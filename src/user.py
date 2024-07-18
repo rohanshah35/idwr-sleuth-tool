@@ -16,6 +16,7 @@ class User:
         self.password_hash = new_encrypted_password
 
     def initialize_linkedin_api(self, username, password):
+        print("Authorizing details on Linkedin..")
         self.linkedin_api = Linkedin(username, password)
         print("Linkedin API initialized")
         print(self.linkedin_api.get_user_profile())

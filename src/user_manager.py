@@ -40,6 +40,7 @@ class UserManager:
         encrypted_password = self.encryptor.encrypt(password)
         self.users[username] = User(username, encrypted_password)
         self._save_users()
+        self.login(username, password)
         return True
 
     def _save_users(self):
