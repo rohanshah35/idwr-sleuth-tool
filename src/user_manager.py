@@ -19,10 +19,8 @@ class UserManager:
     def _load_users(self):
         stored_users = self.file_handler.read_users()
         for username, user_data in stored_users.items():
-            # If user_data is a dictionary (new format)
             password_hash = user_data.get('password_hash')
             remember_me = user_data.get('remember_me', False)
-            # Create User object and add to users dictionary
             self.users[username] = User(username, password_hash, remember_me)
 
     # Login to LinkedIn

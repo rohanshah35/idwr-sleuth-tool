@@ -9,12 +9,12 @@ class User:
         self.username = username
         self.password_hash = password_hash
         self.is_logged_in = False
-        self.remember_me = remember_me  # Initialize remember_me in the constructor
+        self.remember_me = remember_me
 
     # Logout user
     def logout(self):
         self.is_logged_in = False
-        self.remember_me = False  # Reset remember_me on logout
+        self.remember_me = False
 
     # Change user password
     def change_password(self, new_encrypted_password):
