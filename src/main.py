@@ -1,32 +1,35 @@
-# main.py
+# Main application
+
 from user_manager import UserManager
 
 
+# Display menu when not logged in
 def display_logged_out_menu():
     print("select an option:")
     print("1. login\n2. register (these credentials will be used to login to linkedin)\n3. exit")
     return input("enter your choice: ")
 
 
+# Display menu when logged in
 def display_logged_in_menu(username):
     print(f"\nwelcome, {username}!")
     print("1. log in to Linkedin\n2. change password\n3. logout (this will toggle remember-me feature)\n4. exit")
     return input("enter your choice: ")
 
 
+# Application
 def main():
     logged_in_to_linkedin = False
     user_manager = UserManager()
     current_user = user_manager.get_remembered_user()
 
-    # If there's a remembered user, log them in automatically
     if current_user:
         print(f"Remembered user found: {current_user.username}")
         print("Automatic login successful!")
     else:
         print("No remembered user found.")
 
-    # main program loop
+    # Main program loop
     while True:
         if current_user is None:
             choice = display_logged_out_menu()
