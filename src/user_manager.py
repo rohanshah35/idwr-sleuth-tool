@@ -1,4 +1,4 @@
-# ?
+# User management functionality
 
 from file_handler import FileHandler
 from utils import validate_input

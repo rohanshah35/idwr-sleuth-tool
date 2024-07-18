@@ -6,7 +6,7 @@ from user_manager import UserManager
 # Display menu when not logged in
 def display_logged_out_menu():
     print("select an option:")
-    print("1. login\n2. register (these credentials will be used to login to linkedin)\n3. exit")
+    print("1. login\n2. register (these credentials will be used to login to linkedin.py)\n3. exit")
     return input("enter your choice: ")
 
 
@@ -77,7 +77,7 @@ def main():
             else:
                 print("invalid choice. please try again.")
         elif logged_in_to_linkedin:
-            print(f"logged in to linkedin, {current_user.username}!")
+            print(f"logged in to linkedin.py, {current_user.username}!")
             input("coming soon.......")
             break
 

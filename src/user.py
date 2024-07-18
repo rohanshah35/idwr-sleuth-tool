@@ -26,11 +26,11 @@ class User:
 
     # Log into LinkedIn
     def initialize_linkedin_api(self, username, password):
-        print("authorizing details on linkedin..")
+        print("authorizing details on linkedin.py..")
         while True:
             try:
                 self.linkedin_api = Linkedin(username, password)
-                print("linkedin api initialized")
+                print("linkedin.py api initialized")
                 return True
             except Exception as e:
                 if e.__str__() == 'CHALLENGE':
