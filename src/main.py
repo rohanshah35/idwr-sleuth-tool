@@ -10,7 +10,7 @@ def display_logged_out_menu():
 
 def display_logged_in_menu(username):
     print(f"\nwelcome, {username}!")
-    print("1. log in to Linkedin\n2. change password\n3. logout\n4. exit")
+    print("1. log in to Linkedin\n2. change password\n3. logout (this will toggle remember-me feature)\n4. exit")
     return input("enter your choice: ")
 
 

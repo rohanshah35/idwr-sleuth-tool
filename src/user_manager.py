@@ -21,14 +21,9 @@ class UserManager:
         # Retrieve stored user data
         stored_users = self.file_handler.read_users()
         for username, user_data in stored_users.items():
-            if isinstance(user_data, dict):
-                # If user_data is a dictionary (new format)
-                password_hash = user_data.get('password_hash')
-                remember_me = user_data.get('remember_me', False)
-            else:
-                # If user_data is just the password_hash string (old format)
-                password_hash = user_data
-                remember_me = False
+            # If user_data is a dictionary (new format)
+            password_hash = user_data.get('password_hash')
+            remember_me = user_data.get('remember_me', False)
             # Create User object and add to users dictionary
             self.users[username] = User(username, password_hash, remember_me)
 
