@@ -1,8 +1,8 @@
 # LinkedIn functionality
-
 from linkedin_api import Linkedin
 
 
+# Initialize LinkedIn API
 def initialize_linkedin_api(username, password):
     print("authorizing details on linkedin.py..")
     while True:
