@@ -1,5 +1,5 @@
 # Handles login page functionality
-from src.utils import validate_input
+from src.utils.utils import validate_input
 
 
 class Login:

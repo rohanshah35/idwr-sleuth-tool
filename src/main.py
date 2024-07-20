@@ -1,6 +1,6 @@
 # Run application
 from src.app.login import Login
-from user import UserManager
+from src.structures.user import UserManager
 
 
 def main():
