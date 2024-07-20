@@ -33,7 +33,7 @@ class JobHandler:
     # Initialize with a filename
     def __init__(self, filename):
         self.job = filename
-        self.filename = f'jobs/{filename}'
+        self.filename = f'jobs/{filename}.json'
 
     # Read job from a file
     def read_jobs(self):

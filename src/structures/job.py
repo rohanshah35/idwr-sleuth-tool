@@ -1,10 +1,10 @@
 # Handles job data
 
 class Job:
-    def __init__(self, name, description, people):
+    def __init__(self, name, description):
         self.name = name
         self.description = description
-        self.people = people
+        self.clients = []
 
     def load_job_data(self):
 
@@ -22,6 +22,10 @@ class Job:
 
         return self.description
 
-    def get_people(self):
+    def get_clients(self):
 
-        return self.people
+        return self.clients
+
+    def add_client(self, client):
+
+        self.clients.append(client)

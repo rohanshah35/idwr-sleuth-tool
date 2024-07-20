@@ -6,6 +6,7 @@ linkedin_password = None
 email = None
 email_password = None
 
+
 # Main login workflow
 def login(user_manager):
     print("Welcome to IDWR Sleuth Tool!")
@@ -18,6 +19,7 @@ def login(user_manager):
         prompt_for_credentials(user_manager)
     print("LinkedIn credentials and email are set.")
 
+
 # Prompt for LinkedIn username
 def prompt_for_linkedin_username():
     global linkedin_username
@@ -27,6 +29,7 @@ def prompt_for_linkedin_username():
         return
     linkedin_username = username
     prompt_for_linkedin_password()
+
 
 # Prompt for LinkedIn password
 def prompt_for_linkedin_password():
@@ -38,6 +41,7 @@ def prompt_for_linkedin_password():
     linkedin_password = password
     prompt_for_email()
 
+
 # Prompt for email
 def prompt_for_email():
     global email
@@ -48,6 +52,7 @@ def prompt_for_email():
     email = email_address
     prompt_for_email_password()
 
+
 # Prompt for email password
 def prompt_for_email_password():
     global email_password
@@ -56,6 +61,7 @@ def prompt_for_email_password():
         prompt_for_email()
         return
     email_password = password
+
 
 # Prompts user for credentials and saves them if valid
 def prompt_for_credentials(user_manager):
@@ -76,4 +82,3 @@ def prompt_for_credentials(user_manager):
             break
         else:
             print("Invalid input. Please try again.")
-
