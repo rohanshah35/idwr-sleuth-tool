@@ -1,5 +1,5 @@
-# Handles Login functionality
-from utils import validate_input
+# Handles login page functionality
+from src.utils import validate_input
 
 
 class Login:
@@ -16,7 +16,6 @@ class Login:
         if self.user_manager.user_data:
             print("Existing credentials found.")
             print()
-            self.logged_in_prompts()
         else:
             print("No existing credentials found.")
             print()

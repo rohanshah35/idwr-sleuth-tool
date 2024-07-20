@@ -1,0 +1,2 @@
+# Handles home page functionality
+

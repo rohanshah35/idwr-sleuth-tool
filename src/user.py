@@ -1,18 +1,18 @@
 # Handles user
-from encryption import Encryptor
-from file_handler import FileHandler
-from linkedin import initialize_linkedin_api
+from src.fileio.encryption import Encryptor
+from src.fileio.file_handler import FileHandler
+from src.auth.linkedin import initialize_linkedin_api
 
 
 class UserManager:
     def __init__(self):
-        self.file_handler = FileHandler('linkedin_user.json')
+        self.file_handler = FileHandler('auth/credentials.json')
         self.encryptor = Encryptor("71X-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")  # Initialize the encryptor
         self.user_data = self._load_user_data()
 
     # Loads user data from file and decrypts sensitive information
     def _load_user_data(self):
-        data = self.file_handler.read_users()
+        data = self.file_handler.read_credentials()
         print(data)
         if 'linkedin_password' in data:
             data['linkedin_password'] = self.encryptor.decrypt(data['linkedin_password'])
@@ -27,7 +27,7 @@ class UserManager:
             encrypted_data['linkedin_password'] = self.encryptor.encrypt(encrypted_data['linkedin_password'])
         if 'email_password' in encrypted_data:
             encrypted_data['email_password'] = self.encryptor.encrypt(encrypted_data['email_password'])
-        self.file_handler.write_users(encrypted_data)
+        self.file_handler.write_credentials(encrypted_data)
 
     # Retrieves LinkedIn credentials from user data
     def get_linkedin_credentials(self):
