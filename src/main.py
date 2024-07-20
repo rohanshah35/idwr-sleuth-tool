@@ -6,12 +6,14 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.app.login import login
+from src.app.home import home
 from src.structures.user import UserManager
 
 def main():
     user = UserManager()
 
     login(user)
+    home(user)
 
 
 if __name__ == "__main__":
