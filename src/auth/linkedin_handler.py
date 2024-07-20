@@ -4,11 +4,11 @@ from linkedin_api import Linkedin
 
 # Initialize LinkedIn API
 def initialize_linkedin_api(username, password):
-    print("authorizing details on linkedin.py..")
+    print("authorizing details on linkedin_handler.py..")
     while True:
         try:
             linkedin_api = Linkedin(username, password)
-            print("linkedin.py api initialized")
+            print("linkedin_handler.py api initialized")
             return linkedin_api
         except Exception as e:
             if e.__str__() == 'CHALLENGE':

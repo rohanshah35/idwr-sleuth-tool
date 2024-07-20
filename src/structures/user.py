@@ -1,7 +1,7 @@
 # Handles user
 from src.fileio.encryption import Encryptor
 from src.fileio.file_handler import CredentialHandler
-from src.auth.linkedin import initialize_linkedin_api
+from src.auth.linkedin_handler import initialize_linkedin_api
 
 
 class UserManager:

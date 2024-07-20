@@ -27,17 +27,19 @@ class CredentialHandler:
             json.dump(credentials, f)
             f.write('\n')
 
+
 class JobHandler:
 
     # Initialize with a filename
     def __init__(self, filename):
-        self.filename = filename
+        self.job = filename
+        self.filename = f'jobs/{filename}'
 
     # Read job from a file
-    def read_jobs(self, job_name):
+    def read_jobs(self):
         people = {}
         try:
-            with open(f'jobs/{job_name}', 'r') as f:
+            with open(self.filename, 'r') as f:
                 for line in f:
                     user_data = json.loads(line.strip())
                     people.update(user_data)
@@ -46,7 +48,7 @@ class JobHandler:
         return people
 
     # Write job to a new file
-    def write_jobs(self, job_name):
-        with open(f'jobs/{job_name}', 'w') as f:
-            json.dump(job_name, f)
+    def write_jobs(self):
+        with open(self.filename, 'w') as f:
+            json.dump(self.job, f)
             f.write('\n')
