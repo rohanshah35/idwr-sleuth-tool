@@ -3,11 +3,11 @@ import json
 
 
 # Handles reading and writing user data to a file
-class FileHandler:
+class CredentialHandler:
 
     # Initialize with a filename
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self):
+        self.filename = '../auth/credentials.json'
 
     # Read credentials from the file
     def read_credentials(self):
@@ -26,6 +26,12 @@ class FileHandler:
         with open(self.filename, 'w') as f:
             json.dump(credentials, f)
             f.write('\n')
+
+class JobHandler:
+
+    # Initialize with a filename
+    def __init__(self, filename):
+        self.filename = filename
 
     # Read job from a file
     def read_jobs(self, job_name):

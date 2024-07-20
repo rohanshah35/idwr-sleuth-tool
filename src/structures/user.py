@@ -1,12 +1,12 @@
 # Handles user
 from src.fileio.encryption import Encryptor
-from src.fileio.file_handler import FileHandler
+from src.fileio.file_handler import CredentialHandler
 from src.auth.linkedin import initialize_linkedin_api
 
 
 class UserManager:
     def __init__(self):
-        self.file_handler = FileHandler('../auth/credentials.json')
+        self.file_handler = CredentialHandler()
         self.encryptor = Encryptor("71X-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")  # Initialize the encryptor
         self.user_data = self._load_user_data()
 
