@@ -7,7 +7,7 @@ class CredentialHandler:
 
     # Initialize with a filename
     def __init__(self):
-        self.filename = '../auth/credentials.json'
+        self.filename = 'auth/credentials.json'
 
     # Read credentials from the file
     def read_credentials(self):
