@@ -1,29 +1,45 @@
-from file_handler import FileHandler
-from utils import validate_input
+# Handles user
 from encryption import Encryptor
+from file_handler import FileHandler
+from linkedin import initialize_linkedin_api
 
 
 class UserManager:
     def __init__(self):
-        self.file_handler = FileHandler('users.json')
-        self.encryptor = Encryptor("71X-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+        self.file_handler = FileHandler('linkedin_user.json')
+        self.encryptor = Encryptor("71X-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")  # Initialize the encryptor
+        self.user_data = self._load_user_data()
 
-    def login(self, username, password):
-        users = self.file_handler.read_users()
-        if username in users:
-            stored_password = self.encryptor.decrypt(users[username])
-            return stored_password == password
-        return False
+    # Loads user data from file and decrypts sensitive information
+    def _load_user_data(self):
+        data = self.file_handler.read_users()
+        print(data)
+        if 'linkedin_password' in data:
+            data['linkedin_password'] = self.encryptor.decrypt(data['linkedin_password'])
+        if 'email_password' in data:
+            data['email_password'] = self.encryptor.decrypt(data['email_password'])
+        return data
 
-    def register(self, username, password):
-        if not validate_input(username) or not validate_input(password):
+    # Encrypts sensitive data and saves user data to file
+    def save_user_data(self):
+        encrypted_data = self.user_data.copy()
+        if 'linkedin_password' in encrypted_data:
+            encrypted_data['linkedin_password'] = self.encryptor.encrypt(encrypted_data['linkedin_password'])
+        if 'email_password' in encrypted_data:
+            encrypted_data['email_password'] = self.encryptor.encrypt(encrypted_data['email_password'])
+        self.file_handler.write_users(encrypted_data)
+
+    # Retrieves LinkedIn credentials from user data
+    def get_linkedin_credentials(self):
+        username = self.user_data['linkedin_username']
+        password = self.user_data['linkedin_password']
+        return username, password
+
+    # Tests LinkedIn credentials by attempting to initialize the API
+    def test_linkedin_credentials(self):
+        username, password = self.get_linkedin_credentials()
+        try:
+            return initialize_linkedin_api(username, password)
+        except Exception as e:
+            print(e)
             return False
-
-        users = self.file_handler.read_users()
-        if username in users:
-            return False
-
-        encrypted_password = self.encryptor.encrypt(password)
-        users[username] = encrypted_password
-        self.file_handler.write_users(users)
-        return True
