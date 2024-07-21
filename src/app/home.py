@@ -59,7 +59,7 @@ def select_job():
 
     while True:
         try:
-            choice = int(input("Enter the number of the job you want to select (0 to cancel): "))
+            choice = int(input("Enter the number of the job you want to select (-1 to go back): "))
             if choice == 0:
                 return
             if 1 <= choice <= len(job_names):
@@ -126,7 +126,7 @@ def delete_job():
 
     while True:
         try:
-            choice = int(input("Enter the number of the job you want to delete (0 to cancel): "))
+            choice = int(input("Enter the number of the job you want to delete (-1 to go back): "))
             if choice == 0:
                 return
             if 1 <= choice <= len(job_names):
@@ -150,7 +150,7 @@ def account_credentials(user_manager):
     print("2. Delete account (wipes all credentials/jobs)")
     while True:
         try:
-            choice = int(input("Enter the number of the account credentials (0 to cancel): "))
+            choice = int(input("Enter the number of the account credentials (-1 to go back): "))
             if choice == 0:
                 return
             if choice == 1:
