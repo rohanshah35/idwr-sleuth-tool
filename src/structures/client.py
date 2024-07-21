@@ -7,26 +7,23 @@ class Client:
         self.email = email
         self.linkedin = linkedin
 
-    def load_client_data(self):
-
-        return 0
-
-    def save_client_data(self):
-
-        return 0
-
     def get_name(self):
-
         return self.name
 
-    def get_description(self):
-
-        return self.description
-
     def get_email(self):
-
         return self.email
 
-    def get_linkedin(self):
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "email": self.email,
+            "linkedin": self.linkedin
+        }
 
-        return self.linkedin
+    def __str__(self):
+        return f"Client(name={self.name}, email={self.email})"
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(data['name'], data['description'], data['email'], data['linkedin'])
