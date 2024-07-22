@@ -32,11 +32,11 @@ def logged_in_prompts(user_manager):
         print("5. Exit")
         choice = input("Enter your choice (1-5): ")
         if choice == '1':
-            select_job()
+            select_job(user_manager)
         elif choice == '2':
             create_job()
         elif choice == '3':
-            delete_job()
+            delete_job(user_manager)
         elif choice == '4':
             account_credentials(user_manager)
         elif choice == '5':
@@ -47,21 +47,28 @@ def logged_in_prompts(user_manager):
 
 
 # Displays jobs, user makes selection
-def select_job():
+def select_job(user_manager):
     job_names = JobHandler.get_all_job_names()
     if not job_names:
         print("No jobs found.")
         return
 
+    index = 0
+
     print("\nAvailable jobs:")
     for i, name in enumerate(job_names, 1):
         print(f"{i}. {name}")
+        index = i
+
+    print(f"{index}. Back")
 
     while True:
         try:
-            choice = int(input("Enter the number of the job you want to select (-1 to go back): "))
+            choice = int(input("Enter the number of the job you want to select: "))
             if choice == 0:
                 return
+            if choice == len(job_names) + 1:
+                home(user_manager)
             if 1 <= choice <= len(job_names):
                 selected_job = JobHandler.load_job(job_names[choice - 1])
                 if selected_job:
@@ -114,21 +121,28 @@ def prompt_for_job_desc():
 
 
 # User deletes jobs
-def delete_job():
+def delete_job(user_manager):
     job_names = JobHandler.get_all_job_names()
     if not job_names:
         print("No jobs found.")
         return
 
+    index = 0
+
     print("\nAvailable jobs:")
     for i, name in enumerate(job_names, 1):
         print(f"{i}. {name}")
+        index = i
+
+    print(f"{index}. Back")
 
     while True:
         try:
-            choice = int(input("Enter the number of the job you want to delete (-1 to go back): "))
+            choice = int(input("Enter the number of the job you want to delete: "))
             if choice == 0:
                 return
+            if choice == len(job_names) + 1:
+                home(user_manager)
             if 1 <= choice <= len(job_names):
                 job_name = job_names[choice - 1]
                 filename = f'jobs/{job_name}.json'
@@ -148,11 +162,14 @@ def delete_job():
 def account_credentials(user_manager):
     print("1. Change credentials")
     print("2. Delete account (wipes all credentials/jobs)")
+    print("3. Back")
     while True:
         try:
-            choice = int(input("Enter the number of the account credentials (-1 to go back): "))
+            choice = int(input("Enter your choice: "))
             if choice == 0:
                 return
+            if choice == 3:
+                home(user_manager)
             if choice == 1:
                 prompt_for_credentials(user_manager)
             elif choice == 2:
