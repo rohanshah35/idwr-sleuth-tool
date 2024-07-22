@@ -1,5 +1,7 @@
 # Handles home page functionality
+import src.app.login
 from src.app.login import prompt_for_credentials, login
+from src.auth.linkedin_handler import initialize_linkedin_api
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
 from src.structures.job import Job
@@ -15,6 +17,8 @@ job_handler = None
 
 # Main home page workflow
 def home(user_manager):
+    initialize_linkedin_api(src.app.login.linkedin_username, src.app.login.linkedin_password)
+
     logged_in_prompts(user_manager)
 
 

@@ -4,19 +4,15 @@ from linkedin_api import Linkedin
 
 # Initialize LinkedIn API
 def initialize_linkedin_api(username, password):
-    print("authorizing details on linkedin_handler.py..")
-    while True:
-        try:
-            linkedin_api = Linkedin(username, password)
-            print("linkedin_handler.py api initialized")
-            return linkedin_api
-        except Exception as e:
-            if e.__str__() == 'CHALLENGE':
-                print("Challenge failed, could be captcha or incorrect credentials")
-                value = input("Press enter to continue trying again or -1 to exit: ")
-                if value == '-1':
-                    break
-            elif e.__str__() == 'BAD_USERNAME_OR_PASSWORD':
-                raise Exception("Bad username or password, please update your credentials")
-            else:
-                return False
+    try:
+        linkedin_api = Linkedin(username, password)
+        print("LinkedIn Verified!")
+        return linkedin_api
+    except Exception as e:
+        if e.__str__() == 'CHALLENGE':
+            raise Exception("Challenge failed, could be captcha, please try again")
+        elif e.__str__() == 'BAD_USERNAME_OR_PASSWORD':
+            raise Exception("Invalid LinkedIn credentials, please try again")
+        else:
+            print(e)
+            return False
