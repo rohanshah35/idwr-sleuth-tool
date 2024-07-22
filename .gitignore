@@ -1,0 +1,5 @@
+src/jobs/*
+src/auth/credentials.json
+
+__pycache__/
+*.pyc
