@@ -1,4 +1,6 @@
 # Handles home page functionality
+import sys
+
 import src.app.login
 from src.app.job_menu import job_menu
 from src.app.login import prompt_for_credentials, login
@@ -46,7 +48,7 @@ def logged_in_prompts(user_manager):
             account_credentials(user_manager)
         elif choice == '5':
             print("Exiting.")
-            break
+            sys.exit()
         else:
             print("Invalid choice. Please try again.")
 
@@ -79,12 +81,6 @@ def select_job(user_manager):
                 selected_job = JobHandler.load_job(job_names[choice - 1])
                 if selected_job:
                     job_menu(selected_job, user_manager)
-                    # print(f"\nSelected job: {selected_job.get_name()}")
-                    # print(f"Description: {selected_job.get_description()}")
-                    # print("Clients:")
-                    # for client in selected_job.get_clients():
-                    #     print(f"  - {client}")
-                    #
                 break
             else:
                 print("Invalid choice. Please try again.")
