@@ -1,7 +1,7 @@
 # Handles login page functionality
 from src.auth.email_handler import initialize_email
 from src.auth.linkedin_handler import initialize_linkedin_api
-from src.utils.utils import linkedin_validator, email_validator
+from src.utils.utils import linkedin_validator, email_validator, clear_console
 
 linkedin_username = None
 linkedin_password = None
@@ -19,7 +19,7 @@ def login(user_manager):
         print("No existing credentials found.")
         print()
         prompt_for_credentials(user_manager)
-    print("LinkedIn credentials and email are set.")
+        clear_console()
 
 
 # Prompt for LinkedIn username
@@ -64,33 +64,33 @@ def prompt_for_credentials(user_manager):
         print("Please enter your LinkedIn credentials, submit -1 to go back a step")
         prompt_for_linkedin_username()
 
-        while True:
-            if linkedin_validator(linkedin_username):
-                try:
-                    if initialize_linkedin_api(linkedin_username, linkedin_password):
-                        break
-                except Exception as e:
-                    print(e)
-                    prompt_for_linkedin_username()
-            else:
-                print("Invalid LinkedIn credentials, please try again")
-                prompt_for_linkedin_username()
+        # while True:
+        #     if linkedin_validator(linkedin_username):
+        #         try:
+        #             if initialize_linkedin_api(linkedin_username, linkedin_password):
+        #                 break
+        #         except Exception as e:
+        #             print(e)
+        #             prompt_for_linkedin_username()
+        #     else:
+        #         print("Invalid LinkedIn credentials, please try again")
+        #         prompt_for_linkedin_username()
 
         print()
         print("Please enter your email credentials, submit -1 to go back a step")
         prompt_for_email()
 
-        while True:
-            if email_validator(email):
-                try:
-                    if initialize_email(email, email_password):
-                        break
-                except Exception as e:
-                    print(e)
-                    prompt_for_email()
-            else:
-                print("Invalid email, please try again")
-                prompt_for_email()
+        # while True:
+        #     if email_validator(email):
+        #         try:
+        #             if initialize_email(email, email_password):
+        #                 break
+        #         except Exception as e:
+        #             print(e)
+        #             prompt_for_email()
+        #     else:
+        #         print("Invalid email, please try again")
+        #         prompt_for_email()
 
         user_manager.user_data = {
             'linkedin_username': linkedin_username,

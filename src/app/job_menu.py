@@ -1,6 +1,7 @@
 from src.app.login import login
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
+from src.utils.utils import clear_console
 
 client_name = None
 client_description = None
@@ -9,28 +10,39 @@ client_linkedin = None
 
 
 def job_menu(job, user_manager):
+    clear_console()
+
     job_prompts(job, user_manager)
 
 
 def job_prompts(job, user_manager):
     while True:
-        print("\n Current job: " + job.get_name())
+        print("\nCurrent job: " + job.get_name())
         print("\nPlease select an option:")
         print("1. Select client")
         print("2. Create client")
         print("3. Delete client")
-        print("4. Back to home")
+        print()
+        print("4. Back to home menu")
         choice = input("Enter your choice(1-4): ")
         if choice == '1':
+            clear_console()
             select_client(job, user_manager)
+            clear_console()
         elif choice == '2':
+            clear_console()
             create_client(job, user_manager)
+            clear_console()
         elif choice == '3':
+            clear_console()
             delete_client(job, user_manager)
+            clear_console()
         elif choice == '4':
+            clear_console()
             back_to_home(user_manager)
         else:
             print("Invalid choice. Please try again.")
+            clear_console()
 
 
 def select_client(job, user_manager):
@@ -38,6 +50,8 @@ def select_client(job, user_manager):
     if not clients:
         print("No clients found for this job.")
         return None
+
+    print("0. Return to job menu")
 
     print("\nAvailable clients:")
     for i, client in enumerate(clients, 1):
@@ -47,7 +61,7 @@ def select_client(job, user_manager):
         try:
             choice = int(input("Enter the number of the client you want to select (0 to go back): "))
             if choice == 0:
-                return None
+                return job_menu(job, user_manager)
             if 1 <= choice <= len(clients):
                 selected_client = clients[choice - 1]
                 print(f"\nSelected client: {selected_client.get_name()}")
@@ -57,6 +71,7 @@ def select_client(job, user_manager):
                 return selected_client
             else:
                 print("Invalid choice. Please try again.")
+                clear_console()
         except ValueError:
             print("Please enter a valid number.")
         except Exception as e:
@@ -117,19 +132,16 @@ def delete_client(job, user_manager):
         print("No clients found for this job.")
         return
 
-    index = 0
+    print("0. Return to job menu")
 
     print("\nAvailable clients:")
     for i, client in enumerate(client_names, 1):
         print(f"{i}. {client}")
-        index = i
-    print()
-    print(f"{index + 1}. Return to job menu")
 
     while True:
         try:
             choice = int(input("Enter the number of the client you want to delete: "))
-            if choice == len(client_names) + 1:
+            if choice == 0:
                 job_menu(job, user_manager)
             if 1 <= choice <= len(client_names):
                 selected_client_name = client_names[choice - 1]
@@ -140,6 +152,7 @@ def delete_client(job, user_manager):
                 break
             else:
                 print("Invalid choice. Please try again.")
+                clear_console()
         except ValueError:
             print("Please enter a valid number.")
 

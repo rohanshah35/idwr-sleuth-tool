@@ -13,7 +13,6 @@ class UserManager:
     # Loads user data from file and decrypts sensitive information
     def load_user_data(self):
         data = self.file_handler.read_credentials()
-        print(data)
         if 'linkedin_password' in data:
             data['linkedin_password'] = self.encryptor.decrypt(data['linkedin_password'])
         if 'email_password' in data:
