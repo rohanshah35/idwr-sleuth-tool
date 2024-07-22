@@ -1,5 +1,6 @@
 # Handles home page functionality
 import src.app.login
+from src.app.job_menu import job_menu
 from src.app.login import prompt_for_credentials, login
 from src.auth.linkedin_handler import initialize_linkedin_api
 from src.fileio.file_handler import JobHandler
@@ -77,11 +78,13 @@ def select_job(user_manager):
             if 1 <= choice <= len(job_names):
                 selected_job = JobHandler.load_job(job_names[choice - 1])
                 if selected_job:
-                    print(f"\nSelected job: {selected_job.get_name()}")
-                    print(f"Description: {selected_job.get_description()}")
-                    print("Clients:")
-                    for client in selected_job.get_clients():
-                        print(f"  - {client}")
+                    job_menu(selected_job, user_manager)
+                    # print(f"\nSelected job: {selected_job.get_name()}")
+                    # print(f"Description: {selected_job.get_description()}")
+                    # print("Clients:")
+                    # for client in selected_job.get_clients():
+                    #     print(f"  - {client}")
+                    #
                 break
             else:
                 print("Invalid choice. Please try again.")

@@ -1,11 +1,11 @@
 # Handles client data
 
 class Client:
-    def __init__(self, name, description, email, linkedin):
+    def __init__(self, name, description, linkedin, email):
         self.name = name
         self.description = description
-        self.email = email
         self.linkedin = linkedin
+        self.email = email
 
     def get_name(self):
         return self.name

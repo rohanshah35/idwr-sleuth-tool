@@ -41,6 +41,9 @@ class Job:
             "clients": [client.to_dict() for client in self.clients]
         }
 
+    def get_all_client_names(self):
+        return [client.name for client in self.clients]
+
     @classmethod
     def from_dict(cls, data):
         job = cls(data['name'], data['description'])

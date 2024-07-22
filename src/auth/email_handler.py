@@ -2,10 +2,9 @@
 import smtplib
 import socket
 
-import dns
-from verify_email import verify_email
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
 
 # Initialize email login
 def initialize_email(sender_email, sender_password):
@@ -18,6 +17,7 @@ def initialize_email(sender_email, sender_password):
                 return False
     except smtplib.SMTPAuthenticationError:
         raise Exception("Invalid email credentials, please try again.")
+
 
 # Functionality to send email
 def send_email(sender_email, sender_password, recipient_email, subject, body):
@@ -35,8 +35,3 @@ def send_email(sender_email, sender_password, recipient_email, subject, body):
         server.sendmail(sender_email, recipient_email, text)
 
 
-sender_email = ""
-sender_password = ""
-recipient_email = ""
-subject = ""
-body = ""
