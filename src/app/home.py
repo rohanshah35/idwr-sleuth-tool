@@ -1,4 +1,5 @@
 # Handles home page functionality
+from src.app.job_menu import job_menu
 from src.app.login import prompt_for_credentials, login
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
@@ -32,7 +33,7 @@ def logged_in_prompts(user_manager):
         print("5. Exit")
         choice = input("Enter your choice (1-5): ")
         if choice == '1':
-            select_job()
+            select_job(user_manager)
         elif choice == '2':
             create_job()
         elif choice == '3':
@@ -47,7 +48,7 @@ def logged_in_prompts(user_manager):
 
 
 # Displays jobs, user makes selection
-def select_job():
+def select_job(user_manager):
     job_names = JobHandler.get_all_job_names()
     if not job_names:
         print("No jobs found.")
@@ -70,6 +71,7 @@ def select_job():
                     print("Clients:")
                     for client in selected_job.get_clients():
                         print(f"  - {client}")
+                job_menu(selected_job, user_manager)
                 break
             else:
                 print("Invalid choice. Please try again.")
