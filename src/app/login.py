@@ -1,6 +1,7 @@
 # Handles login page functionality
 from src.auth.email_handler import initialize_email
 from src.auth.linkedin_handler import initialize_linkedin_api
+from src.structures.web_driver import WebDriver
 from src.utils.utils import linkedin_validator, email_validator, clear_console
 
 linkedin_username = None
@@ -12,13 +13,14 @@ email_password = None
 # Main login workflow
 def login(user_manager):
     print("Welcome to IDWR Sleuth Tool!")
+    driver = WebDriver()
     if user_manager.user_data:
         print("Existing credentials found.")
         print()
     else:
         print("No existing credentials found.")
         print()
-        prompt_for_credentials(user_manager)
+        prompt_for_credentials(user_manager, driver)
         clear_console()
 
 
@@ -59,38 +61,38 @@ def prompt_for_email_password():
 
 
 # Prompts user for credentials and saves them if valid
-def prompt_for_credentials(user_manager):
+def prompt_for_credentials(user_manager, driver):
     while True:
         print("Please enter your LinkedIn credentials, submit -1 to go back a step")
         prompt_for_linkedin_username()
 
-        # while True:
-        #     if linkedin_validator(linkedin_username):
-        #         try:
-        #             if initialize_linkedin_api(linkedin_username, linkedin_password):
-        #                 break
-        #         except Exception as e:
-        #             print(e)
-        #             prompt_for_linkedin_username()
-        #     else:
-        #         print("Invalid LinkedIn credentials, please try again")
-        #         prompt_for_linkedin_username()
+        while True:
+            if linkedin_validator(linkedin_username):
+                try:
+                    if driver.login_to_linkedin_headless(linkedin_username, linkedin_password):
+                        break
+                except Exception as e:
+                    print(e)
+                    prompt_for_linkedin_username()
+            else:
+                print("Invalid LinkedIn credentials, please try again")
+                prompt_for_linkedin_username()
 
         print()
         print("Please enter your email credentials, submit -1 to go back a step")
         prompt_for_email()
 
-        # while True:
-        #     if email_validator(email):
-        #         try:
-        #             if initialize_email(email, email_password):
-        #                 break
-        #         except Exception as e:
-        #             print(e)
-        #             prompt_for_email()
-        #     else:
-        #         print("Invalid email, please try again")
-        #         prompt_for_email()
+        while True:
+            if email_validator(email):
+                try:
+                    if initialize_email(email, email_password):
+                        break
+                except Exception as e:
+                    print(e)
+                    prompt_for_email()
+            else:
+                print("Invalid email, please try again")
+                prompt_for_email()
 
         user_manager.user_data = {
             'linkedin_username': linkedin_username,
