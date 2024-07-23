@@ -1,7 +1,6 @@
 # Handles user data
 from src.fileio.encryption import Encryptor
 from src.fileio.file_handler import CredentialHandler
-from src.auth.linkedin_handler import initialize_linkedin_api
 
 
 class UserManager:
@@ -34,11 +33,3 @@ class UserManager:
         password = self.user_data['linkedin_password']
         return username, password
 
-    # Tests LinkedIn credentials by attempting to initialize the API
-    def test_linkedin_credentials(self):
-        username, password = self.get_linkedin_credentials()
-        try:
-            return initialize_linkedin_api(username, password)
-        except Exception as e:
-            print(e)
-            return False

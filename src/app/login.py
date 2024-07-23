@@ -1,26 +1,27 @@
 # Handles login page functionality
-from src.auth.email_handler import initialize_email
-from src.auth.linkedin_handler import initialize_linkedin_api
-from src.structures.web_driver import WebDriver
-from src.utils.utils import linkedin_validator, email_validator, clear_console
+from src.auth.email_handler import EmailHandler
+from src.auth.linkedin_handler import LinkedInHandler
+from src.utils.utils import linkedin_validator, clear_console
 
 linkedin_username = None
 linkedin_password = None
 email = None
 email_password = None
 
+linkedin_handler = None
+email_handler = None
+
 
 # Main login workflow
 def login(user_manager):
     print("Welcome to IDWR Sleuth Tool!")
-    driver = WebDriver()
     if user_manager.user_data:
         print("Existing credentials found.")
         print()
     else:
         print("No existing credentials found.")
         print()
-        prompt_for_credentials(user_manager, driver)
+        prompt_for_credentials(user_manager)
         clear_console()
 
 
@@ -61,15 +62,17 @@ def prompt_for_email_password():
 
 
 # Prompts user for credentials and saves them if valid
-def prompt_for_credentials(user_manager, driver):
+def prompt_for_credentials(user_manager):
+    global email_handler, linkedin_handler
     while True:
         print("Please enter your LinkedIn credentials, submit -1 to go back a step")
         prompt_for_linkedin_username()
 
         while True:
             if linkedin_validator(linkedin_username):
+                linkedin_handler = LinkedInHandler(linkedin_username, linkedin_password)
                 try:
-                    if driver.login_to_linkedin_headless(linkedin_username, linkedin_password):
+                    if linkedin_handler.login_to_linkedin_headless():
                         break
                 except Exception as e:
                     print(e)
@@ -81,17 +84,17 @@ def prompt_for_credentials(user_manager, driver):
         print()
         print("Please enter your email credentials, submit -1 to go back a step")
         prompt_for_email()
-
         while True:
-            if email_validator(email):
-                try:
-                    if initialize_email(email, email_password):
-                        break
-                except Exception as e:
-                    print(e)
-                    prompt_for_email()
-            else:
-                print("Invalid email, please try again")
+            try:
+                print("Logging in...")
+                email_handler = EmailHandler(email, email_password)
+                email_handler.initialize_imap()
+                email_handler.initialize_smtp()
+                print("Email login successful.")
+                break
+            except Exception as e:
+                print(f"Error during email login: {str(e)}")
+                print("Please try again.")
                 prompt_for_email()
 
         user_manager.user_data = {
@@ -100,7 +103,6 @@ def prompt_for_credentials(user_manager, driver):
             'email': email,
             'email_password': email_password
         }
-
         user_manager.save_user_data()
         print("Credentials saved successfully!")
         break

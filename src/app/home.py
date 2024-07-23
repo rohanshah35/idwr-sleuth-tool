@@ -4,7 +4,6 @@ import sys
 import src.app.login
 from src.app.job_menu import job_menu
 from src.app.login import prompt_for_credentials, login
-from src.auth.linkedin_handler import initialize_linkedin_api
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
 from src.structures.job import Job
