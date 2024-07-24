@@ -1,4 +1,4 @@
-from src.app.login import login
+from src.app.client_menu import client_menu
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
 from src.utils.utils import clear_console
@@ -68,7 +68,7 @@ def select_client(job, user_manager):
                 print(f"Description: {selected_client.description}")
                 print(f"Email: {selected_client.get_email()}")
                 print(f"LinkedIn: {selected_client.linkedin}")
-                return selected_client
+                client_menu(selected_client)
             else:
                 print("Invalid choice. Please try again.")
                 clear_console()
