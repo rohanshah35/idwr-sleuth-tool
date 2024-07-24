@@ -2,13 +2,13 @@ from src.app.job_menu import job_menu
 from src.utils.utils import clear_console
 
 
-def client_menu(client):
+def client_menu(client, job, user_manager):
     clear_console()
 
-    client_prompts(client)
+    client_prompts(client, job, user_manager)
 
 
-def client_prompts(client):
+def client_prompts(client, job, user_manager):
     while True:
         print("\nCurrent client: " + client.get_name())
         print("\nPlease select an option:")
@@ -37,7 +37,7 @@ def client_prompts(client):
             clear_console()
         elif choice == '5':
             clear_console()
-            back_to_job_menu()
+            back_to_job_menu(job, user_manager)
             clear_console()
         else:
             print("Invalid choice. Please try again.")

@@ -68,7 +68,7 @@ def select_client(job, user_manager):
                 print(f"Description: {selected_client.description}")
                 print(f"Email: {selected_client.get_email()}")
                 print(f"LinkedIn: {selected_client.linkedin}")
-                client_menu(selected_client)
+                client_menu(selected_client, job, user_manager)
             else:
                 print("Invalid choice. Please try again.")
                 clear_console()
