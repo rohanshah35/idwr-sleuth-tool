@@ -1,4 +1,3 @@
-from src.app.client_menu import client_menu
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
 from src.utils.utils import clear_console
@@ -46,6 +45,7 @@ def job_prompts(job, user_manager):
 
 
 def select_client(job, user_manager):
+    from src.app.client_menu import client_menu
     clients = job.get_clients()
     if not clients:
         print("No clients found for this job.")

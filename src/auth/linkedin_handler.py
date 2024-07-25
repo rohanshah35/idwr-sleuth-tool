@@ -123,25 +123,47 @@ class LinkedInHandler:
             return False
 
     # Retrieves the text of a conversation with a specified LinkedIn user
+
     def get_conversation_text(self, messenger_full_name):
         self.open_linkedin_conversation(messenger_full_name)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-s-message-list__event"))
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-s-message-list.full-width.scrollable"))
             )
 
+            # Find the scrollable message list
+            message_list = self.driver.find_element(By.CSS_SELECTOR, ".msg-s-message-list.full-width.scrollable")
+
+            # Scroll to load older messages
+            last_height = self.driver.execute_script("return arguments[0].scrollHeight", message_list)
+            while True:
+                # Scroll to top
+                self.driver.execute_script("arguments[0].scrollTop = -10000", message_list)
+                time.sleep(0.5)  # Wait for content to load
+
+                # Check if we've reached the top
+                new_height = self.driver.execute_script("return arguments[0].scrollTop", message_list)
+                print(f"Current height: {new_height}, Last height: {last_height}")  # Debug print
+                if new_height == last_height:
+                    break
+                last_height = new_height
+
+            # Now get all the messages
             messages = self.driver.find_elements(By.CSS_SELECTOR, ".msg-s-message-list__event")
+            print(f"Found {len(messages)} messages")  # Debug print
 
             conversation_text = []
             for message in messages:
                 try:
-                    sender = message.find_element(By.CSS_SELECTOR, ".msg-s-message-group__name").text
                     content = message.find_element(By.CSS_SELECTOR, ".msg-s-event-listitem__body").text
+                    sender_element = message.find_element(By.CSS_SELECTOR, ".msg-s-message-group__name")
+                    sender = sender_element.text if sender_element.is_displayed() else "You"
+                    # if content.strip():  # Only add non-empty messages
                     conversation_text.append(f"{sender}: {content}")
                 except NoSuchElementException:
-                    pass
-
-            return "\n".join(conversation_text)
+                    conversation_text.append(f"{content}")
+            return conversation_text #returns array, each index is a message
+            # return "\n".join(conversation_text) returns formatted string
         except TimeoutException:
             print("Failed to load conversation messages")
             return None
@@ -207,11 +229,8 @@ def main():
         if linkedin_handler.login_to_linkedin_headless():
             print("Login successful!")
 
-            print(f"Attempting to send message to {recipient_name}...")
-            if linkedin_handler.send_linkedin_message(recipient_name, message):
-                print("Message sent successfully!")
-            else:
-                print("Failed to send message.")
+            print(f"Attempting to view conversation with {recipient_name}...")
+            print(linkedin_handler.get_conversation_text(recipient_name))
         else:
             print("Failed to log in to LinkedIn.")
     except Exception as e:

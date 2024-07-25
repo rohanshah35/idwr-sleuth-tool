@@ -17,7 +17,7 @@ def client_prompts(client, job, user_manager):
         print("3. Email conversation")
         print("4. Send email message")
         print()
-        print("4. Back to job menu")
+        print("5. Back to job menu")
         choice = input("Enter your choice(1-4): ")
         if choice == '1':
             clear_console()
@@ -44,19 +44,19 @@ def client_prompts(client, job, user_manager):
             clear_console()
 
 
-def view_linkedin_conversation():
+def view_linkedin_conversation(client):
     return 0
 
 
-def send_linkedin_message():
+def send_linkedin_message(client):
     return 0
 
 
-def view_email_conversation():
+def view_email_conversation(client):
     return 0
 
 
-def send_email_message():
+def send_email_message(client):
     return 0
 
 
