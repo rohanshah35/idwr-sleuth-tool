@@ -23,7 +23,7 @@ class Client:
             self.message_thread.append(self.message_to_dict(i, message))
 
     def message_to_dict(self, index, message):
-        split_sender_and_message_body = message.split(':', 1) #splits by : 1 time
+        split_sender_and_message_body = message.split(':', 1) # splits by : 1 time
         print(split_sender_and_message_body)
         message = {}
         try:

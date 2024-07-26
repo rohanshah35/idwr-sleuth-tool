@@ -3,12 +3,15 @@ from src.utils.utils import clear_console
 
 
 def client_menu(client, job, user_manager):
+    linkedin_handler = user_manager.linkedin_handler
+    email_handler = user_manager.email_handler
+
     clear_console()
 
-    client_prompts(client, job, user_manager)
+    client_prompts(client, job, user_manager, linkedin_handler, email_handler)
 
 
-def client_prompts(client, job, user_manager):
+def client_prompts(client, job, user_manager, linkedin_handler, email_handler):
     while True:
         print("\nCurrent client: " + client.get_name())
         print("\nPlease select an option:")
@@ -21,19 +24,19 @@ def client_prompts(client, job, user_manager):
         choice = input("Enter your choice(1-4): ")
         if choice == '1':
             clear_console()
-            view_linkedin_conversation(client)
+            view_linkedin_conversation(client, linkedin_handler)
             clear_console()
         elif choice == '2':
             clear_console()
-            send_linkedin_message(client)
+            send_linkedin_message(client, linkedin_handler)
             clear_console()
         elif choice == '3':
             clear_console()
-            view_email_conversation(client)
+            view_email_conversation(client, email_handler)
             clear_console()
         elif choice == '4':
             clear_console()
-            send_email_message(client)
+            send_email_message(client, email_handler)
             clear_console()
         elif choice == '5':
             clear_console()
@@ -44,20 +47,32 @@ def client_prompts(client, job, user_manager):
             clear_console()
 
 
-def view_linkedin_conversation(client):
-    return 0
+def view_linkedin_conversation(client, linkedin_handler):
+    print(linkedin_handler.get_conversation_text(client.linkedin))
 
 
-def send_linkedin_message(client):
-    return 0
+def send_linkedin_message(client, linkedin_handler):
+    print("Enter your message")
+    message = input(" ")
+
+    print(linkedin_handler.send_message(client.linkedin, message))
 
 
-def view_email_conversation(client):
-    return 0
+# Not sure what to do here for logic, one could have multiple email threads with one client, should we display them all and ask them to choose?
+def view_email_conversation(client, email_handler):
+    mail_list = email_handler.search_mailbox(client.get_email)
+    for mail in mail_list:
+        print(email_handler.get_email_content(mail))
 
 
-def send_email_message(client):
-    return 0
+def send_email_message(client, email_handler):
+    print("Enter the email subject:")
+    subject = input(" ")
+
+    print("Enter the email body:")
+    body = input(" ")
+
+    print(email_handler.send_email(client.email, subject, body))
 
 
 def back_to_job_menu(job, user_manager):
