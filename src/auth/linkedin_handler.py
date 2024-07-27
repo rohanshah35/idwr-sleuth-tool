@@ -253,8 +253,8 @@ class LinkedInHandler:
 
 def main():
     # LinkedIn credentials
-    linkedin_username = "luked1012@gmail.com"
-    linkedin_password = "TbH6LM8fEEVA6r2"
+    linkedin_username = ""
+    linkedin_password = ""
 
     # Recipient's full name as it appears on LinkedIn
     recipient_name = "https://www.linkedin.com/in/luca-bianchini-650923288/"
