@@ -22,7 +22,9 @@ def job_prompts(job, user_manager):
         print("2. Create client")
         print("3. Delete client")
         print()
-        print("4. Back to home menu")
+        print("4. Send message to all clients")
+        print()
+        print("5. Back to home menu")
         choice = input("Enter your choice(1-4): ")
         if choice == '1':
             clear_console()
@@ -37,6 +39,10 @@ def job_prompts(job, user_manager):
             delete_client(job, user_manager)
             clear_console()
         elif choice == '4':
+            clear_console()
+            print("In progress...")
+            clear_console()
+        elif choice == '5':
             clear_console()
             back_to_home(user_manager)
         else:
@@ -159,5 +165,5 @@ def delete_client(job, user_manager):
 
 
 def back_to_home(user_manager):
-    from src.app.home import home
-    home(user_manager)
+    from src.app.home import logged_in_prompts
+    logged_in_prompts(user_manager)

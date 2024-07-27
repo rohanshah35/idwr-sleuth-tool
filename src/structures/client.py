@@ -51,7 +51,7 @@ class Client:
 
     @classmethod
     def from_dict(cls, data):
-        client = cls(data["name"], data["description"], data["email"], data["linkedin"])
+        client = cls(data["name"], data["description"], data["linkedin"], data["email"])
         client.message_thread = data.get("message_thread", [])
         return client
 

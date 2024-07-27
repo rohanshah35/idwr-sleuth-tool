@@ -14,8 +14,8 @@ class UserManager:
         self.linkedin_password = None
         self.email = None
         self.email_password = None
-        self.linkedin_handler = LinkedInHandler(self.user_data['linkedin_username'], self.user_data['linkedin_password'])
-        self.email_handler = EmailHandler(self.user_data['email'], self.user_data['email_password'])
+        self.linkedin_handler = None
+        self.email_handler = None
 
     def get_linkedin_username(self):
         return self.linkedin_username
@@ -40,6 +40,11 @@ class UserManager:
 
     def set_email_password(self, password):
         self.email_password = password
+
+    def load_handlers(self):
+        if self.user_data:
+            self.linkedin_handler = LinkedInHandler(self.user_data['linkedin_username'], self.user_data['linkedin_password'])
+            self.email_handler = EmailHandler(self.user_data['email'], self.user_data['email_password'])
 
     # Loads user data from file and decrypts sensitive information
     def load_user_data(self):
