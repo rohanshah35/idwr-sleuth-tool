@@ -9,6 +9,7 @@ from src.app.login import login
 from src.app.home import home
 from src.structures.user import UserManager
 
+
 def main():
     user = UserManager()
 

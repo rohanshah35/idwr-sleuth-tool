@@ -1,9 +1,14 @@
 # Handles home page functionality
+import sys
+
+import src.app.login
+from src.app.job_menu import job_menu
 from src.app.login import prompt_for_credentials, login
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
 from src.structures.job import Job
 import os
+from src.utils.utils import clear_console
 
 from src.structures.user import UserManager
 
@@ -15,6 +20,12 @@ job_handler = None
 
 # Main home page workflow
 def home(user_manager):
+    user_manager.load_handlers()
+
+    user_manager.linkedin_handler.login_to_linkedin_headless()
+    user_manager.email_handler.initialize_imap()
+    user_manager.email_handler.initialize_smtp()
+
     logged_in_prompts(user_manager)
 
 
@@ -29,21 +40,31 @@ def logged_in_prompts(user_manager):
         print("2. Create job")
         print("3. Delete job")
         print("4. Account credentials")
+        print()
         print("5. Exit")
         choice = input("Enter your choice (1-5): ")
         if choice == '1':
+            clear_console()
             select_job(user_manager)
+            clear_console()
         elif choice == '2':
+            clear_console()
             create_job()
+            clear_console()
         elif choice == '3':
+            clear_console()
             delete_job(user_manager)
+            clear_console()
         elif choice == '4':
+            clear_console()
             account_credentials(user_manager)
+            clear_console()
         elif choice == '5':
             print("Exiting.")
-            break
+            sys.exit()
         else:
             print("Invalid choice. Please try again.")
+            clear_console()
 
 
 # Displays jobs, user makes selection
@@ -53,33 +74,25 @@ def select_job(user_manager):
         print("No jobs found.")
         return
 
-    index = 0
+    print("0. Return to home menu")
 
     print("\nAvailable jobs:")
     for i, name in enumerate(job_names, 1):
         print(f"{i}. {name}")
-        index = i
-
-    print(f"{index}. Back")
 
     while True:
         try:
             choice = int(input("Enter the number of the job you want to select: "))
             if choice == 0:
-                return
-            if choice == len(job_names) + 1:
-                home(user_manager)
+                logged_in_prompts(user_manager)
             if 1 <= choice <= len(job_names):
                 selected_job = JobHandler.load_job(job_names[choice - 1])
                 if selected_job:
-                    print(f"\nSelected job: {selected_job.get_name()}")
-                    print(f"Description: {selected_job.get_description()}")
-                    print("Clients:")
-                    for client in selected_job.get_clients():
-                        print(f"  - {client}")
+                    job_menu(selected_job, user_manager)
                 break
             else:
                 print("Invalid choice. Please try again.")
+                clear_console()
         except ValueError:
             print("Please enter a valid number.")
         except Exception as e:
@@ -92,8 +105,6 @@ def create_job():
     print("Submit -1 to go back")
     prompt_for_job_name()
     job = Job(job_name, job_description)
-    client = Client("test", "test", "test@test.com", "test")
-    job.add_client(client)
     job_list.append(job)
     job_handler = JobHandler(job)
     job_handler.write_job()
@@ -127,22 +138,18 @@ def delete_job(user_manager):
         print("No jobs found.")
         return
 
-    index = 0
+    print("0. Return to home menu")
 
     print("\nAvailable jobs:")
     for i, name in enumerate(job_names, 1):
         print(f"{i}. {name}")
-        index = i
-
-    print(f"{index}. Back")
 
     while True:
         try:
             choice = int(input("Enter the number of the job you want to delete: "))
             if choice == 0:
-                return
-            if choice == len(job_names) + 1:
-                home(user_manager)
+                clear_console()
+                logged_in_prompts(user_manager)
             if 1 <= choice <= len(job_names):
                 job_name = job_names[choice - 1]
                 filename = f'jobs/{job_name}.json'
@@ -154,24 +161,28 @@ def delete_job(user_manager):
                 break
             else:
                 print("Invalid choice. Please try again.")
+                clear_console()
         except ValueError:
             print("Please enter a valid number.")
 
 
 # User account credentials (currently empty)
 def account_credentials(user_manager):
+    print("0. Return to home menu")
+    print()
     print("1. Change credentials")
     print("2. Delete account (wipes all credentials/jobs)")
-    print("3. Back")
     while True:
         try:
             choice = int(input("Enter your choice: "))
             if choice == 0:
-                return
-            if choice == 3:
-                home(user_manager)
+                clear_console()
+                logged_in_prompts(user_manager)
             if choice == 1:
+                clear_console()
                 prompt_for_credentials(user_manager)
+                clear_console()
+                logged_in_prompts(user_manager)
             elif choice == 2:
                 user_manager.file_handler.delete_credentials()
                 job_names = JobHandler.get_all_job_names()
@@ -180,9 +191,11 @@ def account_credentials(user_manager):
                     os.remove(filename)
                     print(f"{name} has been deleted.")
                 user_manager = UserManager()
+                clear_console()
                 login(user_manager)
                 break
             else:
                 print("Invalid choice. Please try again.")
+                clear_console()
         except ValueError:
             print("Please enter a valid number.")

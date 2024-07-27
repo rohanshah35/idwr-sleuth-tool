@@ -21,12 +21,28 @@ class Job:
     def add_client(self, client):
         self.clients.append(client)
 
+    def remove_client(self, client):
+        if client in self.clients:
+            self.clients.remove(client)
+            return True
+        return False
+
+    def remove_client_by_name(self, client_name):
+        for client in self.clients:
+            if client.get_name() == client_name:
+                self.clients.remove(client)
+                return True
+        return False
+
     def to_dict(self):
         return {
             "name": self.name,
             "description": self.description,
             "clients": [client.to_dict() for client in self.clients]
         }
+
+    def get_all_client_names(self):
+        return [client.name for client in self.clients]
 
     @classmethod
     def from_dict(cls, data):
