@@ -28,6 +28,9 @@ def home(user_manager):
 # Displays menu for logged-in user and handles their choices
 def logged_in_prompts(user_manager):
     while True:
+        user_manager.linkedin_handler.login_to_linkedin_headless()
+        user_manager.email_handler.initialize_imap()
+        user_manager.email_handler.initialize_smtp()
         print("\nCurrent credentials:")
         print(f"LinkedIn Username: {user_manager.user_data.get('linkedin_username', 'Not set')}")
         print(f"Email: {user_manager.user_data.get('email', 'Not set')}")

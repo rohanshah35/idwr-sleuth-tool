@@ -63,7 +63,8 @@ def select_client(job, user_manager):
             if choice == 0:
                 return job_menu(job, user_manager)
             if 1 <= choice <= len(clients):
-                selected_client = clients[choice - 1]
+                print(clients)
+                selected_client = clients[choice-1]
                 print(f"\nSelected client: {selected_client.get_name()}")
                 print(f"Description: {selected_client.description}")
                 print(f"Email: {selected_client.get_email()}")

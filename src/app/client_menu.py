@@ -55,14 +55,20 @@ def send_linkedin_message(client, linkedin_handler):
     print("Enter your message")
     message = input(" ")
 
-    print(linkedin_handler.send_message(client.linkedin, message))
+    print(linkedin_handler.send_linkedin_message(client.linkedin, message))
 
 
 # Not sure what to do here for logic, one could have multiple email threads with one client, should we display them all and ask them to choose?
 def view_email_conversation(client, email_handler):
-    mail_list = email_handler.search_mailbox(client.get_email)
-    for mail in mail_list:
-        print(email_handler.get_email_content(mail))
+    message_ids = email_handler.search_mailbox(client.get_email())
+    for email_id in message_ids:
+        email_content, email_body = email_handler.get_email_content(email_id)
+        print(f"Subject: {email_content['Subject']}")
+        print(f"From: {email_content['From']}")
+        print(f"Date: {email_content['Date']}")
+        print("Content:")
+        print(email_body)
+        print("--------------------")
 
 
 def send_email_message(client, email_handler):
@@ -72,7 +78,7 @@ def send_email_message(client, email_handler):
     print("Enter the email body:")
     body = input(" ")
 
-    print(email_handler.send_email(client.email, subject, body))
+    email_handler.send_email(client.email, subject, body)
 
 
 def back_to_job_menu(job, user_manager):

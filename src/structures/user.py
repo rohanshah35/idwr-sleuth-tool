@@ -14,8 +14,8 @@ class UserManager:
         self.linkedin_password = None
         self.email = None
         self.email_password = None
-        self.linkedin_handler = LinkedInHandler(self.linkedin_username, self.linkedin_password)
-        self.email_handler = EmailHandler(self.email, self.email_password)
+        self.linkedin_handler = LinkedInHandler(self.user_data['linkedin_username'], self.user_data['linkedin_password'])
+        self.email_handler = EmailHandler(self.user_data['email'], self.user_data['email_password'])
 
     def get_linkedin_username(self):
         return self.linkedin_username
