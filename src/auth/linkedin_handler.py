@@ -1,3 +1,4 @@
+import re
 import time
 
 from selenium import webdriver
@@ -75,7 +76,12 @@ class LinkedInHandler:
         return login_to_linkedin(self.username, self.password, self.driver)
 
     # Opens a conversation with a specified LinkedIn user
-    def open_linkedin_conversation(self, messenger_full_name):
+    def open_linkedin_conversation(self, profile_url):
+        full_name = self.get_linkedin_profile_name(profile_url)
+        if not full_name:
+            print(f"Failed to get profile name from URL: {profile_url}")
+            return False
+
         try:
             print("Attempting to navigate to messaging...")
             messaging_link = WebDriverWait(self.driver, 10).until(
@@ -93,8 +99,8 @@ class LinkedInHandler:
             )
             print("Search input found")
 
-            print(f"Searching for {messenger_full_name}...")
-            search_input.send_keys(messenger_full_name)
+            print(f"Searching for {full_name}...")
+            search_input.send_keys(full_name)
             search_input.send_keys(Keys.RETURN)
             print("Search query sent")
 
@@ -106,7 +112,7 @@ class LinkedInHandler:
 
             print("Attempting to click on the first result...")
             first_result.click()
-            print(f"Clicked on conversation with {messenger_full_name}")
+            print(f"Clicked on conversation with {full_name}")
 
             return True
         except TimeoutException as e:
@@ -122,36 +128,57 @@ class LinkedInHandler:
             print(f"Current URL: {self.driver.current_url}")
             return False
 
-    # Retrieves the text of a conversation with a specified LinkedIn user
-    def get_conversation_text(self, messenger_full_name):
-        self.open_linkedin_conversation(messenger_full_name)
+    def get_conversation_text(self, profile_url):
+        if not self.open_linkedin_conversation(profile_url):
+            print(f"Failed to open conversation for profile: {profile_url}")
+            return None
+
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-s-message-list__event"))
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-s-message-list.full-width.scrollable"))
             )
 
+            # Find the scrollable message list
+            message_list = self.driver.find_element(By.CSS_SELECTOR, ".msg-s-message-list.full-width.scrollable")
+
+            # Scroll to load older messages
+            last_height = self.driver.execute_script("return arguments[0].scrollHeight", message_list)
+            while True:
+                # Scroll to top
+                self.driver.execute_script("arguments[0].scrollTop = -10000", message_list)
+                time.sleep(0.5)  # Wait for content to load
+
+                # Check if we've reached the top
+                new_height = self.driver.execute_script("return arguments[0].scrollTop", message_list)
+                print(f"Current height: {new_height}, Last height: {last_height}")  # Debug print
+                if new_height == last_height:
+                    break
+                last_height = new_height
+
+            # Now get all the messages
             messages = self.driver.find_elements(By.CSS_SELECTOR, ".msg-s-message-list__event")
+            print(f"Found {len(messages)} messages")  # Debug print
 
             conversation_text = []
             for message in messages:
                 try:
-                    sender = message.find_element(By.CSS_SELECTOR, ".msg-s-message-group__name").text
                     content = message.find_element(By.CSS_SELECTOR, ".msg-s-event-listitem__body").text
+                    sender_element = message.find_element(By.CSS_SELECTOR, ".msg-s-message-group__name")
+                    sender = sender_element.text if sender_element.is_displayed() else "You"
                     conversation_text.append(f"{sender}: {content}")
                 except NoSuchElementException:
-                    pass
-
-            return "\n".join(conversation_text)
+                    conversation_text.append(f"{content}")
+            return conversation_text
         except TimeoutException:
             print("Failed to load conversation messages")
             return None
 
-    def send_linkedin_message(self, messenger_full_name, message):
-        try:
-            if not self.open_linkedin_conversation(messenger_full_name):
-                print(f"Failed to open conversation with {messenger_full_name}")
-                return False
+    def send_linkedin_message(self, profile_url, message):
+        if not self.open_linkedin_conversation(profile_url):
+            print(f"Failed to open conversation for profile: {profile_url}")
+            return False
 
+        try:
             print("Waiting for message input field...")
             message_input = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div[role='textbox']"))
@@ -161,11 +188,17 @@ class LinkedInHandler:
 
             print(f"Typing message: {message}")
             message_input.send_keys(message)
-            time.sleep(0.5)
-            message_send_button = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-form__send-btn"))
-            )
+            time.sleep(1)
+            try:
+                message_send_button = WebDriverWait(self.driver, 2).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-form__send-btn"))
+                )
+            except TimeoutException:
+                message_send_button = WebDriverWait(self.driver, 2).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-form__send-button"))
+                )
             message_send_button.click()
+            time.sleep(1)
             print("Message sent")
 
             return True
@@ -182,6 +215,36 @@ class LinkedInHandler:
             print(f"Current URL: {self.driver.current_url}")
             return False
 
+    def get_linkedin_profile_name(self, profile_url):
+        # Verify the URL is a LinkedIn profile URL
+        linkedin_profile_pattern = r'^https?:\/\/(?:www\.)?linkedin\.com\/in\/[\w\-]+\/?$'
+        if not re.match(linkedin_profile_pattern, profile_url):
+            print("Invalid LinkedIn profile URL")
+            return None
+
+        try:
+            # Navigate to the profile page
+            self.driver.get(profile_url)
+
+            # Wait for the profile name to be visible
+            name_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "h1.text-heading-xlarge"))
+            )
+
+            # Extract the full name
+            full_name = name_element.text.strip()
+            print(f"Profile name: {full_name}")
+            return full_name
+
+        except TimeoutException:
+            print("Timeout while loading profile page or finding name element")
+        except NoSuchElementException:
+            print("Could not find the name element on the profile page")
+        except Exception as e:
+            print(f"An error occurred while retrieving the profile name: {str(e)}")
+
+        return None
+
     # Quits the WebDriver, closing the browser
     def quit(self):
         if self.driver:
@@ -194,7 +257,7 @@ def main():
     linkedin_password = ""
 
     # Recipient's full name as it appears on LinkedIn
-    recipient_name = "Luca Bianchini"
+    recipient_name = "https://www.linkedin.com/in/luca-bianchini-650923288/"
 
     # Message to send
     message = "Hello! This is a test message sent using the LinkedInHandler."
@@ -207,11 +270,8 @@ def main():
         if linkedin_handler.login_to_linkedin_headless():
             print("Login successful!")
 
-            print(f"Attempting to send message to {recipient_name}...")
-            if linkedin_handler.send_linkedin_message(recipient_name, message):
-                print("Message sent successfully!")
-            else:
-                print("Failed to send message.")
+            print(f"Attempting to view conversation with {recipient_name}...")
+            print(linkedin_handler.send_linkedin_message(recipient_name, message))
         else:
             print("Failed to log in to LinkedIn.")
     except Exception as e:
@@ -219,7 +279,6 @@ def main():
     finally:
         if linkedin_handler:
             print("Closing browser...")
-            linkedin_handler.quit()
 
 if __name__ == "__main__":
     main()

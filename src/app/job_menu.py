@@ -1,4 +1,3 @@
-from src.app.login import login
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
 from src.utils.utils import clear_console
@@ -23,7 +22,9 @@ def job_prompts(job, user_manager):
         print("2. Create client")
         print("3. Delete client")
         print()
-        print("4. Back to home menu")
+        print("4. Send message to all clients")
+        print()
+        print("5. Back to home menu")
         choice = input("Enter your choice(1-4): ")
         if choice == '1':
             clear_console()
@@ -39,6 +40,10 @@ def job_prompts(job, user_manager):
             clear_console()
         elif choice == '4':
             clear_console()
+            print("In progress...")
+            clear_console()
+        elif choice == '5':
+            clear_console()
             back_to_home(user_manager)
         else:
             print("Invalid choice. Please try again.")
@@ -46,6 +51,7 @@ def job_prompts(job, user_manager):
 
 
 def select_client(job, user_manager):
+    from src.app.client_menu import client_menu
     clients = job.get_clients()
     if not clients:
         print("No clients found for this job.")
@@ -63,12 +69,13 @@ def select_client(job, user_manager):
             if choice == 0:
                 return job_menu(job, user_manager)
             if 1 <= choice <= len(clients):
-                selected_client = clients[choice - 1]
+                print(clients)
+                selected_client = clients[choice-1]
                 print(f"\nSelected client: {selected_client.get_name()}")
                 print(f"Description: {selected_client.description}")
                 print(f"Email: {selected_client.get_email()}")
                 print(f"LinkedIn: {selected_client.linkedin}")
-                return selected_client
+                client_menu(selected_client, job, user_manager)
             else:
                 print("Invalid choice. Please try again.")
                 clear_console()
@@ -158,5 +165,5 @@ def delete_client(job, user_manager):
 
 
 def back_to_home(user_manager):
-    from src.app.home import home
-    home(user_manager)
+    from src.app.home import logged_in_prompts
+    logged_in_prompts(user_manager)

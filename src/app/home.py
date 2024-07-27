@@ -20,7 +20,11 @@ job_handler = None
 
 # Main home page workflow
 def home(user_manager):
-    # initialize_linkedin_api(src.app.login.linkedin_username, src.app.login.linkedin_password)
+    user_manager.load_handlers()
+
+    user_manager.linkedin_handler.login_to_linkedin_headless()
+    user_manager.email_handler.initialize_imap()
+    user_manager.email_handler.initialize_smtp()
 
     logged_in_prompts(user_manager)
 
@@ -80,7 +84,7 @@ def select_job(user_manager):
         try:
             choice = int(input("Enter the number of the job you want to select: "))
             if choice == 0:
-                home(user_manager)
+                logged_in_prompts(user_manager)
             if 1 <= choice <= len(job_names):
                 selected_job = JobHandler.load_job(job_names[choice - 1])
                 if selected_job:
@@ -145,7 +149,7 @@ def delete_job(user_manager):
             choice = int(input("Enter the number of the job you want to delete: "))
             if choice == 0:
                 clear_console()
-                home(user_manager)
+                logged_in_prompts(user_manager)
             if 1 <= choice <= len(job_names):
                 job_name = job_names[choice - 1]
                 filename = f'jobs/{job_name}.json'
@@ -173,12 +177,12 @@ def account_credentials(user_manager):
             choice = int(input("Enter your choice: "))
             if choice == 0:
                 clear_console()
-                home(user_manager)
+                logged_in_prompts(user_manager)
             if choice == 1:
                 clear_console()
                 prompt_for_credentials(user_manager)
                 clear_console()
-                home(user_manager)
+                logged_in_prompts(user_manager)
             elif choice == 2:
                 user_manager.file_handler.delete_credentials()
                 job_names = JobHandler.get_all_job_names()

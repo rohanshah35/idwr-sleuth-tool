@@ -97,6 +97,11 @@ def prompt_for_credentials(user_manager):
                 print("Please try again.")
                 prompt_for_email()
 
+        user_manager.set_linkedin_username(linkedin_username)
+        user_manager.set_linkedin_password(linkedin_password)
+        user_manager.set_email(email)
+        user_manager.set_email_password(email_password)
+
         user_manager.user_data = {
             'linkedin_username': linkedin_username,
             'linkedin_password': linkedin_password,
