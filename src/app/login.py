@@ -14,15 +14,20 @@ email_handler = None
 
 # Main login workflow
 def login(user_manager):
+    from src.app.home import logged_in_prompts, home
     print("Welcome to IDWR Sleuth Tool!")
     if user_manager.user_data:
         print("Existing credentials found.")
+        home(user_manager)
         print()
     else:
         print("No existing credentials found.")
         print()
         prompt_for_credentials(user_manager)
+        user_manager.load_handlers()
         clear_console()
+        logged_in_prompts(user_manager)
+
 
 
 # Prompt for LinkedIn username
