@@ -40,7 +40,7 @@ def job_prompts(job, user_manager):
             clear_console()
         elif choice == '4':
             clear_console()
-            print("In progress...")
+            send_message_to_all_clients(job, user_manager)
             clear_console()
         elif choice == '5':
             clear_console()
@@ -70,7 +70,7 @@ def select_client(job, user_manager):
                 return job_menu(job, user_manager)
             if 1 <= choice <= len(clients):
                 print(clients)
-                selected_client = clients[choice-1]
+                selected_client = clients[choice - 1]
                 print(f"\nSelected client: {selected_client.get_name()}")
                 print(f"Description: {selected_client.description}")
                 print(f"Email: {selected_client.get_email()}")
@@ -162,6 +162,56 @@ def delete_client(job, user_manager):
                 clear_console()
         except ValueError:
             print("Please enter a valid number.")
+
+
+def send_message_to_all_clients(job, user_manager):
+    clear_console()
+    print("Select messaging method:")
+    print("0. Return to job menu")
+    print("1. LinkedIn messages")
+    print("2. Email messages")
+
+    choice = input("Enter your choice (0-2): ")
+
+    if choice == '0':
+        job_menu(job, user_manager)
+    elif choice == '1':
+        send_linkedin_messages(job)
+    elif choice == '2':
+        send_email_messages(job)
+    else:
+        print("Invalid choice. Please try again.")
+        send_message_to_all_clients(job, user_manager)
+
+
+def send_linkedin_messages(job):
+    clients = job.get_clients()
+    linkedin_clients = [client for client in clients if client.linkedin]
+
+    if not linkedin_clients:
+        print("No clients with LinkedIn profiles found.")
+        return
+
+    print("\nClients with LinkedIn profiles:")
+    for i, client in enumerate(linkedin_clients, 1):
+        print(f"{i}. {client.get_name()} - {client.linkedin}")
+
+    input("\nPress Enter to continue...")
+
+
+def send_email_messages(job):
+    clients = job.get_clients()
+    email_clients = [client for client in clients if client.get_email()]
+
+    if not email_clients:
+        print("No clients with email addresses found.")
+        return
+
+    print("\nClients with email addresses:")
+    for i, client in enumerate(email_clients, 1):
+        print(f"{i}. {client.get_name()} - {client.get_email()}")
+
+    input("\nPress Enter to continue...")
 
 
 def back_to_home(user_manager):
