@@ -1,3 +1,4 @@
+# Main controller for application
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
