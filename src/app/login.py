@@ -1,7 +1,7 @@
 # Handles login page functionality
 from src.auth.email_handler import EmailHandler
 from src.auth.linkedin_handler import LinkedInHandler
-from src.utils.utils import linkedin_validator, clear_console
+from src.utils.utils import email_validator, clear_console
 
 linkedin_username = None
 linkedin_password = None
@@ -69,7 +69,7 @@ def prompt_for_credentials(user_manager):
         prompt_for_linkedin_username()
 
         while True:
-            if linkedin_validator(linkedin_username):
+            if email_validator(linkedin_username):
                 linkedin_handler = LinkedInHandler(linkedin_username, linkedin_password)
                 try:
                     if linkedin_handler.login_to_linkedin_headless():
