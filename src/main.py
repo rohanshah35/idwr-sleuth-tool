@@ -12,9 +12,7 @@ from src.structures.user import UserManager
 
 def main():
     user = UserManager()
-
     login(user)
-    home(user)
 
 
 if __name__ == "__main__":
