@@ -13,18 +13,10 @@ from src.structures.user import UserManager
 
 class App:
     def __init__(self):
-        self.root = ttk.Window(title='IDWR Intern V1.0', themename='superhero', size=(1024, 640),
-                               resizable=(False, False))
+        self.root = ttk.Window(title='IDWR Intern V1.0', themename='darkly', size=(1024, 640), resizable=(False, False))
 
         self.frame = ttk.Frame(self.root)
         self.frame.pack(fill=tk.BOTH, expand=True)
-
-        self.controllers = {
-            'login': LoginController(self),
-            'home': HomeController(self),
-            # 'job': JobController(self),
-            # 'client': ClientController(self)
-        }
 
         self.user_manager = UserManager()
 
@@ -35,8 +27,18 @@ class App:
         self.linkedin_handler = None
         self.email_handler = None
 
+        self.controllers = {
+            'login': LoginController(self),
+            'home': HomeController(self),
+            # 'job': JobController(self),
+            # 'client': ClientController(self)
+        }
+
         if self.user_manager.user_data:
             self.show_frame('home')
+            # self.user_manager.linkedin_handler.login_to_linkedin_headless()
+            # self.user_manager.email_handler.initialize_imap()
+            # self.user_manager.email_handler.initialize_smtp()
         else:
             self.show_frame('login')
 

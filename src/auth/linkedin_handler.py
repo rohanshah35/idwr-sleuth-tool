@@ -40,7 +40,6 @@ def login_to_linkedin(username, password, driver):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "global-nav"))
         )
-        print("Successfully logged in!")
         return True
     except TimeoutException:
         print("Login failed or took too long.")

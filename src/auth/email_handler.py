@@ -16,7 +16,6 @@ class EmailHandler:
         try:
             self.imap_server = imaplib.IMAP4_SSL('imap.gmail.com')
             self.imap_server.login(self.email_address, self.password)
-            print("successfully logged in")
         except imaplib.IMAP4.error:
             raise Exception("Invalid email credentials for IMAP, please try again.")
 
