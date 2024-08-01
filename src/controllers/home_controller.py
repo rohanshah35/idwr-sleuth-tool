@@ -15,18 +15,18 @@ class HomeController:
 
         self.app.user_manager.load_handlers()
 
-        # Email display
-        email_frame = ttk.Frame(self.frame)
-        email_frame.pack(fill=X, pady=(0, 20))
-        ttk.Label(email_frame, text="Email:", font=("Helvetica", 12)).pack(side=LEFT)
-        self.email_label = ttk.Label(email_frame, text="Not set", font=("Helvetica", 12, "bold"))
-        self.email_label.pack(side=LEFT, padx=(5, 0))
-
         # Options frame
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
-        ttk.Label(options_frame, text="Welcome to IDWR Office!", font=("Helvetica", 18, "bold")).pack(pady=(0, 30))
+        self.welcome_frame = ttk.Frame(options_frame)
+        self.welcome_frame.pack(pady=(0, 40))
+
+        self.greeting_label = ttk.Label(self.welcome_frame, text="Welcome to IDWR Office,", font=("Helvetica", 18))
+        self.greeting_label.pack(side=tk.LEFT)
+
+        self.email_label = ttk.Label(self.welcome_frame, text="", font=("Helvetica", 18, "bold"))
+        self.email_label.pack(side=tk.LEFT)
 
         self.select_job_btn = ttk.Button(options_frame, text="Select Job", command=self.open_select_job_popup, width=20)
         self.select_job_btn.pack(pady=10)
@@ -55,7 +55,7 @@ class HomeController:
 
     def update_email(self):
         email = self.app.user_manager.user_data.get('linkedin_username', 'Not set')
-        self.email_label.config(text=email if email else "Not set")
+        self.email_label.config(text=email+'!')
 
     def open_popup(self, title, content_func, width=800, height=600):
         popup = tk.Toplevel(self.app.root)
