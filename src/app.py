@@ -5,7 +5,8 @@ from ttkbootstrap.constants import *
 
 from src.controllers.login_controller import LoginController
 from src.controllers.home_controller import HomeController
-# from src.controllers.job_controller import JobController
+from src.controllers.job_controller import JobController
+from src.fileio.file_handler import JobHandler
 # from src.controllers.client_controller import ClientController
 
 from src.structures.user import UserManager
@@ -13,7 +14,7 @@ from src.structures.user import UserManager
 
 class App:
     def __init__(self):
-        self.root = ttk.Window(title='IDWR Intern V1.0', themename='darkly', size=(1024, 640), resizable=(False, False))
+        self.root = ttk.Window(title='IDWR Intern V1.0', themename='darkly', size=(1440, 900), resizable=(False, False))
 
         self.frame = ttk.Frame(self.root)
         self.frame.pack(fill=tk.BOTH, expand=True)
@@ -27,10 +28,13 @@ class App:
         self.linkedin_handler = None
         self.email_handler = None
 
+        self.job_list = JobHandler.load_jobs_from_directory()
+        self.selected_job = None
+
         self.controllers = {
             'login': LoginController(self),
             'home': HomeController(self),
-            # 'job': JobController(self),
+            'job': JobController(self),
             # 'client': ClientController(self)
         }
 
