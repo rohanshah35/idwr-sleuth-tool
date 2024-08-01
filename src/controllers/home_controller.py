@@ -74,7 +74,7 @@ class HomeController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=BOTTOM, fill=X, pady=10)
 
-        ttk.Button(button_frame, text="Back to home menu", command=popup.destroy).pack()
+        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
 
         return popup
 

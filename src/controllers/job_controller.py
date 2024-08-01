@@ -24,16 +24,19 @@ class JobController:
             self.job_label = ttk.Label(options_frame, text=self.app.selected_job.getName(), font=("Helvetica", 18, "bold"))
             self.job_label.pack(pady=(0, 30))
 
-        self.select_job_btn = ttk.Button(options_frame, text="Select Client", command=self.open_select_client_popup, width=20)
-        self.select_job_btn.pack(pady=10)
+        self.select_client_btn = ttk.Button(options_frame, text="Select Client", command=self.open_select_client_popup, width=20)
+        self.select_client_btn.pack(pady=10)
 
-        self.create_job_btn = ttk.Button(options_frame, text="Create Client", command=self.open_create_client_popup, width=20)
-        self.create_job_btn.pack(pady=10)
+        self.create_client_btn = ttk.Button(options_frame, text="Create Client", command=self.open_create_client_popup, width=20)
+        self.create_client_btn.pack(pady=10)
 
-        self.delete_job_btn = ttk.Button(options_frame, text="Delete Client", command=self.open_delete_client_popup, width=20)
-        self.delete_job_btn.pack(pady=10)
+        self.delete_client_btn = ttk.Button(options_frame, text="Delete Client", command=self.open_delete_client_popup, width=20)
+        self.delete_client_btn.pack(pady=10)
 
-        self.export_btn = ttk.Button(options_frame, text="Send bulk message", command=self.open_bulk_popup, width=20)
+        self.bulk_btn = ttk.Button(options_frame, text="Send bulk message", command=self.open_bulk_popup, width=20)
+        self.bulk_btn.pack(pady=10)
+
+        self.export_btn = ttk.Button(options_frame, text="Export", command=self.open_export_popup, width=20)
         self.export_btn.pack(pady=10)
 
         self.exit_btn = ttk.Button(options_frame, text="Back to home", command=self.go_home, width=20)
@@ -67,7 +70,7 @@ class JobController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=BOTTOM, fill=X, pady=10)
 
-        ttk.Button(button_frame, text="Back to job menu", command=popup.destroy).pack()
+        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
 
         return popup
 
@@ -106,6 +109,13 @@ class JobController:
             ttk.Label(frame, text="Send Bulk Message", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
         self.open_popup("Send Bulk Message", content)
+
+    def open_export_popup(self):
+        def content(frame):
+            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            # Add your export widgets here
+
+        self.open_popup("Export", content)
 
     def go_home(self):
         self.app.show_frame('home')

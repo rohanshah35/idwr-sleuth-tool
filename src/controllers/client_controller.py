@@ -24,11 +24,14 @@ class ClientController:
         #     self.job_label = ttk.Label(options_frame, text=self.app.selected_job.getName(), font=("Helvetica", 18, "bold"))
         #     self.job_label.pack(pady=(0, 30))
 
-        self.select_job_btn = ttk.Button(options_frame, text="Open LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=20)
-        self.select_job_btn.pack(pady=10)
+        self.linkedin_conversation_btn = ttk.Button(options_frame, text="Open LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=20)
+        self.linkedin_conversation_btn.pack(pady=10)
 
-        self.create_job_btn = ttk.Button(options_frame, text="Open Email Conversation", command=self.open_email_conversation_popup, width=20)
-        self.create_job_btn.pack(pady=10)
+        self.email_conversation_btn = ttk.Button(options_frame, text="Open Email Conversation", command=self.open_email_conversation_popup, width=20)
+        self.email_conversation_btn.pack(pady=10)
+
+        self.export_btn = ttk.Button(options_frame, text="Export", command=self.open_export_popup, width=20)
+        self.export_btn.pack(pady=10)
 
         self.exit_btn = ttk.Button(options_frame, text="Back to job menu", command=self.go_to_job, width=20)
         self.exit_btn.pack(pady=(30, 10))
@@ -61,7 +64,7 @@ class ClientController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=BOTTOM, fill=X, pady=10)
 
-        ttk.Button(button_frame, text="Back to client menu", command=popup.destroy).pack()
+        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
 
         return popup
 
@@ -88,6 +91,13 @@ class ClientController:
             ttk.Label(frame, text="Email Conversation", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
         popup = self.open_popup("Email Conversation", content)
+
+    def open_export_popup(self):
+        def content(frame):
+            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            # Add your export widgets here
+
+        self.open_popup("Export", content)
 
     def go_to_job(self):
         self.app.show_frame('job')
