@@ -91,18 +91,19 @@ class ClientController:
 
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+
             ttk.Button(frame, text="Export Client (XLS)", command=export_xls, width=20).pack(pady=10)
             ttk.Button(frame, text="Export Client (CSV)", command=export_csv, width=20).pack(pady=10)
 
         def export_xls():
             exporter = ExcelExporter()
             exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo(f"Success, f'{client_name} exported successfully!")
+            messagebox.showinfo("Export", f"Success, f'{client_name} exported successfully!")
 
         def export_csv():
             exporter = CSVExporter()
             exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo(f"Success, f'{client_name} exported successfully!")
+            messagebox.showinfo("Export", f"Success, f'{client_name} exported successfully!")
 
         self.open_popup("Export", content)
 

@@ -183,12 +183,12 @@ class HomeController:
         def export_xls():
             exporter = ExcelExporter()
             exporter.export_all_jobs()
-            messagebox.showinfo("Success, all jobs exported successfully!")
+            messagebox.showinfo("Export", "Success, all jobs exported successfully!")
 
         def export_csv():
             exporter = CSVExporter()
             exporter.export_all_jobs()
-            messagebox.showinfo("Success, all jobs exported successfully!")
+            messagebox.showinfo("Export", "Success, all jobs exported successfully!")
 
         self.open_popup("Export", content)
 
@@ -200,11 +200,12 @@ class HomeController:
             ttk.Button(frame, text="Delete Account", command=delete_account, width=20).pack(pady=10)
 
         def reset_credentials():
-            self.app.show_frame('login')
-            popup.destroy()
+            if messagebox.askokcancel("Reset Credentials", "Are you sure you want to reset your credentials?"):
+                self.app.show_frame('login')
+                popup.destroy()
 
         def delete_account():
-            if messagebox.askokcancel("Exit","Are you sure you want to delete your account? Everything will be lost forever."):
+            if messagebox.askokcancel("Delete Account", "Are you sure you want to delete your account? Everything will be lost forever."):
                 self.app.user_manager.file_handler.delete_credentials()
                 job_names = JobHandler.get_all_job_names()
                 for name in job_names:

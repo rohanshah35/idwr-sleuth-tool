@@ -185,12 +185,12 @@ class JobController:
         def export_xls():
             exporter = ExcelExporter()
             exporter.export_specific_job(self.app.selected_job.get_name())
-            messagebox.showinfo(f"Success, f'{job_name} exported successfully!")
+            messagebox.showinfo("Export", f"Success, f'{job_name} exported successfully!")
 
         def export_csv():
             exporter = CSVExporter()
             exporter.export_specific_job(self.app.selected_job.get_name())
-            messagebox.showinfo(f"Success, f'{job_name} exported successfully!")
+            messagebox.showinfo("Export", f"Success, f'{job_name} exported successfully!")
 
         self.open_popup("Export", content)
 
