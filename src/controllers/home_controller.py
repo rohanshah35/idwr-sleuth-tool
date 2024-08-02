@@ -6,6 +6,7 @@ from tkinter import messagebox
 
 from src.fileio.file_handler import JobHandler
 from src.structures.job import Job
+from src.fileio.exporter import ExcelExporter, CSVExporter
 
 
 class HomeController:
@@ -107,6 +108,7 @@ class HomeController:
             for job in self.app.job_list:
                 if selected_job.get() == job.get_name():
                     self.app.selected_job = job
+                    self.app.client_list = job.get_clients()
                     self.app.controllers['job'].update_job()
                     popup.destroy()
                     self.app.show_frame('job')
@@ -174,7 +176,19 @@ class HomeController:
     def open_export_popup(self):
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
-            # Add your export widgets here
+
+            ttk.Button(frame, text="Export All Jobs (XLS)", command=export_xls, width=20).pack(pady=10)
+            ttk.Button(frame, text="Export All Jobs (CSV)", command=export_csv, width=20).pack(pady=10)
+
+        def export_xls():
+            exporter = ExcelExporter()
+            exporter.export_all_jobs()
+            messagebox.showinfo("Success, all jobs exported successfully!")
+
+        def export_csv():
+            exporter = CSVExporter()
+            exporter.export_all_jobs()
+            messagebox.showinfo("Success, all jobs exported successfully!")
 
         self.open_popup("Export", content)
 

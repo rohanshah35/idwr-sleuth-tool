@@ -32,8 +32,6 @@ class App:
         self.selected_job = None
 
         self.client_list = None
-        if self.selected_job:
-            self.client_list = self.selected_job.get_clients()
         self.selected_client = None
 
         self.controllers = {

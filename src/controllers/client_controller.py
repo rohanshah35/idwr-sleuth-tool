@@ -1,11 +1,10 @@
 import os
 import tkinter as tk
+from tkinter import messagebox
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from tkinter import messagebox
 
-from src.fileio.file_handler import JobHandler
-from src.structures.job import Job
+from src.fileio.exporter import ExcelExporter, CSVExporter
 
 
 class ClientController:
@@ -19,10 +18,6 @@ class ClientController:
 
         self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
         self.job_label.pack(pady=(0, 30))
-
-        # if self.app.selected_job:
-        #     self.job_label = ttk.Label(options_frame, text=self.app.selected_job.getName(), font=("Helvetica", 18, "bold"))
-        #     self.job_label.pack(pady=(0, 30))
 
         self.linkedin_conversation_btn = ttk.Button(options_frame, text="Open LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=20)
         self.linkedin_conversation_btn.pack(pady=10)
@@ -43,9 +38,8 @@ class ClientController:
     def hide(self):
         self.frame.pack_forget()
 
-    # def update_client(self):
-    #     if self.app.selected_job:
-    #         self.job_label.config(text=self.app.selected_job.name)
+    def update_client(self):
+        self.job_label.config(text=self.app.selected_client.name)
 
     def open_popup(self, title, content_func, width=800, height=600):
         popup = tk.Toplevel(self.app.root)
@@ -93,9 +87,22 @@ class ClientController:
         popup = self.open_popup("Email Conversation", content)
 
     def open_export_popup(self):
+        client_name = self.app.selected_client.get_name()
+
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
-            # Add your export widgets here
+            ttk.Button(frame, text="Export Client (XLS)", command=export_xls, width=20).pack(pady=10)
+            ttk.Button(frame, text="Export Client (CSV)", command=export_csv, width=20).pack(pady=10)
+
+        def export_xls():
+            exporter = ExcelExporter()
+            exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
+            messagebox.showinfo(f"Success, f'{client_name} exported successfully!")
+
+        def export_csv():
+            exporter = CSVExporter()
+            exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
+            messagebox.showinfo(f"Success, f'{client_name} exported successfully!")
 
         self.open_popup("Export", content)
 

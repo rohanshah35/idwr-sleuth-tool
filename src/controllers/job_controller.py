@@ -1,12 +1,11 @@
-import os
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
 
+from src.fileio.exporter import ExcelExporter, CSVExporter
 from src.fileio.file_handler import JobHandler
 from src.structures.client import Client
-from src.structures.job import Job
 
 
 class JobController:
@@ -20,10 +19,6 @@ class JobController:
 
         self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
         self.job_label.pack(pady=(0, 30))
-
-        if self.app.selected_job:
-            self.job_label = ttk.Label(options_frame, text=self.app.selected_job.getName(), font=("Helvetica", 18, "bold"))
-            self.job_label.pack(pady=(0, 30))
 
         self.select_client_btn = ttk.Button(options_frame, text="Select Client", command=self.open_select_client_popup, width=20)
         self.select_client_btn.pack(pady=10)
@@ -88,8 +83,7 @@ class JobController:
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
 
     def open_select_client_popup(self):
-        clients = self.app.selected_job.clients
-        print(clients)
+        clients = self.app.selected_job.get_all_client_names()
         selected_client = tk.StringVar()
         selected_client.set(clients[0] if clients else "No clients available")
 
@@ -102,10 +96,10 @@ class JobController:
             ttk.Button(frame, text="Select Client", command=select_client, width=20).pack(pady=10)
 
         def select_client():
-            for client in clients:
-                if selected_client.get() == client:
+            for client in self.app.client_list:
+                if selected_client.get() == client.get_name():
                     self.app.selected_client = client
-                    self.app.controllers['client'].update_job()
+                    self.app.controllers['client'].update_client()
                     popup.destroy()
                     self.app.show_frame('client')
 
@@ -155,14 +149,23 @@ class JobController:
             drop = ttk.OptionMenu(frame, selected_client, selected_client.get(), *clients)
             drop.pack(pady=10)
 
-            ttk.Button(frame, text="Delete Client", command=delete_job(self.app.selected_job), width=20).pack(pady=10)
+            ttk.Button(frame, text="Delete Client", command=delete_client, width=20).pack(pady=10)
 
-        def delete_job(job):
-            job.remove_client_by_name(selected_client)
-            job_manager = JobHandler(job)
+        def delete_client():
+            client_name = selected_client.get()
+            clients.remove(client_name)
+            self.app.selected_job.remove_client_by_name(selected_client)
+
+            for client in self.app.client_list:
+                if client.get_name() == client_name:
+                    self.app.client_list.remove(client)
+
+            job_manager = JobHandler(self.app.selected_job)
             job_manager.write_job()
+            popup.destroy()
+            messagebox.showinfo("Success", f"Client '{client_name}' deleted successfully!")
 
-        self.open_popup("Delete Job", content)
+        popup = self.open_popup("Delete Client", content)
 
     def open_bulk_popup(self):
         def content(frame):
@@ -171,9 +174,23 @@ class JobController:
         self.open_popup("Send Bulk Message", content)
 
     def open_export_popup(self):
+        job_name = self.app.selected_job.get_name()
+
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
-            # Add your export widgets here
+
+            ttk.Button(frame, text="Export Job (XLS)", command=export_xls, width=20).pack(pady=10)
+            ttk.Button(frame, text="Export Job (CSV)", command=export_csv, width=20).pack(pady=10)
+
+        def export_xls():
+            exporter = ExcelExporter()
+            exporter.export_specific_job(self.app.selected_job.get_name())
+            messagebox.showinfo(f"Success, f'{job_name} exported successfully!")
+
+        def export_csv():
+            exporter = CSVExporter()
+            exporter.export_specific_job(self.app.selected_job.get_name())
+            messagebox.showinfo(f"Success, f'{job_name} exported successfully!")
 
         self.open_popup("Export", content)
 
