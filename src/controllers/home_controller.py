@@ -143,8 +143,6 @@ class HomeController:
         selected_job = tk.StringVar()
         selected_job.set(jobs[0] if jobs else "No jobs available")
 
-        drop = None
-
         def content(frame):
             ttk.Label(frame, text="Delete Job", font=("Helvetica", 16, "bold")).pack(pady=10)
 

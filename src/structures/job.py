@@ -1,7 +1,5 @@
 import json
-
 from src.structures.client import Client
-
 
 class Job:
     def __init__(self, name, description):
@@ -42,7 +40,7 @@ class Job:
         }
 
     def get_all_client_names(self):
-        return [client.name for client in self.clients]
+        return [client.get_name() for client in self.clients]
 
     @classmethod
     def from_dict(cls, data):

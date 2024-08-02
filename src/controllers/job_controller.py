@@ -5,6 +5,7 @@ from ttkbootstrap.constants import *
 from tkinter import messagebox
 
 from src.fileio.file_handler import JobHandler
+from src.structures.client import Client
 from src.structures.job import Job
 
 
@@ -87,22 +88,81 @@ class JobController:
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
 
     def open_select_client_popup(self):
+        clients = self.app.selected_job.clients
+        print(clients)
+        selected_client = tk.StringVar()
+        selected_client.set(clients[0] if clients else "No clients available")
+
         def content(frame):
             ttk.Label(frame, text="Select Client", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-        popup = self.open_popup("Select Client", content)
+            drop = ttk.OptionMenu(frame, selected_client, selected_client.get(), *clients)
+            drop.pack(pady=10)
+
+            ttk.Button(frame, text="Select Client", command=select_client, width=20).pack(pady=10)
+
+        def select_client():
+            for client in clients:
+                if selected_client.get() == client:
+                    self.app.selected_client = client
+                    self.app.controllers['client'].update_job()
+                    popup.destroy()
+                    self.app.show_frame('client')
+
+        popup = self.open_popup("Select Job", content)
 
     def open_create_client_popup(self):
         def content(frame):
             ttk.Label(frame, text="Create Client", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
+            ttk.Label(frame, text="Client Name:").pack(pady=10)
+            client_name_entry = ttk.Entry(frame, width=40)
+            client_name_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client Description:").pack(pady=10)
+            client_desc_entry = tk.Text(frame, width=40, height=5)
+            client_desc_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client LinkedIn URL:").pack(pady=10)
+            client_linkedin_entry = ttk.Entry(frame, width=40)
+            client_linkedin_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client Email:").pack(pady=10)
+            client_email_entry = ttk.Entry(frame, width=40)
+            client_email_entry.pack(pady=(0, 10), padx=20)
+
+            create_button = ttk.Button(frame, text="Create Client", command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_linkedin_entry.get(), client_email_entry.get()))
+            create_button.pack(pady=(20, 0))
+
+        def create_client(client_name, client_description, client_linkedin, client_email):
+            client = Client(client_name, client_description, client_linkedin, client_email)
+            self.app.selected_job.add_client(client)
+            job_manager = JobHandler(self.app.selected_job)
+            job_manager.write_job()
+            popup.destroy()
+            messagebox.showinfo("Success", f"Client '{client_name}' created successfully!")
+
         popup = self.open_popup("Create Client", content)
 
     def open_delete_client_popup(self):
+        clients = self.app.selected_job.get_all_client_names()
+        selected_client = tk.StringVar()
+        selected_client.set(clients[0] if clients else "No clients available")
+
         def content(frame):
             ttk.Label(frame, text="Delete Client", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-        popup = self.open_popup("Delete Client", content)
+            drop = ttk.OptionMenu(frame, selected_client, selected_client.get(), *clients)
+            drop.pack(pady=10)
+
+            ttk.Button(frame, text="Delete Client", command=delete_job(self.app.selected_job), width=20).pack(pady=10)
+
+        def delete_job(job):
+            job.remove_client_by_name(selected_client)
+            job_manager = JobHandler(job)
+            job_manager.write_job()
+
+        self.open_popup("Delete Job", content)
 
     def open_bulk_popup(self):
         def content(frame):

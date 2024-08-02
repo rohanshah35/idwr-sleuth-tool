@@ -31,6 +31,11 @@ class App:
         self.job_list = JobHandler.load_jobs_from_directory()
         self.selected_job = None
 
+        self.client_list = None
+        if self.selected_job:
+            self.client_list = self.selected_job.get_clients()
+        self.selected_client = None
+
         self.controllers = {
             'login': LoginController(self),
             'home': HomeController(self),
