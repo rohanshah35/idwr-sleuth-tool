@@ -19,10 +19,10 @@ class ClientController:
         self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
         self.job_label.pack(pady=(0, 30))
 
-        self.linkedin_conversation_btn = ttk.Button(options_frame, text="Open LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=20)
+        self.linkedin_conversation_btn = ttk.Button(options_frame, text="LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=20)
         self.linkedin_conversation_btn.pack(pady=10)
 
-        self.email_conversation_btn = ttk.Button(options_frame, text="Open Email Conversation", command=self.open_email_conversation_popup, width=20)
+        self.email_conversation_btn = ttk.Button(options_frame, text="Email Conversation", command=self.open_email_conversation_popup, width=20)
         self.email_conversation_btn.pack(pady=10)
 
         self.export_btn = ttk.Button(options_frame, text="Export", command=self.open_export_popup, width=20)
