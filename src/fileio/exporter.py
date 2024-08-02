@@ -20,17 +20,23 @@ class ExcelExporter:
         jobs = JobHandler.load_jobs_from_directory()
 
         for job in jobs:
-            for client in job.get_clients():
+            if not job.get_clients():
                 ws.append([
                     job.get_name(),
                     job.get_description(),
-                    client.get_name(),
-                    client.description,
-                    client.linkedin,
-                    client.get_email()
                 ])
+            else:
+                for client in job.get_clients():
+                    ws.append([
+                        job.get_name(),
+                        job.get_description(),
+                        client.get_name(),
+                        client.description,
+                        client.linkedin,
+                        client.get_email()
+                    ])
 
-        filepath = os.path.join(self.export_dir, "all_jobs_and_clients.xlsx")
+        filepath = os.path.join(self.export_dir, "Full Report.xlsx")
         wb.save(filepath)
         return filepath
 
@@ -54,7 +60,7 @@ class ExcelExporter:
                 client.get_email()
             ])
 
-        filepath = os.path.join(self.export_dir, f"{job.get_name()}_clients.xlsx")
+        filepath = os.path.join(self.export_dir, f"{job.get_name()} Report.xlsx")
         wb.save(filepath)
         return filepath
 
@@ -81,7 +87,7 @@ class ExcelExporter:
             client.get_email()
         ])
 
-        filepath = os.path.join(self.export_dir, f"{job.get_name()}_{client.get_name()}.xlsx")
+        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report.xlsx")
         wb.save(filepath)
         return filepath
 
@@ -92,24 +98,31 @@ class CSVExporter:
         os.makedirs(self.export_dir, exist_ok=True)
 
     def export_all_jobs(self):
-        filepath = os.path.join(self.export_dir, "all_jobs_and_clients.csv")
+        filepath = os.path.join(self.export_dir, "Full Report.csv")
 
         jobs = JobHandler.load_jobs_from_directory()
 
         with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
+            writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             writer.writerow(["Job Name", "Job Description", "Client Name", "Client Description", "LinkedIn", "Email"])
 
             for job in jobs:
-                for client in job.get_clients():
+                if not job.get_clients():
                     writer.writerow([
                         job.get_name(),
-                        job.get_description(),
-                        client.get_name(),
-                        client.description,
-                        client.linkedin,
-                        client.get_email()
+                        job.get_description().replace('\n', ' '),
+                        "", "", "", ""
                     ])
+                else:
+                    for client in job.get_clients():
+                        writer.writerow([
+                            job.get_name(),
+                            job.get_description().replace('\n', ' '),
+                            client.get_name(),
+                            client.description.replace('\n', ' '),
+                            client.linkedin,
+                            client.get_email()
+                        ])
 
         return filepath
 
@@ -118,16 +131,16 @@ class CSVExporter:
         if not job:
             return None
 
-        filepath = os.path.join(self.export_dir, f"{job.get_name()}_clients.csv")
+        filepath = os.path.join(self.export_dir, f"{job.get_name()} Report.csv")
 
         with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
+            writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             writer.writerow(["Client Name", "Client Description", "LinkedIn", "Email"])
 
             for client in job.get_clients():
                 writer.writerow([
                     client.get_name(),
-                    client.description,
+                    client.description.replace('\n', ' '),
                     client.linkedin,
                     client.get_email()
                 ])
@@ -143,14 +156,14 @@ class CSVExporter:
         if not client:
             return None
 
-        filepath = os.path.join(self.export_dir, f"{job.get_name()}_{client.get_name()}.csv")
+        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report.csv")
 
         with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
+            writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             writer.writerow(["Client Name", "Client Description", "LinkedIn", "Email"])
             writer.writerow([
                 client.get_name(),
-                client.description,
+                client.description.replace('\n', ' '),
                 client.linkedin,
                 client.get_email()
             ])

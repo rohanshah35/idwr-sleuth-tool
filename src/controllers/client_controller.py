@@ -98,12 +98,12 @@ class ClientController:
         def export_xls():
             exporter = ExcelExporter()
             exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo("Export", f"Success, f'{client_name} exported successfully!")
+            messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
 
         def export_csv():
             exporter = CSVExporter()
             exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo("Export", f"Success, f'{client_name} exported successfully!")
+            messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
 
         self.open_popup("Export", content)
 
