@@ -47,6 +47,7 @@ class ClientController:
         popup.geometry(f"{width}x{height}")
         popup.transient(self.app.root)
         popup.grab_set()
+        popup.resizable(False, False)
 
         self.center_popup(popup, width, height)
 
@@ -78,11 +79,60 @@ class ClientController:
         def content(frame):
             ttk.Label(frame, text="LinkedIn Conversation", font=("Helvetica", 16, "bold")).pack(pady=10)
 
+            conversation_frame = ttk.Frame(frame, borderwidth=1, relief="solid")
+            conversation_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+            canvas = tk.Canvas(conversation_frame)
+            scrollbar = ttk.Scrollbar(conversation_frame, orient="vertical", command=canvas.yview)
+            scrollable_frame = ttk.Frame(canvas)
+
+            scrollable_frame.bind(
+                "<Configure>",
+                lambda e: canvas.configure(
+                    scrollregion=canvas.bbox("all")
+                )
+            )
+
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
+
+            canvas.pack(side="left", fill="both", expand=True)
+            scrollbar.pack(side="right", fill="y")
+
+            conversation_text = self.app.linkedin_handler.get_conversation_text(self.app.selected_client.linkedin)
+
+            for message in conversation_text:
+                parts = message.split(': ', 1)
+                if len(parts) == 2:
+                    sender, content = parts
+                    if sender == "You":
+                        ttk.Label(scrollable_frame, text=content, anchor="e", wraplength=300).pack(pady=5, padx=(50, 10), fill="x")
+                    else:
+                        ttk.Label(scrollable_frame, text=content, anchor="w", wraplength=300).pack(pady=5, padx=(10, 50), fill="x")
+                else:
+                    ttk.Label(scrollable_frame, text=message, anchor="w", wraplength=300).pack(pady=5, padx=10, fill="x")
+
+            input_frame = ttk.Frame(frame)
+            input_frame.pack(fill=tk.X, padx=20, pady=10)
+
+            message_entry = ttk.Entry(input_frame, width=50)
+            message_entry.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 10))
+
+            def send_message():
+                message = message_entry.get()
+                if message:
+                    self.app.linkedin_handler.send_linkedin_message(self.app.selected_client.linkedin, message)
+                    message_entry.delete(0, tk.END)
+
+            send_button = ttk.Button(input_frame, text="Send", command=send_message)
+            send_button.pack(side=tk.RIGHT)
+
         popup = self.open_popup("LinkedIn Conversation", content)
 
     def open_email_conversation_popup(self):
         def content(frame):
             ttk.Label(frame, text="Email Conversation", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+
 
         popup = self.open_popup("Email Conversation", content)
 

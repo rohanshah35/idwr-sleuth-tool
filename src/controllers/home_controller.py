@@ -23,7 +23,7 @@ class HomeController:
         self.welcome_frame = ttk.Frame(options_frame)
         self.welcome_frame.pack(pady=(0, 40))
 
-        self.greeting_label = ttk.Label(self.welcome_frame, text="Welcome to IDWR Office,", font=("Helvetica", 18))
+        self.greeting_label = ttk.Label(self.welcome_frame, text="Welcome to IDWR Office, ", font=("Helvetica", 18))
         self.greeting_label.pack(side=tk.LEFT)
 
         self.email_label = ttk.Label(self.welcome_frame, text="", font=("Helvetica", 18, "bold"))
@@ -64,6 +64,7 @@ class HomeController:
         popup.geometry(f"{width}x{height}")
         popup.transient(self.app.root)
         popup.grab_set()
+        popup.resizable(False, False)
 
         self.center_popup(popup, width, height)
 

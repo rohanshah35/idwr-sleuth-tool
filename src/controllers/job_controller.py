@@ -55,6 +55,7 @@ class JobController:
         popup.geometry(f"{width}x{height}")
         popup.transient(self.app.root)
         popup.grab_set()
+        popup.resizable(False, False)
 
         self.center_popup(popup, width, height)
 

@@ -3,6 +3,8 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
+from src.auth.email_handler import EmailHandler
+from src.auth.linkedin_handler import LinkedInHandler
 from src.controllers.login_controller import LoginController
 from src.controllers.home_controller import HomeController
 from src.controllers.job_controller import JobController
@@ -43,9 +45,11 @@ class App:
 
         if self.user_manager.user_data:
             self.show_frame('home')
-            # self.user_manager.linkedin_handler.login_to_linkedin_headless()
-            # self.user_manager.email_handler.initialize_imap()
-            # self.user_manager.email_handler.initialize_smtp()
+            self.user_manager.linkedin_handler.login_to_linkedin_headless()
+            self.user_manager.email_handler.initialize_imap()
+            self.user_manager.email_handler.initialize_smtp()
+            self.linkedin_handler = LinkedInHandler(self.email, self.linkedin_password)
+            self.email_handler = EmailHandler(self.email, self.email_password)
         else:
             self.show_frame('login')
 

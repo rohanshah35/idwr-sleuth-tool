@@ -58,7 +58,6 @@ def send_linkedin_message(client, linkedin_handler):
     print(linkedin_handler.send_linkedin_message(client.linkedin, message))
 
 
-# Not sure what to do here for logic, one could have multiple email threads with one client, should we display them all and ask them to choose?
 def view_email_conversation(client, email_handler):
     message_ids = email_handler.search_mailbox(client.get_email())
     for email_id in message_ids:
