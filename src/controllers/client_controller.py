@@ -12,7 +12,6 @@ class ClientController:
         self.app = app
         self.frame = ttk.Frame(app.frame)
 
-        # Options frame
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
@@ -33,7 +32,7 @@ class ClientController:
 
     def show(self):
         self.frame.pack(fill=tk.BOTH, expand=True)
-        # self.update_client()
+        self.update_client()
 
     def hide(self):
         self.frame.pack_forget()
@@ -99,18 +98,42 @@ class ClientController:
             canvas.pack(side="left", fill="both", expand=True)
             scrollbar.pack(side="right", fill="y")
 
-            conversation_text = self.app.user_manager.linkedin_handler.get_conversation_text(self.app.selected_client.linkedin)
+            def update_conversation():
+                for widget in scrollable_frame.winfo_children():
+                    widget.destroy()
 
-            for message in conversation_text:
-                parts = message.split(': ', 1)
-                if len(parts) == 2:
-                    sender, content = parts
-                    if sender == "You":
-                        ttk.Label(scrollable_frame, text=content, anchor="e", wraplength=300).pack(pady=5, padx=(50, 10), fill="x")
+                conversation_text = self.app.user_manager.linkedin_handler.get_conversation_text(self.app.selected_client.linkedin)
+                client_name = self.app.selected_client.get_name()
+
+                for message in conversation_text:
+                    parts = message.split(': ', 1)
+                    if len(parts) == 2:
+                        sender, content = parts
+                        if sender == client_name:
+                            prefix = f"{client_name}: "
+                            anchor = "w"
+                            side = "left"
+                        else:
+                            prefix = "You: "
+                            anchor = "e"
+                            side = "left"
+
+                        message_frame = ttk.Frame(scrollable_frame)
+                        message_frame.pack(fill="x", pady=5, padx=10)
+
+                        ttk.Label(message_frame, text=prefix, anchor=anchor, foreground='#555555').pack(side=side)
+                        ttk.Label(message_frame, text=content, anchor=anchor).pack(side=side)
                     else:
-                        ttk.Label(scrollable_frame, text=content, anchor="w", wraplength=300).pack(pady=5, padx=(10, 50), fill="x")
-                else:
-                    ttk.Label(scrollable_frame, text=message, anchor="w", wraplength=300).pack(pady=5, padx=10, fill="x")
+                        ttk.Label(scrollable_frame, text=message, anchor="w").pack(pady=5, padx=10, fill="x")
+
+                    separator_frame = ttk.Frame(scrollable_frame)
+                    separator_frame.pack(fill="x", pady=5, padx=10)
+                    ttk.Separator(separator_frame, orient='horizontal').pack(fill='x')
+
+                scrollable_frame.update_idletasks()
+                canvas.yview_moveto(1.0)
+
+            update_conversation()
 
             input_frame = ttk.Frame(frame)
             input_frame.pack(fill=tk.X, padx=20, pady=10)
@@ -123,6 +146,7 @@ class ClientController:
                 if message:
                     self.app.user_manager.linkedin_handler.send_linkedin_message(self.app.selected_client.linkedin, message)
                     message_entry.delete(0, tk.END)
+                    update_conversation()
 
             send_button = ttk.Button(input_frame, text="Send", command=send_message)
             send_button.pack(side=tk.RIGHT)
@@ -131,8 +155,29 @@ class ClientController:
 
     def open_email_conversation_popup(self):
         def content(frame):
-            ttk.Label(frame, text="Email Conversation", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Email Conversation", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
+            ttk.Label(frame, text="Subject:").pack(anchor="w", padx=20)
+            subject_entry = ttk.Entry(frame, width=60)
+            subject_entry.pack(pady=(0, 10), padx=20, fill="x")
+
+            ttk.Label(frame, text="Body:").pack(anchor="w", padx=20)
+            body_text = tk.Text(frame, width=60, height=10)
+            body_text.pack(pady=(0, 20), padx=20, fill="both", expand=True)
+
+            def send_email():
+                subject = subject_entry.get()
+                body = body_text.get("1.0", tk.END).strip()
+                if subject and body:
+                    self.app.user_manager.email_handler.send_email(self.app.selected_client.email, subject, body)
+                    messagebox.showinfo("Success", "Email sent successfully!")
+                    subject_entry.delete(0, tk.END)
+                    body_text.delete("1.0", tk.END)
+                else:
+                    messagebox.showerror("Error", "Please enter both subject and body.")
+
+            send_button = ttk.Button(frame, text="Send Email", command=send_email)
+            send_button.pack(pady=20)
 
         popup = self.open_popup("Email Conversation", content)
 

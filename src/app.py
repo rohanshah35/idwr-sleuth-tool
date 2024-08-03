@@ -5,6 +5,7 @@ from ttkbootstrap.constants import *
 
 from src.auth.email_handler import EmailHandler
 from src.auth.linkedin_handler import LinkedInHandler
+from src.controllers.loading_screen import LoadingScreenController
 from src.controllers.login_controller import LoginController
 from src.controllers.home_controller import HomeController
 from src.controllers.job_controller import JobController
@@ -37,26 +38,26 @@ class App:
             'login': LoginController(self),
             'home': HomeController(self),
             'job': JobController(self),
-            'client': ClientController(self)
+            'client': ClientController(self),
+            'loading': LoadingScreenController(self)
         }
 
         if self.user_manager.user_data:
+            # self.user_manager.load_handlers()
+            # self.user_manager.linkedin_handler.login_to_linkedin_headless()
+            # self.user_manager.email_handler.initialize_smtp()
+            # self.user_manager.email_handler.initialize_imap()
             self.show_frame('home')
-            self.user_manager.load_handlers()
-            self.user_manager.linkedin_handler.login_to_linkedin_headless()
-            self.user_manager.email_handler.initialize_smtp()
-            self.user_manager.email_handler.initialize_imap()
         else:
             self.show_frame('login')
 
     def show_frame(self, controller_name):
-        # Hide all frames
         for controller in self.controllers.values():
             if hasattr(controller, 'hide'):
                 controller.hide()
 
-        # Show the requested frame
         frame = self.controllers[controller_name]
+        self.current_frame = controller_name
         if hasattr(frame, 'show'):
             frame.show()
         else:

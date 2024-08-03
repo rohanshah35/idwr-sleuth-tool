@@ -3,6 +3,7 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 from src.fileio.file_handler import JobHandler
 from src.structures.job import Job
@@ -16,7 +17,6 @@ class HomeController:
 
         self.app.user_manager.load_handlers()
 
-        # Options frame
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
@@ -28,6 +28,20 @@ class HomeController:
 
         self.email_label = ttk.Label(self.welcome_frame, text="", font=("Helvetica", 18, "bold"))
         self.email_label.pack(side=tk.LEFT)
+
+        original_image = Image.open("resources/mailbox.png")
+        resized_image = original_image.resize((40, 40), Image.LANCZOS)
+        self.mailbox_image = ImageTk.PhotoImage(resized_image)
+
+        self.mailbox_btn = tk.Button(
+            options_frame,
+            image=self.mailbox_image,
+            compound=tk.LEFT,
+            command=self.open_mailbox_popup,
+            padx=10, pady=5,
+            width=142
+        )
+        self.mailbox_btn.pack(pady=(10, 30))
 
         self.select_job_btn = ttk.Button(options_frame, text="Select Job", command=self.open_select_job_popup, width=20)
         self.select_job_btn.pack(pady=10)
@@ -57,6 +71,9 @@ class HomeController:
     def update_email(self):
         email = self.app.user_manager.user_data.get('linkedin_username', 'Not set')
         self.email_label.config(text=email+'!')
+
+    def open_mailbox_popup(self):
+        messagebox.showinfo("Mailbox", "Mailbox clicked!")
 
     def open_popup(self, title, content_func, width=800, height=600):
         popup = tk.Toplevel(self.app.root)
