@@ -99,7 +99,7 @@ class ClientController:
             canvas.pack(side="left", fill="both", expand=True)
             scrollbar.pack(side="right", fill="y")
 
-            conversation_text = self.app.linkedin_handler.get_conversation_text(self.app.selected_client.linkedin)
+            conversation_text = self.app.user_manager.linkedin_handler.get_conversation_text(self.app.selected_client.linkedin)
 
             for message in conversation_text:
                 parts = message.split(': ', 1)
@@ -121,7 +121,7 @@ class ClientController:
             def send_message():
                 message = message_entry.get()
                 if message:
-                    self.app.linkedin_handler.send_linkedin_message(self.app.selected_client.linkedin, message)
+                    self.app.user_manager.linkedin_handler.send_linkedin_message(self.app.selected_client.linkedin, message)
                     message_entry.delete(0, tk.END)
 
             send_button = ttk.Button(input_frame, text="Send", command=send_message)

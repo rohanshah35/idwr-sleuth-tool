@@ -27,9 +27,6 @@ class App:
         self.email_password = ""
         self.linkedin_password = ""
 
-        self.linkedin_handler = None
-        self.email_handler = None
-
         self.job_list = JobHandler.load_jobs_from_directory()
         self.selected_job = None
 
@@ -45,11 +42,10 @@ class App:
 
         if self.user_manager.user_data:
             self.show_frame('home')
+            self.user_manager.load_handlers()
             self.user_manager.linkedin_handler.login_to_linkedin_headless()
-            self.user_manager.email_handler.initialize_imap()
             self.user_manager.email_handler.initialize_smtp()
-            self.linkedin_handler = LinkedInHandler(self.email, self.linkedin_password)
-            self.email_handler = EmailHandler(self.email, self.email_password)
+            self.user_manager.email_handler.initialize_imap()
         else:
             self.show_frame('login')
 
