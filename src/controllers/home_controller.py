@@ -30,7 +30,7 @@ class HomeController:
         self.email_label.pack(side=tk.LEFT)
 
         original_image = Image.open("resources/mailbox.png")
-        resized_image = original_image.resize((40, 40), Image.LANCZOS)
+        resized_image = original_image.resize((30, 30), Image.LANCZOS)
         self.mailbox_image = ImageTk.PhotoImage(resized_image)
 
         self.mailbox_btn = tk.Button(
