@@ -40,7 +40,6 @@ def login_to_linkedin(username, password, driver):
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "global-nav"))
         )
-        print("Successfully logged in!")
         return True
     except TimeoutException:
         print("Login failed or took too long.")
@@ -253,8 +252,8 @@ class LinkedInHandler:
 
 def main():
     # LinkedIn credentials
-    linkedin_username = ""
-    linkedin_password = ""
+    linkedin_username = "rohanshahsf@gmail.com"
+    linkedin_password = "$$Discussrather32%_"
 
     # Recipient's full name as it appears on LinkedIn
     recipient_name = "https://www.linkedin.com/in/luca-bianchini-650923288/"

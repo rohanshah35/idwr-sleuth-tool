@@ -3,6 +3,7 @@ import json
 import os
 
 from src.fileio.json_encoding import job_decoder, JobEncoder
+from src.structures.client import Client
 from src.structures.job import Job
 
 
@@ -74,3 +75,22 @@ class JobHandler:
         except Exception as e:
             print(f"Unexpected error loading job from {filename}: {str(e)}")
             return None
+
+    @staticmethod
+    def load_jobs_from_directory(directory='jobs'):
+        job_list = []
+        job_files = [f for f in os.listdir(directory) if f.endswith('.json')]
+
+        for job_file in job_files:
+            with open(os.path.join(directory, job_file), 'r') as file:
+                job_data = json.load(file)
+                job = Job(job_data['name'], job_data['description'])
+
+                client_objects = []
+                for client_dict in job_data.get('clients', []):
+                    client_objects.append(Client.from_dict(client_dict))
+
+                job.clients = client_objects
+                job_list.append(job)
+
+        return job_list
