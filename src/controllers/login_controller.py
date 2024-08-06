@@ -16,38 +16,32 @@ class LoginController:
         self.center_frame = ttk.Frame(self.frame)
         self.center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
 
-        # Title
         title_label = ttk.Label(self.center_frame, text="IDWR Office", font=("Helvetica", 24, "bold"))
         title_label.pack(pady=(0, 20))
 
-        # Email entry
         self.email_entry = ttk.Entry(self.center_frame, width=40)
         self.email_entry.insert(0, "Email")
         self.email_entry.pack(pady=10)
         self.email_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.email_entry, "Email"))
         self.email_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.email_entry, "Email"))
 
-        # Email provider password entry
         self.email_pass_entry = ttk.Entry(self.center_frame, width=40, show="")
         self.email_pass_entry.insert(0, "Email provider password")
         self.email_pass_entry.pack(pady=10)
         self.email_pass_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.email_pass_entry, "Email provider password"))
         self.email_pass_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.email_pass_entry, "Email provider password"))
 
-        # LinkedIn password entry
         self.linkedin_pass_entry = ttk.Entry(self.center_frame, width=40, show="")
         self.linkedin_pass_entry.insert(0, "LinkedIn password")
         self.linkedin_pass_entry.pack(pady=10)
         self.linkedin_pass_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.linkedin_pass_entry, "LinkedIn password"))
         self.linkedin_pass_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.linkedin_pass_entry, "LinkedIn password"))
 
-        # Login button
         login_button = ttk.Button(self.center_frame, text="Login", style="primary.TButton", command=self.login)
         login_button.pack(pady=(20, 0))
 
-        # Error label
         self.error_label = ttk.Label(self.center_frame, text="", foreground="red")
-        self.error_label.pack(pady=(10, 0))
+        self.error_label.pack(pady=(20, 0))
 
     def on_entry_click(self, entry, default_text):
         if entry.get() == default_text:

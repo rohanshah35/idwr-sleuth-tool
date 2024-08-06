@@ -13,7 +13,6 @@ class JobController:
         self.app = app
         self.frame = ttk.Frame(app.frame)
 
-        # Options frame
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
@@ -49,7 +48,7 @@ class JobController:
         if self.app.selected_job:
             self.job_label.config(text=self.app.selected_job.name)
 
-    def open_popup(self, title, content_func, width=800, height=600):
+    def open_popup(self, title, content_func, width=1000, height=800):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")
@@ -169,10 +168,7 @@ class JobController:
         popup = self.open_popup("Delete Client", content)
 
     def open_bulk_popup(self):
-        def content(frame):
-            ttk.Label(frame, text="Send Bulk Message", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
-
-        self.open_popup("Send Bulk Message", content)
+        self.app.show_frame('bulk')
 
     def open_export_popup(self):
         job_name = self.app.selected_job.get_name()

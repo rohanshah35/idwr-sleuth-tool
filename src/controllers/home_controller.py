@@ -75,7 +75,7 @@ class HomeController:
     def open_mailbox_popup(self):
         messagebox.showinfo("Mailbox", "Mailbox clicked!")
 
-    def open_popup(self, title, content_func, width=800, height=600):
+    def open_popup(self, title, content_func, width=1000, height=800):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")

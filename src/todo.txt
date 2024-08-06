@@ -1,0 +1,4 @@
+- Bulk messaging controller customization
+- Animations
+- Backend optimizations
+- LinkedIn popup vs chatbox for individual messaging

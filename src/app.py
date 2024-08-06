@@ -1,15 +1,13 @@
 # Main controller for application
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
 
-from src.auth.email_handler import EmailHandler
-from src.auth.linkedin_handler import LinkedInHandler
 from src.controllers.loading_screen import LoadingScreenController
 from src.controllers.login_controller import LoginController
 from src.controllers.home_controller import HomeController
 from src.controllers.job_controller import JobController
 from src.controllers.client_controller import ClientController
+from src.controllers.bulk_message_controller import BulkMessageController
 from src.fileio.file_handler import JobHandler
 
 from src.structures.user import UserManager
@@ -39,7 +37,8 @@ class App:
             'home': HomeController(self),
             'job': JobController(self),
             'client': ClientController(self),
-            'loading': LoadingScreenController(self)
+            'loading': LoadingScreenController(self),
+            'bulk': BulkMessageController(self),
         }
 
         if self.user_manager.user_data:
