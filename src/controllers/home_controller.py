@@ -31,17 +31,17 @@ class HomeController:
         self.email_label.pack(side=tk.LEFT)
 
         original_image = Image.open("resources/mailbox.png")
-        resized_image = original_image.resize((30, 30), Image.LANCZOS)
+        resized_image = original_image.resize((20, 20), Image.LANCZOS)
         self.mailbox_image = ImageTk.PhotoImage(resized_image)
 
         self.mailbox_btn = ctk.CTkButton(
             options_frame,
-            text="Messages",
+            text="Notifications",
             image=self.mailbox_image,
             compound=tk.LEFT,
             command=self.open_mailbox_popup,
-            width=142,
-            height=30,
+            width=140,
+            height=32,
             corner_radius=20,
             fg_color="#2C3E50",
             hover_color="#1F2A38"
