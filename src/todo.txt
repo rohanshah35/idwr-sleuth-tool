@@ -2,3 +2,5 @@
 - Animations
 - Backend optimizations
 - LinkedIn popup vs chatbox for individual messaging
+- Notifications
+- GUI cleanup (responsiveness)

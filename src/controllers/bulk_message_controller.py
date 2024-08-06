@@ -1,8 +1,10 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+import customtkinter as ctk  # Import customtkinter
 
 selected_clients = []
+
 
 class BulkMessageController:
     def __init__(self, app):
@@ -10,40 +12,58 @@ class BulkMessageController:
         self.frame = ttk.Frame(app.frame)
 
         self.clients = None
+        self.client_vars = []
 
-        self.listbox = tk.Listbox(self.frame, selectmode=tk.MULTIPLE)
-        self.listbox.pack(pady=(150,0))
+        self.frame.pack(fill=tk.BOTH, expand=True)
 
-        save_btn = ttk.Button(self.frame, text="Save Selections", command=self.save_selections)
-        save_btn.pack(pady=10)
+        self.content_frame = ttk.Frame(self.frame)
+        self.content_frame.pack(expand=False, pady=(100, 0))
 
-        options_frame = ttk.Frame(self.frame)
-        options_frame.pack(pady=20)
+        buttons_frame = ttk.Frame(self.content_frame)
+        buttons_frame.pack(pady=(0, 30))
 
-        self.select_linkedin_btn = ttk.Button(options_frame, text="LinkedIn Messaging", command=self.open_select_linkedin_popup, width=20)
-        self.select_linkedin_btn.pack(pady=10)
+        self.select_linkedin_btn = ctk.CTkButton(buttons_frame, text="LinkedIn Messaging", command=self.open_select_linkedin_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.select_linkedin_btn.pack(side=tk.LEFT, padx=5)
 
-        self.select_email_btn = ttk.Button(options_frame, text="Email Messaging", command=self.open_select_email_popup, width=20)
-        self.select_email_btn.pack(pady=10)
+        self.select_email_btn = ctk.CTkButton(buttons_frame, text="Email Messaging", command=self.open_select_email_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.select_email_btn.pack(side=tk.LEFT, padx=5)
 
-        self.exit_btn = ttk.Button(self.frame, text="Back", command=self.go_to_job, width=10)
-        self.exit_btn.pack(side=tk.BOTTOM, pady=(30, 10))
+        self.checkbox_frame = ttk.Frame(self.content_frame)
+        self.checkbox_frame.pack(pady=10)
+
+        spacer_frame = ttk.Frame(self.frame)
+        spacer_frame.pack(expand=True)
+
+        self.exit_btn = ctk.CTkButton(self.frame, text="Back", command=self.go_to_job, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.exit_btn.pack(side=tk.BOTTOM, pady=(30, 20))
 
     def update_clients(self):
         if self.app.selected_job:
             self.clients = self.app.selected_job.get_all_client_names()
-            self.populate_listbox()
+            self.populate_checkboxes()
 
-    def populate_listbox(self):
-        self.listbox.delete(0, tk.END)  # Clear the listbox
+    def populate_checkboxes(self):
+        for widget in self.checkbox_frame.winfo_children():
+            widget.destroy()
+
+        self.client_vars = []
         if self.clients:
             for client in self.clients:
-                self.listbox.insert(tk.END, client)
+                var = tk.BooleanVar()
+                checkbox = ctk.CTkCheckBox(self.checkbox_frame,
+                                           text=client,
+                                           variable=var,
+                                           fg_color="#3498db",
+                                           hover_color="#2980b9",
+                                           text_color="white",
+                                           border_color="#2C3E50",
+                                           checkmark_color="white")
+                checkbox.pack(pady=3)
+                self.client_vars.append((client, var))
 
     def save_selections(self):
         global selected_clients
-        selected_clients = [self.clients[idx] for idx in self.listbox.curselection()]
-        print("Selected clients:", selected_clients)
+        selected_clients = [client for client, var in self.client_vars if var.get()]
 
     def show(self):
         self.frame.pack(fill=tk.BOTH, expand=True)
@@ -70,7 +90,7 @@ class BulkMessageController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10)
 
-        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack()
 
         return popup
 
@@ -91,9 +111,9 @@ class BulkMessageController:
             ttk.Label(frame, text="LinkedIn", font=("Helvetica", 16, "bold")).pack(pady=10)
             ttk.Label(frame, text="Selected clients:", font=("Helvetica", 12)).pack(pady=10)
             for client in selected_clients:
-                ttk.Label(frame, text=client).pack()
+                ttk.Label(frame, text=client, foreground="white").pack()
 
-            ttk.Label(frame, text="Message Content").pack(pady=(60,0))
+            ttk.Label(frame, text="Message Content").pack(pady=(60, 0))
             message_content = tk.Text(frame, width=40, height=5)
             message_content.pack(pady=10, padx=20)
 
@@ -104,8 +124,9 @@ class BulkMessageController:
                         self.app.user_manager.linkedin_handler.send_linkedin_message(client, message)
                 message_content.delete("1.0", tk.END)
 
-            ttk.Button(frame, text="Send message", command=send_message, width=20).pack(pady=10)
+            ctk.CTkButton(frame, text="Send message", command=send_message, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
+        self.save_selections()
         popup = self.open_popup("LinkedIn", content)
 
     def open_select_email_popup(self):
@@ -113,15 +134,15 @@ class BulkMessageController:
             ttk.Label(frame, text="Email", font=("Helvetica", 16, "bold")).pack(pady=10)
             ttk.Label(frame, text="Selected clients:", font=("Helvetica", 12)).pack(pady=5)
             for client in selected_clients:
-                ttk.Label(frame, text=client).pack()
+                ttk.Label(frame, text=client, foreground="white").pack()
 
-            ttk.Label(frame, text="Subject:").pack(pady=(60,0))
+            ttk.Label(frame, text="Subject:").pack(pady=(60, 0))
             subject_entry = ttk.Entry(frame, width=40)
-            subject_entry.pack(pady=(0,10))
+            subject_entry.pack(pady=(0, 10))
 
-            ttk.Label(frame, text="Message Body:").pack(pady=(10,5))
+            ttk.Label(frame, text="Message Body:").pack(pady=(10, 5))
             body_text = tk.Text(frame, width=40, height=10)
-            body_text.pack(pady=(0,10))
+            body_text.pack(pady=(0, 10))
 
             def send_email():
                 subject = subject_entry.get().strip()
@@ -132,8 +153,9 @@ class BulkMessageController:
                 subject_entry.delete(0, tk.END)
                 body_text.delete("1.0", tk.END)
 
-            ttk.Button(frame, text="Send Email", command=send_email, width=20).pack(pady=10)
+            ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
+        self.save_selections()
         popup = self.open_popup("Email", content)
 
     def go_to_job(self):

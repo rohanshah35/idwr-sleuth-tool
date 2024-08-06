@@ -7,11 +7,15 @@ class LoadingScreenController:
     def __init__(self, app):
         self.app = app
         self.frame = ttk.Frame(app.frame)
-        self.label = ttk.Label(self.frame, text="Loading...", font=("Helvetica", 24))
+        self.progress = ttk.Progressbar(self.frame, mode='indeterminate', style='info.TProgressbar')
+        self.progress.pack(pady=20)
+        self.label = ttk.Label(self.frame, text="Loading...", font=("Helvetica", 16))
         self.label.pack(expand=True)
 
     def show(self):
-        self.frame.pack(fill=tk.BOTH, expand=True)
+        self.frame.place(relx=0.5, rely=0.5, anchor='center')
+        self.progress.start()
 
     def hide(self):
-        self.frame.pack_forget()
+        self.progress.stop()
+        self.frame.place_forget()

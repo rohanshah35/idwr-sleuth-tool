@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
+import customtkinter as ctk  # Import customtkinter
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
 
@@ -18,16 +18,16 @@ class ClientController:
         self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
         self.job_label.pack(pady=(0, 30))
 
-        self.linkedin_conversation_btn = ttk.Button(options_frame, text="LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=20)
+        self.linkedin_conversation_btn = ctk.CTkButton(options_frame, text="LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.linkedin_conversation_btn.pack(pady=10)
 
-        self.email_conversation_btn = ttk.Button(options_frame, text="Email Conversation", command=self.open_email_conversation_popup, width=20)
+        self.email_conversation_btn = ctk.CTkButton(options_frame, text="Email Conversation", command=self.open_email_conversation_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.email_conversation_btn.pack(pady=10)
 
-        self.export_btn = ttk.Button(options_frame, text="Export", command=self.open_export_popup, width=20)
+        self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.exit_btn = ttk.Button(options_frame, text="Back to job menu", command=self.go_to_job, width=20)
+        self.exit_btn = ctk.CTkButton(options_frame, text="Back to job menu", command=self.go_to_job, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.exit_btn.pack(pady=(30, 10))
 
     def show(self):
@@ -56,9 +56,9 @@ class ClientController:
         content_func(content_frame)
 
         button_frame = ttk.Frame(content_frame)
-        button_frame.pack(side=BOTTOM, fill=X, pady=10)
+        button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10)
 
-        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack()
 
         return popup
 
@@ -99,6 +99,8 @@ class ClientController:
             scrollbar.pack(side="right", fill="y")
 
             def update_conversation():
+                self.app.root.update()
+
                 for widget in scrollable_frame.winfo_children():
                     widget.destroy()
 
@@ -133,7 +135,7 @@ class ClientController:
                 scrollable_frame.update_idletasks()
                 canvas.yview_moveto(1.0)
 
-            update_conversation()
+            self.app.root.after(100, update_conversation)
 
             input_frame = ttk.Frame(frame)
             input_frame.pack(fill=tk.X, padx=20, pady=10)
@@ -148,7 +150,7 @@ class ClientController:
                     message_entry.delete(0, tk.END)
                     update_conversation()
 
-            send_button = ttk.Button(input_frame, text="Send", command=send_message)
+            send_button = ctk.CTkButton(input_frame, text="Send", command=send_message, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
             send_button.pack(side=tk.RIGHT)
 
         popup = self.open_popup("LinkedIn Conversation", content)
@@ -176,7 +178,7 @@ class ClientController:
                 else:
                     messagebox.showerror("Error", "Please enter both subject and body.")
 
-            send_button = ttk.Button(frame, text="Send Email", command=send_email)
+            send_button = ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
             send_button.pack(pady=20)
 
         popup = self.open_popup("Email Conversation", content)
@@ -187,8 +189,8 @@ class ClientController:
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            ttk.Button(frame, text="Export Client (XLS)", command=export_xls, width=20).pack(pady=10)
-            ttk.Button(frame, text="Export Client (CSV)", command=export_csv, width=20).pack(pady=10)
+            ctk.CTkButton(frame, text="Export Client (XLS)", command=export_xls, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Export Client (CSV)", command=export_csv, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
         def export_xls():
             exporter = ExcelExporter()

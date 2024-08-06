@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from customtkinter import CTkButton
 from ttkbootstrap.constants import *
 
 from src.auth.email_handler import EmailHandler
@@ -37,7 +38,7 @@ class LoginController:
         self.linkedin_pass_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.linkedin_pass_entry, "LinkedIn password"))
         self.linkedin_pass_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.linkedin_pass_entry, "LinkedIn password"))
 
-        login_button = ttk.Button(self.center_frame, text="Login", style="primary.TButton", command=self.login)
+        login_button = CTkButton(self.center_frame, text="Login", command=self.login, corner_radius=20, width=80, fg_color="#2C3E50", hover_color="#1F2A38")
         login_button.pack(pady=(20, 0))
 
         self.error_label = ttk.Label(self.center_frame, text="", foreground="red")

@@ -2,6 +2,7 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
+import customtkinter as ctk  # Make sure to import customtkinter
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
 from src.fileio.file_handler import JobHandler
@@ -19,22 +20,76 @@ class JobController:
         self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
         self.job_label.pack(pady=(0, 30))
 
-        self.select_client_btn = ttk.Button(options_frame, text="Select Client", command=self.open_select_client_popup, width=20)
+        self.select_client_btn = ctk.CTkButton(
+            options_frame,
+            text="Select Client",
+            command=self.open_select_client_popup,
+            width=140,
+            height=30,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
         self.select_client_btn.pack(pady=10)
 
-        self.create_client_btn = ttk.Button(options_frame, text="Create Client", command=self.open_create_client_popup, width=20)
+        self.create_client_btn = ctk.CTkButton(
+            options_frame,
+            text="Create Client",
+            command=self.open_create_client_popup,
+            width=140,
+            height=30,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
         self.create_client_btn.pack(pady=10)
 
-        self.delete_client_btn = ttk.Button(options_frame, text="Delete Client", command=self.open_delete_client_popup, width=20)
+        self.delete_client_btn = ctk.CTkButton(
+            options_frame,
+            text="Delete Client",
+            command=self.open_delete_client_popup,
+            width=140,
+            height=30,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
         self.delete_client_btn.pack(pady=10)
 
-        self.bulk_btn = ttk.Button(options_frame, text="Send bulk message", command=self.open_bulk_popup, width=20)
+        self.bulk_btn = ctk.CTkButton(
+            options_frame,
+            text="Send bulk message",
+            command=self.open_bulk_popup,
+            width=140,
+            height=30,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
         self.bulk_btn.pack(pady=10)
 
-        self.export_btn = ttk.Button(options_frame, text="Export", command=self.open_export_popup, width=20)
+        self.export_btn = ctk.CTkButton(
+            options_frame,
+            text="Export",
+            command=self.open_export_popup,
+            width=140,
+            height=30,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
         self.export_btn.pack(pady=10)
 
-        self.exit_btn = ttk.Button(options_frame, text="Back to home", command=self.go_home, width=20)
+        self.exit_btn = ctk.CTkButton(
+            options_frame,
+            text="Back to home",
+            command=self.go_home,
+            width=140,
+            height=30,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
         self.exit_btn.pack(pady=(30, 10))
 
     def show(self):
@@ -66,7 +121,7 @@ class JobController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=BOTTOM, fill=X, pady=10)
 
-        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack()
 
         return popup
 
@@ -90,10 +145,10 @@ class JobController:
         def content(frame):
             ttk.Label(frame, text="Select Client", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-            drop = ttk.OptionMenu(frame, selected_client, selected_client.get(), *clients)
-            drop.pack(pady=10)
+            drop = ctk.CTkOptionMenu(frame, variable=selected_client, values=clients, width=140, fg_color="#2C3E50")
+            drop.pack(pady=(30, 10))
 
-            ttk.Button(frame, text="Select Client", command=select_client, width=20).pack(pady=10)
+            ctk.CTkButton(frame, text="Select Client", command=select_client, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
         def select_client():
             for client in self.app.client_list:
@@ -103,7 +158,7 @@ class JobController:
                     popup.destroy()
                     self.app.show_frame('client')
 
-        popup = self.open_popup("Select Job", content)
+        popup = self.open_popup("Select Client", content)
 
     def open_create_client_popup(self):
         def content(frame):
@@ -125,7 +180,16 @@ class JobController:
             client_email_entry = ttk.Entry(frame, width=40)
             client_email_entry.pack(pady=(0, 10), padx=20)
 
-            create_button = ttk.Button(frame, text="Create Client", command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_linkedin_entry.get(), client_email_entry.get()))
+            create_button = ctk.CTkButton(
+                frame,
+                text="Create Client",
+                command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_linkedin_entry.get(), client_email_entry.get()),
+                width=140,
+                height=30,
+                corner_radius=20,
+                fg_color="#2C3E50",
+                hover_color="#1F2A38"
+            )
             create_button.pack(pady=(20, 0))
 
         def create_client(client_name, client_description, client_linkedin, client_email):
@@ -146,15 +210,24 @@ class JobController:
         def content(frame):
             ttk.Label(frame, text="Delete Client", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-            drop = ttk.OptionMenu(frame, selected_client, selected_client.get(), *clients)
-            drop.pack(pady=10)
+            drop = ctk.CTkOptionMenu(frame, variable=selected_client, values=clients, width=140, fg_color="#2C3E50")
+            drop.pack(pady=(30, 10))
 
-            ttk.Button(frame, text="Delete Client", command=delete_client, width=20).pack(pady=10)
+            ctk.CTkButton(
+                frame,
+                text="Delete Client",
+                command=delete_client,
+                width=140,
+                height=30,
+                corner_radius=20,
+                fg_color="#2C3E50",
+                hover_color="#1F2A38"
+            ).pack(pady=10)
 
         def delete_client():
             client_name = selected_client.get()
             clients.remove(client_name)
-            self.app.selected_job.remove_client_by_name(selected_client)
+            self.app.selected_job.remove_client_by_name(selected_client.get())
 
             for client in self.app.client_list:
                 if client.get_name() == client_name:
@@ -176,8 +249,26 @@ class JobController:
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            ttk.Button(frame, text="Export Job (XLS)", command=export_xls, width=20).pack(pady=10)
-            ttk.Button(frame, text="Export Job (CSV)", command=export_csv, width=20).pack(pady=10)
+            ctk.CTkButton(
+                frame,
+                text="Export Job (XLS)",
+                command=export_xls,
+                width=140,
+                height=30,
+                corner_radius=20,
+                fg_color="#2C3E50",
+                hover_color="#1F2A38"
+            ).pack(pady=10)
+            ctk.CTkButton(
+                frame,
+                text="Export Job (CSV)",
+                command=export_csv,
+                width=140,
+                height=30,
+                corner_radius=20,
+                fg_color="#2C3E50",
+                hover_color="#1F2A38"
+            ).pack(pady=10)
 
         def export_xls():
             exporter = ExcelExporter()
