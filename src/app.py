@@ -42,8 +42,7 @@ class App:
         }
 
         if self.user_manager.user_data:
-            self.root.update()
-            # self.user_manager.load_handlers()
+            self.user_manager.load_handlers()
             # self.user_manager.linkedin_handler.login_to_linkedin_headless()
             # self.user_manager.email_handler.initialize_smtp()
             # self.user_manager.email_handler.initialize_imap()

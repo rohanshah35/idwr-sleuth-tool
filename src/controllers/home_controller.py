@@ -1,10 +1,11 @@
 import os
 import tkinter as tk
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
 from PIL import Image
-import customtkinter as ctk  # Make sure to import customtkinter
+import customtkinter as ctk
 
 from src.fileio.file_handler import ProjectHandler
 from src.structures.project import Project
@@ -61,7 +62,7 @@ class HomeController:
         self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.account_cred_btn = ctk.CTkButton(options_frame, text="Settings", command=self.open_credentials_popup, width=140, height=30, corner_radius=20, fg_color="#606060", hover_color="#505050")
+        self.account_cred_btn = ctk.CTkButton(options_frame, text="Settings", command=self.open_settings_popup, width=140, height=30, corner_radius=20, fg_color="#606060", hover_color="#505050")
         self.account_cred_btn.pack(pady=(30, 10))
 
         self.exit_btn = ctk.CTkButton(options_frame, text="Exit", command=self.exit_app, width=140, height=30, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
@@ -211,12 +212,14 @@ class HomeController:
 
         self.open_popup("Export", content)
 
-    def open_credentials_popup(self):
+    def open_settings_popup(self):
         def content(frame):
             ttk.Label(frame, text="Settings", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
             ctk.CTkButton(frame, text="Reset Credentials", command=reset_credentials, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
             ctk.CTkButton(frame, text="Delete Account", command=delete_account, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Instructions", command=show_instructions, width=140, height=30, corner_radius=20, fg_color="#805500", hover_color="#664400").pack(pady=(30, 10))
+            ctk.CTkButton(frame, text="Submit Bug Ticket", command=show_bug_ticket, width=140, height=30, corner_radius=20, fg_color="#446600", hover_color="#334d00").pack(pady=10)
 
         def reset_credentials():
             if messagebox.askokcancel("Reset Credentials", "Are you sure you want to reset your credentials?"):
@@ -233,7 +236,64 @@ class HomeController:
                 self.app.show_frame('login')
                 popup.destroy()
 
-        popup = self.open_popup("Change Credentials", content)
+        def show_instructions():
+            def content(frame):
+                ttk.Label(frame, text="Instructions", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+
+                instructions = [
+                    "I. Home Menu",
+                    "   A. Select Project: Choose which project to work on",
+                    "   B. Create Project: Create a project, with a name and description",
+                    "   C. Delete Project: Delete a project (forever)",
+                    "   D. Export: Export a full report, includes all projects and clients",
+                    "",
+                    "II. Project Menu",
+                    "   A. Select Client: Choose which client to work on",
+                    "   B. Create Client: Create a client, with a name, description, company, LinkedIn URL, and email",
+                    "   C. Delete Client: Delete a client (forever)",
+                    "   D. Send bulk message: Send a bulk message (either LinkedIn or email) to clients of your choosing",
+                    "   E. Export: Export a project report, includes all clients",
+                    "",
+                    "III. Client Menu",
+                    "   A. LinkedIn Conversation: Send a LinkedIn message to client",
+                    "   B. Email Conversation: Send an email to client",
+                    "   C. Export: Export a client report, includes all client attributes",
+                    "",
+                    "IV. Settings",
+                    "   A. Reset Credentials: In the case your login changes to LinkedIn and/or email, you can reset your credentials without losing any data",
+                    "   B. Delete Account: Wipe all data, including credentials, forever",
+                    "",
+                ]
+
+                for instruction in instructions:
+                    ttk.Label(frame, text=instruction, font=("Arial", 10)).pack(anchor=tk.W, padx=20)
+
+                ttk.Label(frame, text="Any more questions? Contact email@gmail.com", font=("Helvetica", 10, "italic")).pack(pady=(90, 0))
+
+            self.open_popup("Instructions", content)
+
+        def show_bug_ticket():
+            def content(frame):
+                ttk.Label(frame, text="Bug Ticket Submission", font=("Helvetica", 16, "bold")).pack(pady=(0, 40))
+
+                ticket_entry = tk.Text(frame, width=80, height=20)
+                ticket_entry.pack(pady=(0, 20), padx=20)
+
+                send_button = ctk.CTkButton(frame, text="Submit Ticket", command=lambda: submit_ticket(ticket_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+                send_button.pack(pady=(0, 30))
+
+            def submit_ticket(ticket):
+                subject = 'IDWR Intern Bug Ticket'
+                body = ticket
+                if subject and body:
+                    self.app.user_manager.email_handler.send_email("rohanshahsf@gmail.com", subject, body)
+                    self.app.user_manager.email_handler.send_email("lfbianchini@dons.usfca.edu", subject, body)
+                    popup.destroy()
+                    messagebox.showinfo("Success", "Ticket submitted successfully!")
+
+            self.open_popup("Bug Ticket Submission", content)
+
+        popup = self.open_popup("Change Settings", content)
 
     def exit_app(self):
         self.app.root.destroy()

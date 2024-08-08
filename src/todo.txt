@@ -5,8 +5,8 @@
 - GUI cleanup
     - Animations
     - Responsiveness
+- Exports in timeframes
 
 Lucas Notes:
 - Company attribute in client
 - Highlight clients that responded in exported file
-- Help me button with instruction
