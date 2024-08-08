@@ -9,13 +9,14 @@ from src.controllers.project_controller import ProjectController
 from src.controllers.client_controller import ClientController
 from src.controllers.bulk_message_controller import BulkMessageController
 from src.fileio.file_handler import ProjectHandler
+from src.utils.constants import FRAME_HEIGHT, FRAME_WIDTH
 
 from src.structures.user import UserManager
 
 
 class App:
     def __init__(self):
-        self.root = ttk.Window(title='IDWR Intern V1.0', themename='darkly', size=(1440, 900), resizable=(False, False))
+        self.root = ttk.Window(title='IDWR Intern V1.0', themename='darkly', size=(FRAME_WIDTH, FRAME_HEIGHT), resizable=(False, False))
 
         self.frame = ttk.Frame(self.root)
         self.frame.pack(fill=tk.BOTH, expand=True)

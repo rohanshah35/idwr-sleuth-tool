@@ -2,11 +2,11 @@
 - Backend optimizations
 - LinkedIn popup vs chatbox for individual messaging
 - Notifications
+    - Highlight clients that responded in exported file
 - GUI cleanup
     - Animations
     - Responsiveness
 - Exports in timeframes
-
-Lucas Notes:
-- Company attribute in client
-- Highlight clients that responded in exported file
+- Anonymous clients
+- Edge cases for creating projects, clients
+- Edit jobs and projects

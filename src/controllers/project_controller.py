@@ -2,11 +2,12 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
-import customtkinter as ctk  # Make sure to import customtkinter
+import customtkinter as ctk
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
 from src.fileio.file_handler import ProjectHandler
 from src.structures.client import Client
+from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 
 class ProjectController:
@@ -103,7 +104,7 @@ class ProjectController:
         if self.app.selected_project:
             self.project_label.config(text=self.app.selected_project.name)
 
-    def open_popup(self, title, content_func, width=1000, height=800):
+    def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")
@@ -172,6 +173,10 @@ class ProjectController:
             client_desc_entry = tk.Text(frame, width=40, height=5)
             client_desc_entry.pack(pady=(0, 10), padx=20)
 
+            ttk.Label(frame, text="Client Company:").pack(pady=10)
+            client_company_entry = ttk.Entry(frame, width=40)
+            client_company_entry.pack(pady=(0, 10), padx=20)
+
             ttk.Label(frame, text="Client LinkedIn URL:").pack(pady=10)
             client_linkedin_entry = ttk.Entry(frame, width=40)
             client_linkedin_entry.pack(pady=(0, 10), padx=20)
@@ -183,7 +188,7 @@ class ProjectController:
             create_button = ctk.CTkButton(
                 frame,
                 text="Create Client",
-                command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_linkedin_entry.get(), client_email_entry.get()),
+                command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_company_entry.get(), client_linkedin_entry.get(), client_email_entry.get()),
                 width=140,
                 height=30,
                 corner_radius=20,
@@ -192,8 +197,8 @@ class ProjectController:
             )
             create_button.pack(pady=(20, 0))
 
-        def create_client(client_name, client_description, client_linkedin, client_email):
-            client = Client(client_name, client_description, client_linkedin, client_email)
+        def create_client(client_name, client_description, client_company, client_linkedin, client_email):
+            client = Client(client_name, client_description, client_company, client_linkedin, client_email)
             self.app.selected_project.add_client(client)
             project_manager = ProjectHandler(self.app.selected_project)
             project_manager.write_project()

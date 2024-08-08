@@ -17,7 +17,7 @@ class ExcelExporter:
         ws = wb.active
         ws.title = "All Projects and Clients"
 
-        headers = ["Project Name", "Project Description", "Client Name", "Client Description", "LinkedIn", "Email"]
+        headers = ["Project Name", "Project Description", "Client Name", "Client Description", "Client Company", "LinkedIn", "Email"]
         ws.append(headers)
 
         projects = ProjectHandler.load_projects_from_directory()
@@ -35,6 +35,7 @@ class ExcelExporter:
                         project.get_description(),
                         client.get_name(),
                         client.description,
+                        client.company,
                         client.linkedin,
                         client.get_email()
                     ])
@@ -52,13 +53,14 @@ class ExcelExporter:
         ws = wb.active
         ws.title = f"Project {project.get_name()}"
 
-        headers = ["Client Name", "Client Description", "LinkedIn", "Email"]
+        headers = ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email"]
         ws.append(headers)
 
         for client in project.get_clients():
             ws.append([
                 client.get_name(),
                 client.description,
+                client.company,
                 client.linkedin,
                 client.get_email()
             ])
@@ -80,12 +82,13 @@ class ExcelExporter:
         ws = wb.active
         ws.title = f"Client {client.get_name()}"
 
-        headers = ["Client Name", "Client Description", "LinkedIn", "Email"]
+        headers = ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email"]
         ws.append(headers)
 
         ws.append([
             client.get_name(),
             client.description,
+            client.company,
             client.linkedin,
             client.get_email()
         ])
@@ -107,7 +110,7 @@ class CSVExporter:
 
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-            writer.writerow(["Project Name", "Project Description", "Client Name", "Client Description", "LinkedIn", "Email"])
+            writer.writerow(["Project Name", "Project Description", "Client Name", "Client Description", "Client Company", "LinkedIn", "Email"])
 
             for project in projects:
                 if not project.get_clients():
@@ -123,6 +126,7 @@ class CSVExporter:
                             project.get_description().replace('\n', ' '),
                             client.get_name(),
                             client.description.replace('\n', ' '),
+                            client.company,
                             client.linkedin,
                             client.get_email()
                         ])
@@ -138,12 +142,13 @@ class CSVExporter:
 
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-            writer.writerow(["Client Name", "Client Description", "LinkedIn", "Email"])
+            writer.writerow(["Client Name", "Client Description", "Client Company", "LinkedIn", "Email"])
 
             for client in project.get_clients():
                 writer.writerow([
                     client.get_name(),
                     client.description.replace('\n', ' '),
+                    client.company,
                     client.linkedin,
                     client.get_email()
                 ])
@@ -163,10 +168,11 @@ class CSVExporter:
 
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-            writer.writerow(["Client Name", "Client Description", "LinkedIn", "Email"])
+            writer.writerow(["Client Name", "Client Description", "Client Company", "LinkedIn", "Email"])
             writer.writerow([
                 client.get_name(),
                 client.description.replace('\n', ' '),
+                client.company,
                 client.linkedin,
                 client.get_email()
             ])

@@ -3,9 +3,10 @@ from src.auth.linkedin_handler import LinkedInHandler
 
 
 class Client:
-    def __init__(self, name, description, linkedin, email):
+    def __init__(self, name, description, company, linkedin, email):
         self.name = name
         self.description = description
+        self.company = company
         self.linkedin = linkedin
         self.email = email
         self.message_thread = []
@@ -41,6 +42,7 @@ class Client:
         return {
             "name": self.name,
             "description": self.description,
+            "company": self.company,
             "email": self.email,
             "linkedin": self.linkedin,
             "message_thread": self.message_thread
@@ -51,7 +53,7 @@ class Client:
 
     @classmethod
     def from_dict(cls, data):
-        client = cls(data["name"], data["description"], data["linkedin"], data["email"])
+        client = cls(data["name"], data["description"], data["company"], data["linkedin"], data["email"])
         client.message_thread = data.get("message_thread", [])
         return client
 
