@@ -7,7 +7,6 @@
     - Responsiveness
 
 Lucas Notes:
-- Projects instead of job
 - Company attribute in client
 - Highlight clients that responded in exported file
 - Help me button with instruction

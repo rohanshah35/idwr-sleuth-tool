@@ -5,10 +5,10 @@ import ttkbootstrap as ttk
 from src.controllers.loading_screen import LoadingScreenController
 from src.controllers.login_controller import LoginController
 from src.controllers.home_controller import HomeController
-from src.controllers.job_controller import JobController
+from src.controllers.project_controller import ProjectController
 from src.controllers.client_controller import ClientController
 from src.controllers.bulk_message_controller import BulkMessageController
-from src.fileio.file_handler import JobHandler
+from src.fileio.file_handler import ProjectHandler
 
 from src.structures.user import UserManager
 
@@ -26,8 +26,8 @@ class App:
         self.email_password = ""
         self.linkedin_password = ""
 
-        self.job_list = JobHandler.load_jobs_from_directory()
-        self.selected_job = None
+        self.project_list = ProjectHandler.load_projects_from_directory()
+        self.selected_project = None
 
         self.client_list = None
         self.selected_client = None
@@ -35,7 +35,7 @@ class App:
         self.controllers = {
             'login': LoginController(self),
             'home': HomeController(self),
-            'job': JobController(self),
+            'project': ProjectController(self),
             'client': ClientController(self),
             'loading': LoadingScreenController(self),
             'bulk': BulkMessageController(self),

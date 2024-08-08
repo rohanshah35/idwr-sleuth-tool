@@ -5,11 +5,11 @@ from tkinter import messagebox
 import customtkinter as ctk  # Make sure to import customtkinter
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
-from src.fileio.file_handler import JobHandler
+from src.fileio.file_handler import ProjectHandler
 from src.structures.client import Client
 
 
-class JobController:
+class ProjectController:
     def __init__(self, app):
         self.app = app
         self.frame = ttk.Frame(app.frame)
@@ -17,8 +17,8 @@ class JobController:
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
-        self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
-        self.job_label.pack(pady=(0, 30))
+        self.project_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
+        self.project_label.pack(pady=(0, 30))
 
         self.select_client_btn = ctk.CTkButton(
             options_frame,
@@ -94,14 +94,14 @@ class JobController:
 
     def show(self):
         self.frame.pack(fill=tk.BOTH, expand=True)
-        self.update_job()
+        self.update_project()
 
     def hide(self):
         self.frame.pack_forget()
 
-    def update_job(self):
-        if self.app.selected_job:
-            self.job_label.config(text=self.app.selected_job.name)
+    def update_project(self):
+        if self.app.selected_project:
+            self.project_label.config(text=self.app.selected_project.name)
 
     def open_popup(self, title, content_func, width=1000, height=800):
         popup = tk.Toplevel(self.app.root)
@@ -138,7 +138,7 @@ class JobController:
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
 
     def open_select_client_popup(self):
-        clients = self.app.selected_job.get_all_client_names()
+        clients = self.app.selected_project.get_all_client_names()
         selected_client = tk.StringVar()
         selected_client.set(clients[0] if clients else "No clients available")
 
@@ -194,9 +194,9 @@ class JobController:
 
         def create_client(client_name, client_description, client_linkedin, client_email):
             client = Client(client_name, client_description, client_linkedin, client_email)
-            self.app.selected_job.add_client(client)
-            job_manager = JobHandler(self.app.selected_job)
-            job_manager.write_job()
+            self.app.selected_project.add_client(client)
+            project_manager = ProjectHandler(self.app.selected_project)
+            project_manager.write_project()
             popup.destroy()
             messagebox.showinfo("Success", f"Client '{client_name}' created successfully!")
 
@@ -227,14 +227,14 @@ class JobController:
         def delete_client():
             client_name = selected_client.get()
             clients.remove(client_name)
-            self.app.selected_job.remove_client_by_name(selected_client.get())
+            self.app.selected_project.remove_client_by_name(selected_client.get())
 
             for client in self.app.client_list:
                 if client.get_name() == client_name:
                     self.app.client_list.remove(client)
 
-            job_manager = JobHandler(self.app.selected_job)
-            job_manager.write_job()
+            project_manager = ProjectHandler(self.app.selected_project)
+            project_manager.write_project()
             popup.destroy()
             messagebox.showinfo("Success", f"Client '{client_name}' deleted successfully!")
 
@@ -244,14 +244,14 @@ class JobController:
         self.app.show_frame('bulk')
 
     def open_export_popup(self):
-        job_name = self.app.selected_job.get_name()
+        project_name = self.app.selected_project.get_name()
 
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
             ctk.CTkButton(
                 frame,
-                text="Export Job (XLS)",
+                text="Export Project (XLS)",
                 command=export_xls,
                 width=140,
                 height=30,
@@ -261,7 +261,7 @@ class JobController:
             ).pack(pady=10)
             ctk.CTkButton(
                 frame,
-                text="Export Job (CSV)",
+                text="Export Project (CSV)",
                 command=export_csv,
                 width=140,
                 height=30,
@@ -272,13 +272,13 @@ class JobController:
 
         def export_xls():
             exporter = ExcelExporter()
-            exporter.export_specific_job(self.app.selected_job.get_name())
-            messagebox.showinfo("Export", f"Success, {job_name} exported successfully!")
+            exporter.export_specific_project(self.app.selected_project.get_name())
+            messagebox.showinfo("Export", f"Success, {project_name} exported successfully!")
 
         def export_csv():
             exporter = CSVExporter()
-            exporter.export_specific_job(self.app.selected_job.get_name())
-            messagebox.showinfo("Export", f"Success, {job_name} exported successfully!")
+            exporter.export_specific_project(self.app.selected_project.get_name())
+            messagebox.showinfo("Export", f"Success, {project_name} exported successfully!")
 
         self.open_popup("Export", content)
 

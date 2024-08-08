@@ -15,8 +15,8 @@ class ClientController:
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
-        self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
-        self.job_label.pack(pady=(0, 30))
+        self.project_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
+        self.project_label.pack(pady=(0, 30))
 
         self.linkedin_conversation_btn = ctk.CTkButton(options_frame, text="LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.linkedin_conversation_btn.pack(pady=10)
@@ -27,7 +27,7 @@ class ClientController:
         self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.exit_btn = ctk.CTkButton(options_frame, text="Back to job menu", command=self.go_to_job, width=200, height=40, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
+        self.exit_btn = ctk.CTkButton(options_frame, text="Back to project menu", command=self.go_to_project, width=200, height=40, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=(30, 10))
 
     def show(self):
@@ -38,7 +38,7 @@ class ClientController:
         self.frame.pack_forget()
 
     def update_client(self):
-        self.job_label.config(text=self.app.selected_client.name)
+        self.project_label.config(text=self.app.selected_client.name)
 
     def open_popup(self, title, content_func, width=1000, height=800):
         popup = tk.Toplevel(self.app.root)
@@ -194,15 +194,15 @@ class ClientController:
 
         def export_xls():
             exporter = ExcelExporter()
-            exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
+            exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name())
             messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
 
         def export_csv():
             exporter = CSVExporter()
-            exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
+            exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name())
             messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
 
         self.open_popup("Export", content)
 
-    def go_to_job(self):
-        self.app.show_frame('job')
+    def go_to_project(self):
+        self.app.show_frame('project')

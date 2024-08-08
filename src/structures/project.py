@@ -1,7 +1,8 @@
 import json
 from src.structures.client import Client
 
-class Job:
+
+class Project:
     def __init__(self, name, description):
         self.name = name
         self.description = description
@@ -44,12 +45,12 @@ class Job:
 
     @classmethod
     def from_dict(cls, data):
-        job = cls(data['name'], data['description'])
+        project = cls(data['name'], data['description'])
         for client_data in data.get('clients', []):
             try:
                 client = Client.from_dict(client_data)
-                job.add_client(client)
+                project.add_client(client)
             except Exception as e:
                 print(f"Error creating client from data: {client_data}")
                 print(f"Error: {str(e)}")
-        return job
+        return project

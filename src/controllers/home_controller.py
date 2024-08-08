@@ -6,8 +6,8 @@ from tkinter import messagebox
 from PIL import Image
 import customtkinter as ctk  # Make sure to import customtkinter
 
-from src.fileio.file_handler import JobHandler
-from src.structures.job import Job
+from src.fileio.file_handler import ProjectHandler
+from src.structures.project import Project
 from src.fileio.exporter import ExcelExporter, CSVExporter
 
 
@@ -49,14 +49,14 @@ class HomeController:
         )
         self.mailbox_btn.pack(pady=(10, 30))
 
-        self.select_job_btn = ctk.CTkButton(options_frame, text="Select Job", command=self.open_select_job_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
-        self.select_job_btn.pack(pady=10)
+        self.select_project_btn = ctk.CTkButton(options_frame, text="Select Project", command=self.open_select_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.select_project_btn.pack(pady=10)
 
-        self.create_job_btn = ctk.CTkButton(options_frame, text="Create Job", command=self.open_create_job_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
-        self.create_job_btn.pack(pady=10)
+        self.create_project_btn = ctk.CTkButton(options_frame, text="Create Project", command=self.open_create_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.create_project_btn.pack(pady=10)
 
-        self.delete_job_btn = ctk.CTkButton(options_frame, text="Delete Job", command=self.open_delete_job_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
-        self.delete_job_btn.pack(pady=10)
+        self.delete_project_btn = ctk.CTkButton(options_frame, text="Delete Project", command=self.open_delete_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.delete_project_btn.pack(pady=10)
 
         self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
@@ -115,99 +115,99 @@ class HomeController:
 
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
 
-    def open_select_job_popup(self):
-        jobs = JobHandler.get_all_job_names()
-        selected_job = tk.StringVar()
-        selected_job.set(jobs[0] if jobs else "No jobs available")
+    def open_select_project_popup(self):
+        projects = ProjectHandler.get_all_project_names()
+        selected_project = tk.StringVar()
+        selected_project.set(projects[0] if projects else "No projects available")
 
         def content(frame):
-            ttk.Label(frame, text="Select Job", font=("Helvetica", 16, "bold")).pack(pady=10)
+            ttk.Label(frame, text="Select Project", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-            drop = ctk.CTkOptionMenu(frame, variable=selected_job, values=jobs, width=140, fg_color="#2C3E50")
+            drop = ctk.CTkOptionMenu(frame, variable=selected_project, values=projects, width=140, fg_color="#2C3E50")
             drop.pack(pady=(30, 10))
 
-            ctk.CTkButton(frame, text="Select Job", command=select_job, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Select Project", command=select_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
-        def select_job():
-            for job in self.app.job_list:
-                if selected_job.get() == job.get_name():
-                    self.app.selected_job = job
-                    self.app.client_list = job.get_clients()
-                    self.app.controllers['job'].update_job()
+        def select_project():
+            for project in self.app.project_list:
+                if selected_project.get() == project.get_name():
+                    self.app.selected_project = project
+                    self.app.client_list = project.get_clients()
+                    self.app.controllers['project'].update_project()
                     popup.destroy()
-                    self.app.show_frame('job')
+                    self.app.show_frame('project')
 
-        popup = self.open_popup("Select Job", content)
+        popup = self.open_popup("Select Project", content)
 
-    def open_create_job_popup(self):
+    def open_create_project_popup(self):
         def content(frame):
-            ttk.Label(frame, text="Create Job", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Create Project", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            ttk.Label(frame, text="Job Name:").pack(pady=10)
-            job_name_entry = ttk.Entry(frame, width=40)
-            job_name_entry.pack(pady=(0, 10), padx=20)
+            ttk.Label(frame, text="Project Name:").pack(pady=10)
+            project_name_entry = ttk.Entry(frame, width=40)
+            project_name_entry.pack(pady=(0, 10), padx=20)
 
-            ttk.Label(frame, text="Job Description:").pack(pady=10)
-            job_desc_entry = tk.Text(frame, width=40, height=5)
-            job_desc_entry.pack(pady=(0, 20), padx=20)
+            ttk.Label(frame, text="Project Description:").pack(pady=10)
+            project_desc_entry = tk.Text(frame, width=40, height=5)
+            project_desc_entry.pack(pady=(0, 20), padx=20)
 
-            create_button = ctk.CTkButton(frame, text="Create Job", command=lambda: create_job(job_name_entry.get(), job_desc_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+            create_button = ctk.CTkButton(frame, text="Create Project", command=lambda: create_project(project_name_entry.get(), project_desc_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
             create_button.pack(pady=(0, 30))
 
-        def create_job(job_name, job_description):
-            job = Job(job_name, job_description)
-            self.app.job_list.append(job)
-            job_handler = JobHandler(job)
-            job_handler.write_job()
+        def create_project(project_name, project_description):
+            project = Project(project_name, project_description)
+            self.app.project_list.append(project)
+            project_handler = ProjectHandler(project)
+            project_handler.write_project()
             popup.destroy()
-            messagebox.showinfo("Success", f"Job '{job_name}' created successfully!")
+            messagebox.showinfo("Success", f"Project '{project_name}' created successfully!")
 
-        popup = self.open_popup("Create Job", content)
+        popup = self.open_popup("Create Project", content)
 
-    def open_delete_job_popup(self):
-        jobs = JobHandler.get_all_job_names()
-        selected_job = tk.StringVar()
-        selected_job.set(jobs[0] if jobs else "No jobs available")
+    def open_delete_project_popup(self):
+        projects = ProjectHandler.get_all_project_names()
+        selected_project = tk.StringVar()
+        selected_project.set(projects[0] if projects else "No projects available")
 
         def content(frame):
-            ttk.Label(frame, text="Delete Job", font=("Helvetica", 16, "bold")).pack(pady=10)
+            ttk.Label(frame, text="Delete Project", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-            drop = ctk.CTkOptionMenu(frame, variable=selected_job, values=jobs, width=140, fg_color="#2C3E50")
+            drop = ctk.CTkOptionMenu(frame, variable=selected_project, values=projects, width=140, fg_color="#2C3E50")
             drop.pack(pady=(30, 10))
 
-            ctk.CTkButton(frame, text="Delete Job", command=delete_job, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Delete Project", command=delete_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
-        def delete_job():
-            job_name = selected_job.get()
-            filename = f'jobs/{job_name}.json'
+        def delete_project():
+            project_name = selected_project.get()
+            filename = f'projects/{project_name}.json'
             if os.path.exists(filename):
                 try:
                     os.remove(filename)
                     popup.destroy()
-                    messagebox.showinfo("Success", f"Job '{job_name}' deleted successfully!")
+                    messagebox.showinfo("Success", f"Project '{project_name}' deleted successfully!")
                 except OSError as e:
-                    messagebox.showerror("Error", f"Error deleting job '{job_name}': {e}")
+                    messagebox.showerror("Error", f"Error deleting project '{project_name}': {e}")
             else:
-                messagebox.showerror("Error", f"Job '{job_name}' not found.")
+                messagebox.showerror("Error", f"Project '{project_name}' not found.")
 
-        popup = self.open_popup("Delete Job", content)
+        popup = self.open_popup("Delete Project", content)
 
     def open_export_popup(self):
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            ctk.CTkButton(frame, text="Export All Jobs (XLS)", command=export_xls, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
-            ctk.CTkButton(frame, text="Export All Jobs (CSV)", command=export_csv, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Export All Projects (XLS)", command=export_xls, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Export All Projects (CSV)", command=export_csv, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
         def export_xls():
             exporter = ExcelExporter()
-            exporter.export_all_jobs()
-            messagebox.showinfo("Export", "Success, all jobs exported successfully!")
+            exporter.export_all_projects()
+            messagebox.showinfo("Export", "Success, all projects exported successfully!")
 
         def export_csv():
             exporter = CSVExporter()
-            exporter.export_all_jobs()
-            messagebox.showinfo("Export", "Success, all jobs exported successfully!")
+            exporter.export_all_projects()
+            messagebox.showinfo("Export", "Success, all projects exported successfully!")
 
         self.open_popup("Export", content)
 
@@ -226,9 +226,9 @@ class HomeController:
         def delete_account():
             if messagebox.askokcancel("Delete Account", "Are you sure you want to delete your account? Everything will be lost forever."):
                 self.app.user_manager.file_handler.delete_credentials()
-                job_names = JobHandler.get_all_job_names()
-                for name in job_names:
-                    filename = f'jobs/{name}.json'
+                project_names = ProjectHandler.get_all_project_names()
+                for name in project_names:
+                    filename = f'projects/{name}.json'
                     os.remove(filename)
                 self.app.show_frame('login')
                 popup.destroy()

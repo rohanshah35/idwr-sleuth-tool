@@ -34,12 +34,12 @@ class BulkMessageController:
         spacer_frame = ttk.Frame(self.frame)
         spacer_frame.pack(expand=True)
 
-        self.exit_btn = ctk.CTkButton(self.frame, text="Back", command=self.go_to_job, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.exit_btn = ctk.CTkButton(self.frame, text="Back", command=self.go_to_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.exit_btn.pack(side=tk.BOTTOM, pady=(30, 20))
 
     def update_clients(self):
-        if self.app.selected_job:
-            self.clients = self.app.selected_job.get_all_client_names()
+        if self.app.selected_project:
+            self.clients = self.app.selected_project.get_all_client_names()
             self.populate_checkboxes()
 
     def populate_checkboxes(self):
@@ -158,5 +158,5 @@ class BulkMessageController:
         self.save_selections()
         popup = self.open_popup("Email", content)
 
-    def go_to_job(self):
-        self.app.show_frame('job')
+    def go_to_project(self):
+        self.app.show_frame('project')

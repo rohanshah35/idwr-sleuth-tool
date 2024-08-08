@@ -2,9 +2,9 @@
 import json
 import os
 
-from src.fileio.json_encoding import job_decoder, JobEncoder
+from src.fileio.json_encoding import project_decoder, ProjectEncoder
 from src.structures.client import Client
-from src.structures.job import Job
+from src.structures.project import Project
 
 
 # Handles reading and writing user data to a file
@@ -36,61 +36,61 @@ class CredentialHandler:
         os.remove(self.filename)
 
 
-class JobHandler:
-    def __init__(self, job):
-        self.job = job
-        self.filename = f'jobs/{job.get_name()}.json'
+class ProjectHandler:
+    def __init__(self, project):
+        self.project = project
+        self.filename = f'projects/{project.get_name()}.json'
 
-    def read_job(self):
+    def read_project(self):
         try:
             with open(self.filename, 'r') as f:
-                return json.loads(f.read(), object_hook=job_decoder)
+                return json.loads(f.read(), object_hook=project_decoder)
         except FileNotFoundError:
-            print(f"Job file {self.filename} not found.")
+            print(f"Project file {self.filename} not found.")
             return None
 
-    def write_job(self):
-        os.makedirs('jobs', exist_ok=True)
+    def write_project(self):
+        os.makedirs('projects', exist_ok=True)
         with open(self.filename, 'w') as f:
-            json.dump(self.job, f, cls=JobEncoder)
+            json.dump(self.project, f, cls=ProjectEncoder)
 
     @staticmethod
-    def get_all_job_names():
-        return [f.replace('.json', '') for f in os.listdir('jobs') if f.endswith('.json')]
+    def get_all_project_names():
+        return [f.replace('.json', '') for f in os.listdir('projects') if f.endswith('.json')]
 
     @staticmethod
-    def load_job(job_name):
-        filename = f'jobs/{job_name}.json'
+    def load_project(project_name):
+        filename = f'projects/{project_name}.json'
         try:
             with open(filename, 'r') as f:
                 json_data = f.read()
-                job_data = json.loads(json_data)
-                return Job.from_dict(job_data)
+                project_data = json.loads(json_data)
+                return Project.from_dict(project_data)
         except FileNotFoundError:
-            print(f"Job file {filename} not found.")
+            print(f"Project file {filename} not found.")
             return None
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON from {filename}: {str(e)}")
             return None
         except Exception as e:
-            print(f"Unexpected error loading job from {filename}: {str(e)}")
+            print(f"Unexpected error loading project from {filename}: {str(e)}")
             return None
 
     @staticmethod
-    def load_jobs_from_directory(directory='jobs'):
-        job_list = []
-        job_files = [f for f in os.listdir(directory) if f.endswith('.json')]
+    def load_projects_from_directory(directory='projects'):
+        project_list = []
+        project_files = [f for f in os.listdir(directory) if f.endswith('.json')]
 
-        for job_file in job_files:
-            with open(os.path.join(directory, job_file), 'r') as file:
-                job_data = json.load(file)
-                job = Job(job_data['name'], job_data['description'])
+        for project_file in project_files:
+            with open(os.path.join(directory, project_file), 'r') as file:
+                project_data = json.load(file)
+                project = Project(project_data['name'], project_data['description'])
 
                 client_objects = []
-                for client_dict in job_data.get('clients', []):
+                for client_dict in project_data.get('clients', []):
                     client_objects.append(Client.from_dict(client_dict))
 
-                job.clients = client_objects
-                job_list.append(job)
+                project.clients = client_objects
+                project_list.append(project)
 
-        return job_list
+        return project_list
