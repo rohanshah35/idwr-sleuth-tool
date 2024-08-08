@@ -1,6 +1,13 @@
 - Bulk messaging controller customization
-- Animations
 - Backend optimizations
 - LinkedIn popup vs chatbox for individual messaging
 - Notifications
-- GUI cleanup (responsiveness)
+- GUI cleanup
+    - Animations
+    - Responsiveness
+
+Lucas Notes:
+- Projects instead of job
+- Company attribute in client
+- Highlight clients that responded in exported file
+- Help me button with instruction

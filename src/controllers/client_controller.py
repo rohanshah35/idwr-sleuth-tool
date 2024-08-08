@@ -27,7 +27,7 @@ class ClientController:
         self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.exit_btn = ctk.CTkButton(options_frame, text="Back to job menu", command=self.go_to_job, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.exit_btn = ctk.CTkButton(options_frame, text="Back to job menu", command=self.go_to_job, width=200, height=40, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=(30, 10))
 
     def show(self):

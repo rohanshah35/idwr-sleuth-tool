@@ -2,6 +2,9 @@ import os
 import csv
 from openpyxl import Workbook
 from src.fileio.file_handler import JobHandler
+from datetime import datetime
+
+date = datetime.today().strftime('%Y-%m-%d')
 
 
 class ExcelExporter:
@@ -36,7 +39,7 @@ class ExcelExporter:
                         client.get_email()
                     ])
 
-        filepath = os.path.join(self.export_dir, "Full Report.xlsx")
+        filepath = os.path.join(self.export_dir, f"Full Report, ({date}).xlsx")
         wb.save(filepath)
         return filepath
 
@@ -60,7 +63,7 @@ class ExcelExporter:
                 client.get_email()
             ])
 
-        filepath = os.path.join(self.export_dir, f"{job.get_name()} Report.xlsx")
+        filepath = os.path.join(self.export_dir, f"{job.get_name()} Report, ({date}).xlsx")
         wb.save(filepath)
         return filepath
 
@@ -87,7 +90,7 @@ class ExcelExporter:
             client.get_email()
         ])
 
-        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report.xlsx")
+        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report, ({date}).xlsx")
         wb.save(filepath)
         return filepath
 
@@ -98,7 +101,7 @@ class CSVExporter:
         os.makedirs(self.export_dir, exist_ok=True)
 
     def export_all_jobs(self):
-        filepath = os.path.join(self.export_dir, "Full Report.csv")
+        filepath = os.path.join(self.export_dir, f"Full Report, ({date}).csv")
 
         jobs = JobHandler.load_jobs_from_directory()
 
@@ -131,7 +134,7 @@ class CSVExporter:
         if not job:
             return None
 
-        filepath = os.path.join(self.export_dir, f"{job.get_name()} Report.csv")
+        filepath = os.path.join(self.export_dir, f"{job.get_name()} Report, ({date}).csv")
 
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
@@ -156,7 +159,7 @@ class CSVExporter:
         if not client:
             return None
 
-        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report.csv")
+        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report, ({date}).csv")
 
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)

@@ -3,7 +3,7 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
-from PIL import Image, ImageTk
+from PIL import Image
 import customtkinter as ctk  # Make sure to import customtkinter
 
 from src.fileio.file_handler import JobHandler
@@ -32,13 +32,14 @@ class HomeController:
 
         original_image = Image.open("resources/mailbox.png")
         resized_image = original_image.resize((20, 20), Image.LANCZOS)
-        self.mailbox_image = ImageTk.PhotoImage(resized_image)
+
+        self.mailbox_image = ctk.CTkImage(light_image=resized_image, dark_image=resized_image, size=(20, 20))
 
         self.mailbox_btn = ctk.CTkButton(
             options_frame,
             text="Notifications",
             image=self.mailbox_image,
-            compound=tk.LEFT,
+            compound="left",
             command=self.open_mailbox_popup,
             width=140,
             height=32,
@@ -60,10 +61,10 @@ class HomeController:
         self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.account_cred_btn = ctk.CTkButton(options_frame, text="Settings", command=self.open_credentials_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.account_cred_btn = ctk.CTkButton(options_frame, text="Settings", command=self.open_credentials_popup, width=140, height=30, corner_radius=20, fg_color="#606060", hover_color="#505050")
         self.account_cred_btn.pack(pady=(30, 10))
 
-        self.exit_btn = ctk.CTkButton(options_frame, text="Exit", command=self.exit_app, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.exit_btn = ctk.CTkButton(options_frame, text="Exit", command=self.exit_app, width=140, height=30, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=10)
 
     def show(self):
@@ -184,15 +185,10 @@ class HomeController:
                     os.remove(filename)
                     popup.destroy()
                     messagebox.showinfo("Success", f"Job '{job_name}' deleted successfully!")
-                    jobs.remove(job_name)
-
-                    for job in self.app.job_list:
-                        if job.get_name() == job_name:
-                            self.app.job_list.remove(job)
                 except OSError as e:
-                    print(f"Error deleting job file: {e}")
+                    messagebox.showerror("Error", f"Error deleting job '{job_name}': {e}")
             else:
-                print(f"Job file '{filename}' does not exist.")
+                messagebox.showerror("Error", f"Job '{job_name}' not found.")
 
         popup = self.open_popup("Delete Job", content)
 
@@ -240,5 +236,4 @@ class HomeController:
         popup = self.open_popup("Change Credentials", content)
 
     def exit_app(self):
-        if messagebox.askokcancel("Exit", "Are you sure you want to exit?"):
-            self.app.root.quit()
+        self.app.root.destroy()

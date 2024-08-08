@@ -87,8 +87,8 @@ class JobController:
             width=140,
             height=30,
             corner_radius=20,
-            fg_color="#2C3E50",
-            hover_color="#1F2A38"
+            fg_color="#CC0000",
+            hover_color="#990000"
         )
         self.exit_btn.pack(pady=(30, 10))
 
