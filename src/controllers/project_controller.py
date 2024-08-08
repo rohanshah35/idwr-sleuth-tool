@@ -83,7 +83,7 @@ class ProjectController:
 
         self.exit_btn = ctk.CTkButton(
             options_frame,
-            text="Back to home",
+            text="Back",
             command=self.go_home,
             width=140,
             height=30,
@@ -208,7 +208,7 @@ class ProjectController:
         popup = self.open_popup("Create Client", content)
 
     def open_delete_client_popup(self):
-        clients = self.app.selected_job.get_all_client_names()
+        clients = self.app.selected_project.get_all_client_names()
         selected_client = tk.StringVar()
         selected_client.set(clients[0] if clients else "No clients available")
 

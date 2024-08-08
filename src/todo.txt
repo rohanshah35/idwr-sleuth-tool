@@ -1,6 +1,7 @@
 - Bulk messaging controller customization
+    - <name>, <company>: changes for each client in bulk message
 - Backend optimizations
-- LinkedIn popup vs chatbox for individual messaging
+- LinkedIn popup for individual messaging
 - Notifications
     - Highlight clients that responded in exported file
 - GUI cleanup
@@ -8,5 +9,5 @@
     - Responsiveness
 - Exports in timeframes
 - Anonymous clients
-- Edge cases for creating projects, clients
+- Edge cases for all menus
 - Edit jobs and projects

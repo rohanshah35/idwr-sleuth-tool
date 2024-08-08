@@ -10,6 +10,7 @@ import customtkinter as ctk
 from src.fileio.file_handler import ProjectHandler
 from src.structures.project import Project
 from src.fileio.exporter import ExcelExporter, CSVExporter
+from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 
 class HomeController:
@@ -82,7 +83,7 @@ class HomeController:
     def open_mailbox_popup(self):
         messagebox.showinfo("Mailbox", "Mailbox clicked!")
 
-    def open_popup(self, title, content_func, width=1000, height=800):
+    def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")

@@ -1,7 +1,7 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-import customtkinter as ctk  # Import customtkinter
+import customtkinter as ctk
+from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 selected_clients = []
 
@@ -72,7 +72,7 @@ class BulkMessageController:
     def hide(self):
         self.frame.pack_forget()
 
-    def open_popup(self, title, content_func, width=1000, height=800):
+    def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")

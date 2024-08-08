@@ -2,7 +2,8 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
-import customtkinter as ctk  # Import customtkinter
+import customtkinter as ctk
+from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
 
@@ -27,7 +28,7 @@ class ClientController:
         self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.exit_btn = ctk.CTkButton(options_frame, text="Back to project menu", command=self.go_to_project, width=200, height=40, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
+        self.exit_btn = ctk.CTkButton(options_frame, text="Back", command=self.go_to_project, width=200, height=40, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=(30, 10))
 
     def show(self):
@@ -40,7 +41,7 @@ class ClientController:
     def update_client(self):
         self.project_label.config(text=self.app.selected_client.name)
 
-    def open_popup(self, title, content_func, width=1000, height=800):
+    def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")
