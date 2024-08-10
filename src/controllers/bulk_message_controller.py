@@ -31,8 +31,8 @@ class BulkMessageController:
         self.checkbox_frame = ttk.Frame(self.content_frame)
         self.checkbox_frame.pack(pady=10)
 
-        spacer_frame = ttk.Frame(self.frame)
-        spacer_frame.pack(expand=True)
+        # spacer_frame = ttk.Frame(self.frame)
+        # spacer_frame.pack(expand=True)
 
         self.exit_btn = ctk.CTkButton(self.frame, text="Back", command=self.go_to_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.exit_btn.pack(side=tk.BOTTOM, pady=(30, 20))

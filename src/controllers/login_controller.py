@@ -7,7 +7,6 @@ from src.auth.email_handler import EmailHandler
 from src.auth.linkedin_handler import LinkedInHandler
 from src.utils.utils import email_validator
 
-
 class LoginController:
     def __init__(self, app):
         self.app = app
@@ -31,6 +30,12 @@ class LoginController:
         self.email_pass_entry.pack(pady=10)
         self.email_pass_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.email_pass_entry, "Email provider password"))
         self.email_pass_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.email_pass_entry, "Email provider password"))
+
+        self.linkedin_email_entry = ttk.Entry(self.center_frame, width=40)
+        self.linkedin_email_entry.insert(0, "LinkedIn email")
+        self.linkedin_email_entry.pack(pady=10)
+        self.linkedin_email_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.linkedin_email_entry, "LinkedIn email"))
+        self.linkedin_email_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.linkedin_email_entry, "LinkedIn email"))
 
         self.linkedin_pass_entry = ttk.Entry(self.center_frame, width=40, show="")
         self.linkedin_pass_entry.insert(0, "LinkedIn password")
@@ -62,6 +67,8 @@ class LoginController:
         self.email_pass_entry.delete(0, "end")
         self.email_pass_entry.insert(0, "Email provider password")
         self.email_pass_entry.config(show="")
+        self.linkedin_email_entry.delete(0, "end")
+        self.linkedin_email_entry.insert(0, "LinkedIn email")
         self.linkedin_pass_entry.delete(0, "end")
         self.linkedin_pass_entry.insert(0, "LinkedIn password")
         self.linkedin_pass_entry.config(show="")
@@ -71,22 +78,25 @@ class LoginController:
         self.error_label.config(text="")
         self.app.email = self.email_entry.get()
         self.app.email_password = self.email_pass_entry.get()
+        self.app.linkedin_email = self.linkedin_email_entry.get()
         self.app.linkedin_password = self.linkedin_pass_entry.get()
 
-        if email_validator(self.app.email):
-            self.app.linkedin_handler = LinkedInHandler(self.app.email, self.app.linkedin_password)
+        if email_validator(self.app.email) and email_validator(self.app.linkedin_email):
+            self.app.linkedin_handler = LinkedInHandler(self.app.linkedin_email, self.app.linkedin_password)
             self.app.email_handler = EmailHandler(self.app.email, self.app.email_password)
 
             try:
-                self.app.linkedin_handler.login_to_linkedin_headless()
+                self.app.linkedin_handler.login_to_linkedin_visible_then_headless()
+                linkedin_cookies = self.app.linkedin_handler.get_cookies()
                 self.app.email_handler.initialize_imap()
                 self.app.email_handler.initialize_smtp()
 
                 self.app.user_manager.user_data = {
-                    'linkedin_username': self.app.email,
+                    'linkedin_email': self.app.linkedin_email,
                     'linkedin_password': self.app.linkedin_password,
                     'email': self.app.email,
-                    'email_password': self.app.email_password
+                    'email_password': self.app.email_password,
+                    'linkedin_cookies': linkedin_cookies
                 }
 
                 self.app.user_manager.save_user_data()
@@ -96,7 +106,7 @@ class LoginController:
                 self.error_label.config(text="Login unsuccessful. Please try again.")
         else:
             self.clear_entries()
-            self.error_label.config(text="Login unsuccessful. Please try again.")
+            self.error_label.config(text="Invalid email format. Please try again.")
 
     def hide(self):
         self.frame.pack_forget()

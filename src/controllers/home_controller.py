@@ -18,8 +18,6 @@ class HomeController:
         self.app = app
         self.frame = ttk.Frame(app.frame)
 
-        self.app.user_manager.load_handlers()
-
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
@@ -77,7 +75,7 @@ class HomeController:
         self.frame.pack_forget()
 
     def update_email(self):
-        email = self.app.user_manager.user_data.get('linkedin_username', 'Not set')
+        email = self.app.user_manager.user_data.get('linkedin_email', 'Not set')
         self.email_label.config(text=email+'!')
 
     def open_mailbox_popup(self):
