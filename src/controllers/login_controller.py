@@ -82,14 +82,14 @@ class LoginController:
         self.app.linkedin_password = self.linkedin_pass_entry.get()
 
         if email_validator(self.app.email) and email_validator(self.app.linkedin_email):
-            self.app.linkedin_handler = LinkedInHandler(self.app.linkedin_email, self.app.linkedin_password)
-            self.app.email_handler = EmailHandler(self.app.email, self.app.email_password)
+            self.app.user_manager.linkedin_handler = LinkedInHandler(self.app.linkedin_email, self.app.linkedin_password)
+            self.app.user_manager.email_handler = EmailHandler(self.app.email, self.app.email_password)
 
             try:
-                self.app.linkedin_handler.login_to_linkedin_visible_then_headless()
-                linkedin_cookies = self.app.linkedin_handler.get_cookies()
-                self.app.email_handler.initialize_imap()
-                self.app.email_handler.initialize_smtp()
+                self.app.user_manager.linkedin_handler.login_to_linkedin_visible_then_headless()
+                linkedin_cookies = self.app.user_manager.linkedin_handler.get_cookies()
+                self.app.user_manager.email_handler.initialize_imap()
+                self.app.user_manager.email_handler.initialize_smtp()
 
                 self.app.user_manager.user_data = {
                     'linkedin_email': self.app.linkedin_email,
