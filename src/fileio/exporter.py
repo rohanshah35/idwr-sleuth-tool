@@ -30,15 +30,24 @@ class ExcelExporter:
                 ])
             else:
                 for client in project.get_clients():
-                    ws.append([
-                        project.get_name(),
-                        project.get_description(),
-                        client.get_name(),
-                        client.description,
-                        client.company,
-                        client.linkedin,
-                        client.get_email()
-                    ])
+                    if client.get_anonymous():
+                        ws.append([
+                            project.get_name(),
+                            project.get_description(),
+                            client.get_name(),
+                            client.get_description(),
+                            "", "", ""
+                        ])
+                    else:
+                        ws.append([
+                            project.get_name(),
+                            project.get_description(),
+                            client.get_name(),
+                            client.get_description(),
+                            client.get_company(),
+                            client.get_linkedin(),
+                            client.get_email()
+                        ])
 
         filepath = os.path.join(self.export_dir, f"Full Report, ({date}).xlsx")
         wb.save(filepath)
@@ -57,13 +66,20 @@ class ExcelExporter:
         ws.append(headers)
 
         for client in project.get_clients():
-            ws.append([
-                client.get_name(),
-                client.description,
-                client.company,
-                client.linkedin,
-                client.get_email()
-            ])
+            if client.get_anonymous():
+                ws.append([
+                    client.get_name(),
+                    client.get_description(),
+                    "", "", ""
+                ])
+            else:
+                ws.append([
+                    client.get_name(),
+                    client.get_description(),
+                    client.get_company(),
+                    client.get_linkedin(),
+                    client.get_email()
+                ])
 
         filepath = os.path.join(self.export_dir, f"{project.get_name()} Report, ({date}).xlsx")
         wb.save(filepath)
@@ -85,13 +101,20 @@ class ExcelExporter:
         headers = ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email"]
         ws.append(headers)
 
-        ws.append([
-            client.get_name(),
-            client.description,
-            client.company,
-            client.linkedin,
-            client.get_email()
-        ])
+        if client.get_anonymous():
+            ws.append([
+                client.get_name(),
+                client.get_description(),
+                "", "", ""
+            ])
+        else:
+            ws.append([
+                client.get_name(),
+                client.get_description(),
+                client.get_company(),
+                client.get_linkedin(),
+                client.get_email()
+            ])
 
         filepath = os.path.join(self.export_dir, f"{client.get_name()} Report, ({date}).xlsx")
         wb.save(filepath)
@@ -121,15 +144,24 @@ class CSVExporter:
                     ])
                 else:
                     for client in project.get_clients():
-                        writer.writerow([
-                            project.get_name(),
-                            project.get_description().replace('\n', ' '),
-                            client.get_name(),
-                            client.description.replace('\n', ' '),
-                            client.company,
-                            client.linkedin,
-                            client.get_email()
-                        ])
+                        if client.get_anonymous():
+                            writer.writerow([
+                                project.get_name(),
+                                project.get_description().replace('\n', ' '),
+                                client.get_name(),
+                                client.get_description().replace('\n', ' '),
+                                "", "", ""
+                            ])
+                        else:
+                            writer.writerow([
+                                project.get_name(),
+                                project.get_description().replace('\n', ' '),
+                                client.get_name(),
+                                client.get_description().replace('\n', ' '),
+                                client.get_company(),
+                                client.get_linkedin(),
+                                client.get_email()
+                            ])
 
         return filepath
 
@@ -145,13 +177,20 @@ class CSVExporter:
             writer.writerow(["Client Name", "Client Description", "Client Company", "LinkedIn", "Email"])
 
             for client in project.get_clients():
-                writer.writerow([
-                    client.get_name(),
-                    client.description.replace('\n', ' '),
-                    client.company,
-                    client.linkedin,
-                    client.get_email()
-                ])
+                if client.get_anonymous():
+                    writer.writerow([
+                        client.get_name(),
+                        client.get_description().replace('\n', ' '),
+                        "", "", ""
+                    ])
+                else:
+                    writer.writerow([
+                        client.get_name(),
+                        client.get_description().replace('\n', ' '),
+                        client.get_company(),
+                        client.get_linkedin(),
+                        client.get_email()
+                    ])
 
         return filepath
 
@@ -169,12 +208,20 @@ class CSVExporter:
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             writer.writerow(["Client Name", "Client Description", "Client Company", "LinkedIn", "Email"])
-            writer.writerow([
-                client.get_name(),
-                client.description.replace('\n', ' '),
-                client.company,
-                client.linkedin,
-                client.get_email()
-            ])
+
+            if client.get_anonymous():
+                writer.writerow([
+                    client.get_name(),
+                    client.get_description().replace('\n', ' '),
+                    "", "", ""
+                ])
+            else:
+                writer.writerow([
+                    client.get_name(),
+                    client.get_description().replace('\n', ' '),
+                    client.get_company(),
+                    client.get_linkedin(),
+                    client.get_email()
+                ])
 
         return filepath

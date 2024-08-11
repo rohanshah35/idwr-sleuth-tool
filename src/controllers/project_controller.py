@@ -217,7 +217,22 @@ class ProjectController:
 
     def open_create_client_popup(self):
         def content(frame):
-            ttk.Label(frame, text="Create Client", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Create Client", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
+
+            anonymous_var = tk.BooleanVar()
+
+            def toggle_anonymous():
+                if anonymous_var.get():
+                    client_name_entry.delete(0, tk.END)
+                    client_name_entry.insert(0, "Anonymous")
+                    client_name_entry.config(state="disabled")
+                    self.app.selected_client.set_anonymous(True)
+                else:
+                    client_name_entry.config(state="normal")
+                    client_name_entry.delete(0, tk.END)
+
+            anonymous_check = ttk.Checkbutton(frame, text="Anonymous Client", variable=anonymous_var, command=toggle_anonymous)
+            anonymous_check.pack(pady=(0, 10))
 
             ttk.Label(frame, text="Client Name:").pack(pady=10)
             client_name_entry = ttk.Entry(frame, width=40)

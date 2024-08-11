@@ -11,6 +11,7 @@ class Client:
         self.email = email
         self.message_thread = []
         self.last_sender = None
+        self.anonymous = False
 
     def get_name(self):
         return self.name
@@ -18,14 +19,17 @@ class Client:
     def get_description(self):
         return self.description
 
-    def get_email(self):
-        return self.email
-
     def get_company(self):
         return self.company
 
     def get_linkedin(self):
         return self.linkedin
+
+    def get_email(self):
+        return self.email
+
+    def get_anonymous(self):
+        return self.anonymous
 
     def set_name(self, name):
         self.name = name
@@ -41,6 +45,9 @@ class Client:
 
     def set_email(self, email):
         self.email = email
+
+    def set_anon(self, anonymous):
+        self.anonymous = anonymous
 
     def load_linkedin_conversation(self, linkedin_handler):
         uncleaned_message_thread = linkedin_handler.get_conversation_text(self.get_name())

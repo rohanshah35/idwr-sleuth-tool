@@ -361,36 +361,3 @@ class LinkedInHandler:
         if self.driver:
             self.driver.quit()
 
-
-def main():
-    # LinkedIn credentials
-    linkedin_username = "rohanshahsf@gmail.com"
-    linkedin_password = "$$Discussrather32%_"
-
-    # Recipient's full name as it appears on LinkedIn
-    recipient_name = "https://www.linkedin.com/in/luca-bianchini-650923288/"
-
-    # Message to send
-    message = "Hello! This is a test message sent using the LinkedInHandler."
-
-    try:
-        # Create LinkedInHandler instance
-        linkedin_handler = LinkedInHandler(linkedin_username, linkedin_password)
-
-        print("Logging in to LinkedIn...")
-        if linkedin_handler.login_to_linkedin_headless():
-            print("Login successful!")
-
-            print(f"Attempting to view conversation with {recipient_name}...")
-            print(linkedin_handler.send_linkedin_message(recipient_name, message))
-        else:
-            print("Failed to log in to LinkedIn.")
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-    finally:
-        if linkedin_handler:
-            print("Closing browser...")
-
-
-if __name__ == "__main__":
-    main()

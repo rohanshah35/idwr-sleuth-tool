@@ -14,14 +14,14 @@ class Project:
     def get_description(self):
         return self.description
 
+    def get_clients(self):
+        return self.clients
+
     def set_name(self, name):
         self.name = name
 
     def set_description(self, description):
         self.description = description
-
-    def get_clients(self):
-        return self.clients
 
     def add_client(self, client):
         self.clients.append(client)

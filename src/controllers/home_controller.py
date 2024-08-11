@@ -292,7 +292,7 @@ class HomeController:
 
             self.open_popup("Bug Ticket Submission", content)
 
-        popup = self.open_popup("Change Settings", content)
+        popup = self.open_popup("Settings", content)
 
     def exit_app(self):
         self.app.root.destroy()

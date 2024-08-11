@@ -157,7 +157,6 @@ class ClientController:
 
         popup = self.open_popup("Edit Client", content)
 
-
     def open_linkedin_conversation_popup(self):
         self.app.user_manager.linkedin_handler.open_linkedin_conversation_visible(self.app.selected_client.linkedin)
 
