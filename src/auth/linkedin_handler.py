@@ -62,7 +62,6 @@ class LinkedInHandler:
     def login_with_cookies(self, cookies):
         if not self.driver:
             self.create_headless_driver()
-
         self.driver.get("https://www.linkedin.com")
         for cookie in cookies:
             self.driver.add_cookie(cookie)
@@ -143,7 +142,7 @@ class LinkedInHandler:
             )
             print(f"Messaging link found. href: {messaging_link.get_attribute('href')}")
             messaging_link.click()
-            time.sleep(2)
+            time.sleep(1)
             print("Successfully clicked on messaging link")
 
             print("Waiting for search input...")
@@ -300,7 +299,7 @@ class LinkedInHandler:
 
             print(f"Typing message: {message}")
             message_input.send_keys(message)
-            time.sleep(1)
+            time.sleep(0.5)
             try:
                 message_send_button = WebDriverWait(self.driver, 2).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-form__send-btn"))
@@ -310,7 +309,7 @@ class LinkedInHandler:
                     EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-form__send-button"))
                 )
             message_send_button.click()
-            time.sleep(1)
+            time.sleep(0.5)
             print("Message sent")
 
             return True

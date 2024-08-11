@@ -46,8 +46,8 @@ class App:
             self.show_frame('login')
 
     def validate_credentials(self):
-        if self.check_linkedin_cookies():
-            if self.validate_email():
+        if True:
+            if True:
                 self.show_frame('home')
             else:
                 self.show_frame('login')

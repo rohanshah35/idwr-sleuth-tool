@@ -21,6 +21,18 @@ class ProjectController:
         self.project_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
         self.project_label.pack(pady=(0, 30))
 
+        self.edit_project_btn = ctk.CTkButton(
+            options_frame,
+            text="Edit Project",
+            command=self.open_edit_project_popup,
+            width=140,
+            height=30,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
+        self.edit_project_btn.pack(pady=(10, 30))
+
         self.select_client_btn = ctk.CTkButton(
             options_frame,
             text="Select Client",
@@ -137,6 +149,12 @@ class ProjectController:
         position_down = int(main_y + (main_height / 2) - (height / 2))
 
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
+
+    def open_edit_project_popup(self):
+        def content(frame):
+            ttk.Label(frame, text="Edit Project", font=("Helvetica", 16, "bold")).pack(pady=10)
+
+        popup = self.open_popup("Select Client", content)
 
     def open_select_client_popup(self):
         clients = self.app.selected_project.get_all_client_names()

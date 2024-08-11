@@ -17,10 +17,22 @@ class BulkMessageController:
         self.frame.pack(fill=tk.BOTH, expand=True)
 
         self.content_frame = ttk.Frame(self.frame)
-        self.content_frame.pack(expand=False, pady=(100, 0))
+        self.content_frame.pack(expand=False, pady=(20, 0))
+
+        ttk.Label(self.content_frame, text="Bulk Messaging", font=("Helvetica", 16, "bold")).pack(pady=(10, 30))
+
+        keywords = [
+            "You can use these keywords to dynamically replace content within bulk messages!",
+            "<name>: Replaces keyword with specific client name",
+            "<company>: Replaces keyword with specific client name",
+            "<project>: Replaces keyword with specific project name"
+        ]
+
+        for keyword in keywords:
+            ttk.Label(self.content_frame, text=keyword, font=("Arial", 10)).pack(pady=5)
 
         buttons_frame = ttk.Frame(self.content_frame)
-        buttons_frame.pack(pady=(0, 30))
+        buttons_frame.pack(pady=(30, 30))
 
         self.select_linkedin_btn = ctk.CTkButton(buttons_frame, text="LinkedIn Messaging", command=self.open_select_linkedin_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.select_linkedin_btn.pack(side=tk.LEFT, padx=5)
@@ -31,15 +43,12 @@ class BulkMessageController:
         self.checkbox_frame = ttk.Frame(self.content_frame)
         self.checkbox_frame.pack(pady=10)
 
-        # spacer_frame = ttk.Frame(self.frame)
-        # spacer_frame.pack(expand=True)
-
         self.exit_btn = ctk.CTkButton(self.frame, text="Back", command=self.go_to_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.exit_btn.pack(side=tk.BOTTOM, pady=(30, 20))
 
     def update_clients(self):
         if self.app.selected_project:
-            self.clients = self.app.selected_project.get_all_client_names()
+            self.clients = self.app.client_list
             self.populate_checkboxes()
 
     def populate_checkboxes(self):
@@ -51,7 +60,7 @@ class BulkMessageController:
             for client in self.clients:
                 var = tk.BooleanVar()
                 checkbox = ctk.CTkCheckBox(self.checkbox_frame,
-                                           text=client,
+                                           text=client.get_name(),
                                            variable=var,
                                            fg_color="#3498db",
                                            hover_color="#2980b9",
@@ -64,6 +73,12 @@ class BulkMessageController:
     def save_selections(self):
         global selected_clients
         selected_clients = [client for client, var in self.client_vars if var.get()]
+
+    def replace_string_with_keywords(self, string, client):
+        customized_message = string.replace('<name>', client.get_name().split()[0])
+        customized_message = customized_message.replace('<company>', client.get_company())
+        customized_message = customized_message.replace('<project>', self.app.selected_project.get_name())
+        return customized_message
 
     def show(self):
         self.frame.pack(fill=tk.BOTH, expand=True)
@@ -111,7 +126,7 @@ class BulkMessageController:
             ttk.Label(frame, text="LinkedIn", font=("Helvetica", 16, "bold")).pack(pady=10)
             ttk.Label(frame, text="Selected clients:", font=("Helvetica", 12)).pack(pady=10)
             for client in selected_clients:
-                ttk.Label(frame, text=client, foreground="white").pack()
+                ttk.Label(frame, text=client.get_name(), foreground="white").pack()
 
             ttk.Label(frame, text="Message Content").pack(pady=(60, 0))
             message_content = tk.Text(frame, width=40, height=5)
@@ -119,9 +134,11 @@ class BulkMessageController:
 
             def send_message():
                 message = message_content.get("1.0", tk.END).strip()
+
                 for client in selected_clients:
-                    if message:
-                        self.app.user_manager.linkedin_handler.send_linkedin_message(client, message)
+                    customized_message = self.replace_string_with_keywords(message, client)
+
+                    self.app.user_manager.linkedin_handler.send_linkedin_message(client.linkedin, customized_message)
                 message_content.delete("1.0", tk.END)
 
             ctk.CTkButton(frame, text="Send message", command=send_message, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
@@ -134,7 +151,7 @@ class BulkMessageController:
             ttk.Label(frame, text="Email", font=("Helvetica", 16, "bold")).pack(pady=10)
             ttk.Label(frame, text="Selected clients:", font=("Helvetica", 12)).pack(pady=5)
             for client in selected_clients:
-                ttk.Label(frame, text=client, foreground="white").pack()
+                ttk.Label(frame, text=client.get_name(), foreground="white").pack()
 
             ttk.Label(frame, text="Subject:").pack(pady=(60, 0))
             subject_entry = ttk.Entry(frame, width=40)
@@ -148,11 +165,12 @@ class BulkMessageController:
                 subject = subject_entry.get().strip()
                 body = body_text.get("1.0", tk.END).strip()
                 for client in selected_clients:
-                    if subject and body:
-                        self.app.user_manager.email_handler.send_email(client, subject, body)
+                    customized_subject_message = self.replace_string_with_keywords(subject, client)
+                    customized_body_message = self.replace_string_with_keywords(body, client)
+
+                    self.app.user_manager.email_handler.send_email(client.get_email(), customized_subject_message, customized_body_message)
                 subject_entry.delete(0, tk.END)
                 body_text.delete("1.0", tk.END)
-
             ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
         self.save_selections()

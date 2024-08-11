@@ -18,6 +18,24 @@ class Client:
     def get_email(self):
         return self.email
 
+    def get_company(self):
+        return self.company
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_description(self, description):
+        self.description = description
+
+    def set_company(self, company):
+        self.company = company
+
+    def set_linkedin(self, linkedin):
+        self.linkedin = linkedin
+
+    def set_email(self, email):
+        self.email = email
+
     def load_linkedin_conversation(self, linkedin_handler):
         uncleaned_message_thread = linkedin_handler.get_conversation_text(self.get_name())
         for i, message in enumerate(uncleaned_message_thread, 0):
