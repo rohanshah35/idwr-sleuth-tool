@@ -226,7 +226,7 @@ class ProjectController:
                     client_name_entry.delete(0, tk.END)
                     client_name_entry.insert(0, "Anonymous")
                     client_name_entry.config(state="disabled")
-                    self.app.selected_client.set_anonymous(True)
+                    # self.app.selected_client.set_anonymous(True)
                 else:
                     client_name_entry.config(state="normal")
                     client_name_entry.delete(0, tk.END)
@@ -257,7 +257,7 @@ class ProjectController:
             create_button = ctk.CTkButton(
                 frame,
                 text="Create Client",
-                command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_company_entry.get(), client_linkedin_entry.get(), client_email_entry.get()),
+                command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_company_entry.get(), client_linkedin_entry.get(), client_email_entry.get(), anonymous_var.get()),
                 width=140,
                 height=30,
                 corner_radius=20,
@@ -266,8 +266,8 @@ class ProjectController:
             )
             create_button.pack(pady=(20, 0))
 
-        def create_client(client_name, client_description, client_company, client_linkedin, client_email):
-            client = Client(client_name, client_description, client_company, client_linkedin, client_email)
+        def create_client(client_name, client_description, client_company, client_linkedin, client_email, anonymous):
+            client = Client(client_name, client_description, client_company, client_linkedin, client_email, anonymous)
             self.app.selected_project.add_client(client)
             project_manager = ProjectHandler(self.app.selected_project)
             project_manager.write_project()
