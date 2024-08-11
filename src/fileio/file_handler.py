@@ -54,6 +54,15 @@ class ProjectHandler:
         with open(self.filename, 'w') as f:
             json.dump(self.project, f, cls=ProjectEncoder)
 
+    def rename_project(self, new_name):
+        old_filename = self.filename
+        new_filename = f'projects/{new_name}.json'
+        if old_filename != new_filename:
+            if os.path.exists(new_filename):
+                os.remove(new_filename)
+            os.rename(old_filename, new_filename)
+            self.filename = new_filename
+
     @staticmethod
     def get_all_project_names():
         return [f.replace('.json', '') for f in os.listdir('projects') if f.endswith('.json')]

@@ -14,6 +14,12 @@ class Project:
     def get_description(self):
         return self.description
 
+    def set_name(self, name):
+        self.name = name
+
+    def set_description(self, description):
+        self.description = description
+
     def get_clients(self):
         return self.clients
 
@@ -25,6 +31,12 @@ class Project:
             self.clients.remove(client)
             return True
         return False
+
+    def update_client(self, old_name, updated_client):
+        for i, client in enumerate(self.clients):
+            if client.get_name() == old_name:
+                self.clients[i] = updated_client
+                break
 
     def remove_client_by_name(self, client_name):
         for client in self.clients:

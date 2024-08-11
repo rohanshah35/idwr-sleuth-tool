@@ -7,4 +7,3 @@
 - Exports in timeframes
 - Anonymous clients*
 - Edge cases for all menus
-- Edit jobs and projects*

@@ -7,6 +7,7 @@ import customtkinter as ctk
 from src.fileio.exporter import ExcelExporter, CSVExporter
 from src.fileio.file_handler import ProjectHandler
 from src.structures.client import Client
+from src.structures.project import Project
 from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 
@@ -116,6 +117,10 @@ class ProjectController:
         if self.app.selected_project:
             self.project_label.config(text=self.app.selected_project.name)
 
+    def update_project_label(self):
+        if self.app.selected_project:
+            self.project_label.config(text=self.app.selected_project.get_name())
+
     def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
@@ -152,9 +157,40 @@ class ProjectController:
 
     def open_edit_project_popup(self):
         def content(frame):
-            ttk.Label(frame, text="Edit Project", font=("Helvetica", 16, "bold")).pack(pady=10)
+            ttk.Label(frame, text="Edit Project", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-        popup = self.open_popup("Select Client", content)
+            ttk.Label(frame, text="Project Name:").pack(pady=10)
+            project_name_entry = ttk.Entry(frame, width=40)
+            project_name_entry.insert(0, self.app.selected_project.get_name())
+            project_name_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Project Description:").pack(pady=10)
+            project_desc_entry = tk.Text(frame, width=40, height=5)
+            project_desc_entry.insert("1.0", self.app.selected_project.get_description())
+            project_desc_entry.pack(pady=(0, 20), padx=20)
+
+            create_button = ctk.CTkButton(frame, text="Edit Project", command=lambda: edit_project(project_name_entry.get(), project_desc_entry.get("1.0", tk.END).strip()), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+            create_button.pack(pady=(0, 30))
+
+        def edit_project(new_name, new_description):
+            project_handler = ProjectHandler(self.app.selected_project)
+            old_name = self.app.selected_project.get_name()
+
+            if new_name and new_name != old_name:
+                self.app.selected_project.set_name(new_name)
+                project_handler.rename_project(new_name)
+
+            if new_description and new_description != self.app.selected_project.get_description():
+                self.app.selected_project.set_description(new_description)
+
+            project_handler.write_project()
+
+            self.update_project_label()
+
+            popup.destroy()
+            messagebox.showinfo("Success", f"Project '{self.app.selected_project.get_name()}' edited successfully!")
+
+        popup = self.open_popup("Edit Project", content)
 
     def open_select_client_popup(self):
         clients = self.app.selected_project.get_all_client_names()

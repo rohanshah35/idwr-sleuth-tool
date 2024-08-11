@@ -15,11 +15,17 @@ class Client:
     def get_name(self):
         return self.name
 
+    def get_description(self):
+        return self.description
+
     def get_email(self):
         return self.email
 
     def get_company(self):
         return self.company
+
+    def get_linkedin(self):
+        return self.linkedin
 
     def set_name(self, name):
         self.name = name

@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
 import customtkinter as ctk
+
+from src.fileio.file_handler import ProjectHandler
 from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
@@ -18,6 +20,18 @@ class ClientController:
 
         self.project_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
         self.project_label.pack(pady=(0, 30))
+
+        self.edit_client_btn = ctk.CTkButton(
+            options_frame,
+            text="Edit Client",
+            command=self.open_edit_client_popup,
+            width=200,
+            height=40,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
+        self.edit_client_btn.pack(pady=(10, 30))
 
         self.linkedin_conversation_btn = ctk.CTkButton(options_frame, text="LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.linkedin_conversation_btn.pack(pady=10)
@@ -74,6 +88,75 @@ class ClientController:
         position_down = int(main_y + (main_height / 2) - (height / 2))
 
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
+
+    def open_edit_client_popup(self):
+        def content(frame):
+            ttk.Label(frame, text="Edit Client", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+
+            ttk.Label(frame, text="Client Name:").pack(pady=10)
+            client_name_entry = ttk.Entry(frame, width=40)
+            client_name_entry.insert(0, self.app.selected_client.get_name())
+            client_name_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client Description:").pack(pady=10)
+            client_desc_entry = tk.Text(frame, width=40, height=5)
+            client_desc_entry.insert("1.0", self.app.selected_client.get_description())
+            client_desc_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client Company:").pack(pady=10)
+            client_company_entry = ttk.Entry(frame, width=40)
+            client_company_entry.insert(0, self.app.selected_client.get_company())
+            client_company_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client LinkedIn URL:").pack(pady=10)
+            client_linkedin_entry = ttk.Entry(frame, width=40)
+            client_linkedin_entry.insert(0, self.app.selected_client.get_linkedin())
+            client_linkedin_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client Email:").pack(pady=10)
+            client_email_entry = ttk.Entry(frame, width=40)
+            client_email_entry.insert(0, self.app.selected_client.get_email())
+            client_email_entry.pack(pady=(0, 10), padx=20)
+
+            edit_button = ctk.CTkButton(
+                frame,
+                text="Edit Client",
+                command=lambda: edit_client(
+                    client_name_entry.get(),
+                    client_desc_entry.get("1.0", tk.END).strip(),
+                    client_company_entry.get(),
+                    client_linkedin_entry.get(),
+                    client_email_entry.get()
+                ),
+                width=140,
+                height=30,
+                corner_radius=20,
+                fg_color="#2C3E50",
+                hover_color="#1F2A38"
+            )
+            edit_button.pack(pady=(20, 0))
+
+        def edit_client(client_name, client_description, client_company, client_linkedin, client_email):
+            old_name = self.app.selected_client.get_name()
+
+            self.app.selected_client.set_name(client_name)
+            self.app.selected_client.set_description(client_description)
+            self.app.selected_client.set_company(client_company)
+            self.app.selected_client.set_linkedin(client_linkedin)
+            self.app.selected_client.set_email(client_email)
+
+            self.app.selected_project.update_client(old_name, self.app.selected_client)
+
+            project_manager = ProjectHandler(self.app.selected_project)
+            project_manager.write_project()
+
+            self.update_client()
+
+            popup.destroy()
+            messagebox.showinfo("Success", f"Client '{client_name}' edited successfully!")
+
+        popup = self.open_popup("Edit Client", content)
+
 
     def open_linkedin_conversation_popup(self):
         self.app.user_manager.linkedin_handler.open_linkedin_conversation_visible(self.app.selected_client.linkedin)
