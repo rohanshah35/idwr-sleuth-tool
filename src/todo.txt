@@ -8,5 +8,6 @@
     - Animations
     - Responsiveness
 - Exports in timeframes
-- Anonymous clients*
+- Multiple anonymous clients
 - Edge cases for all menus
+- Discord webhook for bugs
