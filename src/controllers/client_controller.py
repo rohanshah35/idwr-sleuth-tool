@@ -120,7 +120,7 @@ class ClientController:
 
             edit_button = ctk.CTkButton(
                 frame,
-                text="Edit Client",
+                text="Save Client",
                 command=lambda: edit_client(
                     client_name_entry.get(),
                     client_desc_entry.get("1.0", tk.END).strip(),

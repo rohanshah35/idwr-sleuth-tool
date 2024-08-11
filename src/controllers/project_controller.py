@@ -169,7 +169,7 @@ class ProjectController:
             project_desc_entry.insert("1.0", self.app.selected_project.get_description())
             project_desc_entry.pack(pady=(0, 20), padx=20)
 
-            create_button = ctk.CTkButton(frame, text="Edit Project", command=lambda: edit_project(project_name_entry.get(), project_desc_entry.get("1.0", tk.END).strip()), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+            create_button = ctk.CTkButton(frame, text="Save Project", command=lambda: edit_project(project_name_entry.get(), project_desc_entry.get("1.0", tk.END).strip()), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
             create_button.pack(pady=(0, 30))
 
         def edit_project(new_name, new_description):
