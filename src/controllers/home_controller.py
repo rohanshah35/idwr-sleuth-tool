@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 
+import requests
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
@@ -282,14 +283,25 @@ class HomeController:
                 send_button = ctk.CTkButton(frame, text="Submit Ticket", command=lambda: submit_ticket(ticket_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
                 send_button.pack(pady=(0, 30))
 
-            def submit_ticket(ticket):
-                subject = 'IDWR Intern Bug Ticket'
-                body = ticket
-                if subject and body:
-                    self.app.user_manager.email_handler.send_email("rohanshahsf@gmail.com", subject, body)
-                    self.app.user_manager.email_handler.send_email("lfbianchini@dons.usfca.edu", subject, body)
-                    popup.destroy()
-                    messagebox.showinfo("Success", "Ticket submitted successfully!")
+                def submit_ticket(ticket):
+                    webhook_url = "https://discord.com/api/webhooks/1272445421943390272/tLSoAlr0hI1zjJiDzsVFmsbC8R11rHtQalh7AzxrpxJ4gP_zcIjMyku3Ca-ZK5ktnK5l"
+
+                    data = {
+                        "content": "New Bug Ticket Submission",
+                        "embeds": [{
+                            "title": "IDWR Intern Bug Ticket",
+                            "description": ticket,
+                            "color": 15158332  # Red color
+                        }]
+                    }
+
+                    response = requests.post(webhook_url, json=data)
+
+                    if response.status_code == 204:
+                        popup.destroy()
+                        messagebox.showinfo("Success", "Ticket submitted successfully!")
+                    else:
+                        messagebox.showerror("Error", f"Failed to submit ticket. Status code: {response.status_code}")
 
             self.open_popup("Bug Ticket Submission", content)
 
