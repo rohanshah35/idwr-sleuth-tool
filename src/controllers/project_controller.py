@@ -267,7 +267,12 @@ class ProjectController:
             create_button.pack(pady=(20, 0))
 
         def create_client(client_name, client_description, client_company, client_linkedin, client_email, anonymous):
-            client = Client(client_name, client_description, client_company, client_linkedin, client_email, anonymous)
+            if client_linkedin:
+                client_linkedin_name = self.app.user_manager.linkedin_handler.get_linkedin_profile_name(client_linkedin)
+                client = Client(client_name, client_description, client_company, client_linkedin, client_email, anonymous, client_linkedin_name)
+            else:
+                client = Client(client_name, client_description, client_company, client_linkedin, client_email, anonymous)
+
             self.app.selected_project.add_client(client)
             project_manager = ProjectHandler(self.app.selected_project)
             project_manager.write_project()

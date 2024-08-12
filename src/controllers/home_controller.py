@@ -79,6 +79,7 @@ class HomeController:
         self.email_label.config(text=email+'!')
 
     def open_mailbox_popup(self):
+        print(self.app.user_manager.linkedin_handler.check_for_new_messages(self.app.entire_client_list))
         messagebox.showinfo("Mailbox", "Mailbox clicked!")
 
     def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):

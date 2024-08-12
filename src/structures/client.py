@@ -3,7 +3,7 @@ from src.auth.linkedin_handler import LinkedInHandler
 
 
 class Client:
-    def __init__(self, name, description, company, linkedin, email, anonymous=None):
+    def __init__(self, name, description, company, linkedin, email, anonymous=None, linkedin_name=None):
         self.name = name
         self.description = description
         self.company = company
@@ -12,6 +12,7 @@ class Client:
         self.message_thread = []
         self.last_sender = None
         self.anonymous = anonymous
+        self.linkedin_name = linkedin_name
 
     def get_name(self):
         return self.name
@@ -31,6 +32,9 @@ class Client:
     def get_anonymous(self):
         return self.anonymous
 
+    def get_linkedin_name(self):
+        return self.linkedin_name
+
     def set_name(self, name):
         self.name = name
 
@@ -48,6 +52,9 @@ class Client:
 
     def set_anonymous(self, anonymous):
         self.anonymous = anonymous
+
+    def set_linkedin_name(self, linkedin_name):
+        self.linkedin_name = linkedin_name
 
     def load_linkedin_conversation(self, linkedin_handler):
         uncleaned_message_thread = linkedin_handler.get_conversation_text(self.get_name())
@@ -77,7 +84,8 @@ class Client:
             "email": self.email,
             "linkedin": self.linkedin,
             "message_thread": self.message_thread,
-            "anonymous": self.anonymous
+            "anonymous": self.anonymous,
+            "linkedin_name": self.linkedin_name
         }
 
     def __str__(self):
@@ -85,7 +93,7 @@ class Client:
 
     @classmethod
     def from_dict(cls, data):
-        client = cls(data["name"], data["description"], data["company"], data["linkedin"], data["email"], data["anonymous"])
+        client = cls(data["name"], data["description"], data["company"], data["linkedin"], data["email"], data["anonymous"], data["linkedin_name"])
         client.message_thread = data.get("message_thread", [])
         return client
 

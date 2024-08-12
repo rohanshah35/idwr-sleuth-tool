@@ -29,6 +29,7 @@ class App:
         self.project_list = ProjectHandler.load_projects_from_directory()
         self.selected_project = None
 
+        self.entire_client_list = self.get_all_clients_from_projects()
         self.client_list = None
         self.selected_client = None
 
@@ -45,9 +46,18 @@ class App:
         else:
             self.show_frame('login')
 
+    def get_all_clients_from_projects(self):
+        all_clients = []
+
+        for project in self.project_list:
+            project_clients = project.get_clients()
+            all_clients.extend(project_clients)
+
+        return all_clients
+
     def validate_credentials(self):
-        if True:
-            if True:
+        if self.check_linkedin_cookies():
+            if self.validate_email():
                 self.show_frame('home')
             else:
                 self.show_frame('login')

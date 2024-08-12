@@ -7,6 +7,7 @@ from selenium.webdriver import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.color import Color
 from selenium.webdriver.support.wait import WebDriverWait
 
 
@@ -62,6 +63,7 @@ class LinkedInHandler:
     def login_with_cookies(self, cookies):
         if not self.driver:
             self.create_headless_driver()
+            # self.driver = create_visible_driver()
         self.driver.get("https://www.linkedin.com")
         for cookie in cookies:
             self.driver.add_cookie(cookie)
@@ -127,6 +129,49 @@ class LinkedInHandler:
         self.driver = create_visible_driver()  #using visible rn for test, headless vers: self.driver = create_headless_driver()
         return login_to_linkedin(self.username, self.password, self.driver)
 
+    def check_for_new_messages(self, clients):
+        if not self.driver:
+            print("No active driver. Please log in first.")
+            return []
+
+        clients_with_new_messages = []
+
+        try:
+            self.driver.get("https://www.linkedin.com/messaging/?filter=unread")
+
+            WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".msg-conversation-listitem__link"))
+            )
+
+            # Find all conversation items
+            conversation_items = self.driver.find_elements(By.CSS_SELECTOR, ".msg-conversation-listitem__link")
+
+            for client in clients:
+                linkedin_name = client.get_linkedin_name()
+                if not linkedin_name:
+                    print(f"Skipping client {client.get_name()} - No LinkedIn name provided.")
+                    continue
+
+                for item in conversation_items:
+                    try:
+                        name_element = item.find_element(By.CSS_SELECTOR, ".msg-conversation-listitem__participant-names")
+
+                        if linkedin_name.lower() in name_element.text.lower():
+                            clients_with_new_messages.append(client)
+                            print(f"New message detected from {linkedin_name}")
+                            break
+                    except NoSuchElementException:
+                        continue
+
+            return clients_with_new_messages
+
+        except TimeoutException:
+            print("No messages found")
+        except Exception as e:
+            print(f"An error occurred while checking for new messages: {str(e)}")
+
+        return clients_with_new_messages
+
     # Opens a conversation with a specified LinkedIn user
     def open_linkedin_conversation(self, profile_url):
         full_name = self.get_linkedin_profile_name(profile_url)
@@ -180,14 +225,14 @@ class LinkedInHandler:
             print(f"Current URL: {self.driver.current_url}")
             return False
 
-    def open_linkedin_conversation_visible(self, profile_url):
+    def open_linkedin_conversation_visible(self, client):
         if not self.cookies:
             print("No cookies available. Please log in first.")
             return False
 
-        full_name = self.get_linkedin_profile_name(profile_url)
+        full_name = client.get_linkedin_name()
         if not full_name:
-            print(f"Failed to get profile name from URL: {profile_url}")
+            print(f"Client does not have a linkedin profile attached.")
             return False
 
         self.visible_chatbox_driver = create_visible_driver()
