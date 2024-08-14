@@ -7,6 +7,7 @@ from src.auth.email_handler import EmailHandler
 from src.auth.linkedin_handler import LinkedInHandler
 from src.utils.utils import email_validator
 
+
 class LoginController:
     def __init__(self, app):
         self.app = app
@@ -28,22 +29,29 @@ class LoginController:
         self.email_pass_entry = ttk.Entry(self.center_frame, width=40, show="")
         self.email_pass_entry.insert(0, "Email provider password")
         self.email_pass_entry.pack(pady=10)
-        self.email_pass_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.email_pass_entry, "Email provider password"))
-        self.email_pass_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.email_pass_entry, "Email provider password"))
+        self.email_pass_entry.bind("<FocusIn>",
+                                   lambda e: self.on_entry_click(self.email_pass_entry, "Email provider password"))
+        self.email_pass_entry.bind("<FocusOut>",
+                                   lambda e: self.on_focus_out(self.email_pass_entry, "Email provider password"))
 
         self.linkedin_email_entry = ttk.Entry(self.center_frame, width=40)
         self.linkedin_email_entry.insert(0, "LinkedIn email")
         self.linkedin_email_entry.pack(pady=10)
-        self.linkedin_email_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.linkedin_email_entry, "LinkedIn email"))
-        self.linkedin_email_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.linkedin_email_entry, "LinkedIn email"))
+        self.linkedin_email_entry.bind("<FocusIn>",
+                                       lambda e: self.on_entry_click(self.linkedin_email_entry, "LinkedIn email"))
+        self.linkedin_email_entry.bind("<FocusOut>",
+                                       lambda e: self.on_focus_out(self.linkedin_email_entry, "LinkedIn email"))
 
         self.linkedin_pass_entry = ttk.Entry(self.center_frame, width=40, show="")
         self.linkedin_pass_entry.insert(0, "LinkedIn password")
         self.linkedin_pass_entry.pack(pady=10)
-        self.linkedin_pass_entry.bind("<FocusIn>", lambda e: self.on_entry_click(self.linkedin_pass_entry, "LinkedIn password"))
-        self.linkedin_pass_entry.bind("<FocusOut>", lambda e: self.on_focus_out(self.linkedin_pass_entry, "LinkedIn password"))
+        self.linkedin_pass_entry.bind("<FocusIn>",
+                                      lambda e: self.on_entry_click(self.linkedin_pass_entry, "LinkedIn password"))
+        self.linkedin_pass_entry.bind("<FocusOut>",
+                                      lambda e: self.on_focus_out(self.linkedin_pass_entry, "LinkedIn password"))
 
-        login_button = CTkButton(self.center_frame, text="Login", command=self.login, corner_radius=20, width=80, fg_color="#2C3E50", hover_color="#1F2A38")
+        login_button = CTkButton(self.center_frame, text="Login", command=self.login, corner_radius=20, width=80,
+                                 fg_color="#2C3E50", hover_color="#1F2A38")
         login_button.pack(pady=(20, 0))
 
         self.error_label = ttk.Label(self.center_frame, text="", foreground="red")
@@ -82,7 +90,8 @@ class LoginController:
         self.app.linkedin_password = self.linkedin_pass_entry.get()
 
         if email_validator(self.app.email) and email_validator(self.app.linkedin_email):
-            self.app.user_manager.linkedin_handler = LinkedInHandler(self.app.linkedin_email, self.app.linkedin_password)
+            self.app.user_manager.linkedin_handler = LinkedInHandler(self.app.linkedin_email,
+                                                                     self.app.linkedin_password)
             self.app.user_manager.email_handler = EmailHandler(self.app.email, self.app.email_password)
 
             try:
@@ -107,6 +116,9 @@ class LoginController:
         else:
             self.clear_entries()
             self.error_label.config(text="Invalid email format. Please try again.")
+
+    def show(self):
+        self.frame.pack(fill=tk.BOTH, expand=True)
 
     def hide(self):
         self.frame.pack_forget()

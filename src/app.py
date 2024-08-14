@@ -1,4 +1,5 @@
 # Main controller for application
+import time
 import tkinter as tk
 import ttkbootstrap as ttk
 
@@ -42,7 +43,8 @@ class App:
             'bulk': BulkMessageController(self),
         }
         if self.user_manager.user_data:
-            self.validate_credentials()
+            self.show_frame('loading')
+            self.root.after(100, self.validate_credentials)
         else:
             self.show_frame('login')
 
@@ -56,11 +58,29 @@ class App:
         return all_clients
 
     def validate_credentials(self):
-        if self.check_linkedin_cookies():
-            if self.validate_email():
-                self.show_frame('home')
-            else:
-                self.show_frame('login')
+        start_total = time.time()
+
+        start_cookies = time.time()
+        cookies_valid = self.check_linkedin_cookies()
+        end_cookies = time.time()
+        cookies_time = end_cookies - start_cookies
+
+        start_email = time.time()
+        email_valid = self.validate_email()
+        end_email = time.time()
+        email_time = end_email - start_email
+
+        end_total = time.time()
+        total_time = end_total - start_total
+
+        print(f"Time to check LinkedIn cookies: {cookies_time:.4f} seconds")
+        print(f"Time to validate email: {email_time:.4f} seconds")
+        print(f"Total time: {total_time:.4f} seconds")
+
+        self.controllers['loading'].hide()
+
+        if cookies_valid and email_valid:
+            self.show_frame('home')
         else:
             self.show_frame('login')
 
