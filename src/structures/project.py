@@ -1,11 +1,17 @@
 import json
+from datetime import date
+
 from src.structures.client import Client
 
 
 class Project:
-    def __init__(self, name, description):
+    def __init__(self, name, description, date_created=None):
         self.name = name
         self.description = description
+        if not date_created:
+            self.date_created = date.today()
+        else:
+            self.date_created = date_created
         self.clients = []
 
     def get_name(self):
@@ -16,6 +22,12 @@ class Project:
 
     def get_clients(self):
         return self.clients
+
+    def get_date_created(self):
+        return self.date_created
+
+    def get_date_created_iso(self):
+        return self.date_created.isoformat()
 
     def set_name(self, name):
         self.name = name
@@ -49,6 +61,7 @@ class Project:
         return {
             "name": self.name,
             "description": self.description,
+            "date_created": self.date_created.isoformat(),
             "clients": [client.to_dict() for client in self.clients]
         }
 
@@ -57,7 +70,10 @@ class Project:
 
     @classmethod
     def from_dict(cls, data):
-        project = cls(data['name'], data['description'])
+        # split_date = data['date_created'].split('-')
+        # date_created = date(int(split_date[0]), int(split_date[1]), int(split_date[2]))
+        date_created = date.fromisoformat(data['date_created'])
+        project = cls(data['name'], data['description'], date_created)
         for client_data in data.get('clients', []):
             try:
                 client = Client.from_dict(client_data)

@@ -1,4 +1,5 @@
 # Main controller for application
+import concurrent.futures
 import time
 import tkinter as tk
 import ttkbootstrap as ttk
@@ -60,21 +61,16 @@ class App:
     def validate_credentials(self):
         start_total = time.time()
 
-        start_cookies = time.time()
-        cookies_valid = self.check_linkedin_cookies()
-        end_cookies = time.time()
-        cookies_time = end_cookies - start_cookies
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            cookies_future = executor.submit(self.check_linkedin_cookies)
+            email_future = executor.submit(self.validate_email)
 
-        start_email = time.time()
-        email_valid = self.validate_email()
-        end_email = time.time()
-        email_time = end_email - start_email
+            cookies_valid = cookies_future.result()
+            email_valid = email_future.result()
 
         end_total = time.time()
         total_time = end_total - start_total
 
-        print(f"Time to check LinkedIn cookies: {cookies_time:.4f} seconds")
-        print(f"Time to validate email: {email_time:.4f} seconds")
         print(f"Total time: {total_time:.4f} seconds")
 
         self.controllers['loading'].hide()
@@ -83,6 +79,33 @@ class App:
             self.show_frame('home')
         else:
             self.show_frame('login')
+
+    # def validate_credentials(self):
+    #     start_total = time.time()
+    #
+    #     start_cookies = time.time()
+    #     cookies_valid = self.check_linkedin_cookies()
+    #     end_cookies = time.time()
+    #     cookies_time = end_cookies - start_cookies
+    #
+    #     start_email = time.time()
+    #     email_valid = self.validate_email()
+    #     end_email = time.time()
+    #     email_time = end_email - start_email
+    #
+    #     end_total = time.time()
+    #     total_time = end_total - start_total
+    #
+    #     print(f"Time to check LinkedIn cookies: {cookies_time:.4f} seconds")
+    #     print(f"Time to validate email: {email_time:.4f} seconds")
+    #     print(f"Total time: {total_time:.4f} seconds")
+    #
+    #     self.controllers['loading'].hide()
+    #
+    #     if cookies_valid and email_valid:
+    #         self.show_frame('home')
+    #     else:
+    #         self.show_frame('login')
 
     def check_linkedin_cookies(self):
         if not self.user_manager.linkedin_handler:
@@ -106,7 +129,6 @@ class App:
 
         try:
             self.user_manager.email_handler.initialize_smtp()
-            self.user_manager.email_handler.initialize_imap()
             return True
         except Exception as e:
             print(f"An error occurred while validating email: {str(e)}")

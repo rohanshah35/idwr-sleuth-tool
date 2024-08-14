@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import tkinter as tk
 
@@ -12,6 +13,7 @@ from src.fileio.file_handler import ProjectHandler
 from src.structures.project import Project
 from src.fileio.exporter import ExcelExporter, CSVExporter
 from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
+from src.utils.utils import DateEntry
 
 
 class HomeController:
@@ -80,8 +82,46 @@ class HomeController:
         self.email_label.config(text=email+'!')
 
     def open_mailbox_popup(self):
-        print(self.app.user_manager.linkedin_handler.check_for_new_messages(self.app.entire_client_list))
-        messagebox.showinfo("Mailbox", "Mailbox clicked!")
+        def content(frame):
+            ttk.Label(frame, text="Notifications", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
+
+            # Get new LinkedIn messages and emails
+            linkedin_messages = self.app.user_manager.linkedin_handler.check_for_new_messages(self.app.entire_client_list)
+            new_emails = self.app.user_manager.email_handler.search_mailbox_for_unseen_emails_from_clients(self.app.entire_client_list)
+
+            # Create a notebook for tabs
+            notebook = ttk.Notebook(frame)
+            notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+            # LinkedIn Messages Tab
+            linkedin_frame = ttk.Frame(notebook)
+            notebook.add(linkedin_frame, text="LinkedIn Messages")
+
+            if linkedin_messages:
+                for client in linkedin_messages:
+                    message_frame = ttk.Frame(linkedin_frame)
+                    message_frame.pack(fill=tk.X, padx=5, pady=5)
+                    ttk.Label(message_frame, text=f"New message from: {client.get_name()}", font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                    ttk.Label(message_frame, text=f"Company: {client.get_company()}").pack(anchor=tk.W)
+                    ttk.Separator(linkedin_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
+            else:
+                ttk.Label(linkedin_frame, text="No new LinkedIn messages").pack(pady=20)
+
+            # Emails Tab
+            email_frame = ttk.Frame(notebook)
+            notebook.add(email_frame, text="Emails")
+
+            if new_emails:
+                for client in new_emails:
+                    email_message_frame = ttk.Frame(email_frame)
+                    email_message_frame.pack(fill=tk.X, padx=5, pady=5)
+                    ttk.Label(email_message_frame, text=f"New email from: {client.get_name()}", font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                    ttk.Label(email_message_frame, text=f"Email: {client.get_email()}").pack(anchor=tk.W)
+                    ttk.Separator(email_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
+            else:
+                ttk.Label(email_frame, text="No new emails").pack(pady=20)
+
+        popup = self.open_popup("Mailbox", content, width=400, height=500)
 
     def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
@@ -196,19 +236,36 @@ class HomeController:
 
     def open_export_popup(self):
         def content(frame):
-            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            ctk.CTkButton(frame, text="Export All Projects (XLS)", command=export_xls, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
-            ctk.CTkButton(frame, text="Export All Projects (CSV)", command=export_csv, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            # Start Date
+            ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
+            start_date = DateEntry(frame)
+            start_date.pack(pady=(0, 10))
 
-        def export_xls():
+            # End Date
+            ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
+            end_date = DateEntry(frame)
+            end_date.pack(pady=(0, 20))
+
+            ctk.CTkButton(frame, text="Export All Projects (XLSX)",
+                          command=lambda: export_xls(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+            ctk.CTkButton(frame, text="Export All Projects (CSV)",
+                          command=lambda: export_csv(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+        def export_xls(start_date, end_date):
             exporter = ExcelExporter()
-            exporter.export_all_projects()
+            exporter.export_all_projects(start_date, end_date)
             messagebox.showinfo("Export", "Success, all projects exported successfully!")
 
-        def export_csv():
+        def export_csv(start_date, end_date):
             exporter = CSVExporter()
-            exporter.export_all_projects()
+            exporter.export_all_projects(start_date, end_date)
             messagebox.showinfo("Export", "Success, all projects exported successfully!")
 
         self.open_popup("Export", content)

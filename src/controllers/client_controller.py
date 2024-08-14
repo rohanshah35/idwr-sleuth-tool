@@ -8,6 +8,7 @@ from src.fileio.file_handler import ProjectHandler
 from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
+from src.utils.utils import DateEntry
 
 
 class ClientController:
@@ -33,16 +34,23 @@ class ClientController:
         )
         self.edit_client_btn.pack(pady=(10, 30))
 
-        self.linkedin_conversation_btn = ctk.CTkButton(options_frame, text="LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.linkedin_conversation_btn = ctk.CTkButton(options_frame, text="LinkedIn Conversation",
+                                                       command=self.open_linkedin_conversation_popup, width=200,
+                                                       height=40, corner_radius=20, fg_color="#2C3E50",
+                                                       hover_color="#1F2A38")
         self.linkedin_conversation_btn.pack(pady=10)
 
-        self.email_conversation_btn = ctk.CTkButton(options_frame, text="Email Conversation", command=self.open_email_conversation_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.email_conversation_btn = ctk.CTkButton(options_frame, text="Email Conversation",
+                                                    command=self.open_email_conversation_popup, width=200, height=40,
+                                                    corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.email_conversation_btn.pack(pady=10)
 
-        self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=200, height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=200,
+                                        height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.exit_btn = ctk.CTkButton(options_frame, text="Back", command=self.go_to_project, width=200, height=40, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
+        self.exit_btn = ctk.CTkButton(options_frame, text="Back", command=self.go_to_project, width=200, height=40,
+                                      corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=(30, 10))
 
     def show(self):
@@ -73,7 +81,8 @@ class ClientController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10)
 
-        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack()
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, width=140, height=30, corner_radius=20,
+                      fg_color="#2C3E50", hover_color="#1F2A38").pack()
 
         return popup
 
@@ -158,9 +167,17 @@ class ClientController:
         popup = self.open_popup("Edit Client", content)
 
     def open_linkedin_conversation_popup(self):
+        if not self.app.selected_client.get_linkedin():
+            messagebox.showinfo("Error", "Selected client does not have a LinkedIn URL set!")
+            return
+
         self.app.user_manager.linkedin_handler.open_linkedin_conversation_visible(self.app.selected_client)
 
     def open_email_conversation_popup(self):
+        if not self.app.selected_client.get_email():
+            messagebox.showinfo("Error", "Selected client does not have an email set!")
+            return
+
         def content(frame):
             ttk.Label(frame, text="Email Conversation", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
@@ -183,29 +200,51 @@ class ClientController:
                 else:
                     messagebox.showerror("Error", "Please enter both subject and body.")
 
-            send_button = ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+            send_button = ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30,
+                                        corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
             send_button.pack(pady=20)
 
         popup = self.open_popup("Email Conversation", content)
 
     def open_export_popup(self):
-        client_name = self.app.selected_client.get_name()
-
         def content(frame):
-            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            ctk.CTkButton(frame, text="Export Client (XLS)", command=export_xls, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
-            ctk.CTkButton(frame, text="Export Client (CSV)", command=export_csv, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            # Start Date
+            ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
+            start_date = DateEntry(frame)
+            start_date.pack(pady=(0, 10))
 
-        def export_xls():
+            # End Date
+            ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
+            end_date = DateEntry(frame)
+            end_date.pack(pady=(0, 20))
+
+            ctk.CTkButton(frame, text="Export Selected Client (XLSX)",
+                          command=lambda: export_xls(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+            ctk.CTkButton(frame, text="Export Selected Client (CSV)",
+                          command=lambda: export_csv(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+        def export_xls(start_date, end_date):
             exporter = ExcelExporter()
-            exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
+            output = exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name(), start_date, end_date)
+            if output is None:
+                messagebox.showinfo("Error", "No data found within selected timeframe!")
+            else:
+                messagebox.showinfo("Export", "Success, client exported successfully!")
 
-        def export_csv():
+        def export_csv(start_date, end_date):
             exporter = CSVExporter()
-            exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
+            output = exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name(), start_date, end_date)
+            if output is None:
+                messagebox.showinfo("Error", "No data found within selected timeframe!")
+            else:
+                messagebox.showinfo("Export", "Success, client exported successfully!")
 
         self.open_popup("Export", content)
 

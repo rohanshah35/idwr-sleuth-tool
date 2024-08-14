@@ -40,12 +40,39 @@ class EmailHandler:
         text = message.as_string()
         self.smtp_server.sendmail(self.email_address, recipient_email, text)
 
+    def search_mailbox_for_unseen_emails_from_clients(self, clients):
+        if not self.imap_server:
+            self.initialize_imap()
+
+        clients_with_new_mail = []
+
+        for client in clients:
+            client_email = client.get_email()
+            if not client_email:
+                print(f"Skipping client {client.get_name()} - No email provided.")
+                continue
+
+            unseen_mail_from_client = self.search_mailbox_for_unseen(client_email)
+            if unseen_mail_from_client:
+                clients_with_new_mail.append(client)
+                print(f"New message detected from {client.get_name()}")
+
+        return clients_with_new_mail
+
     def search_mailbox(self, sender_email):
         if not self.imap_server:
             self.initialize_imap()
 
         self.imap_server.select('INBOX')
         _, message_numbers = self.imap_server.search(None, f'FROM "{sender_email}"')
+        return message_numbers[0].split()
+
+    def search_mailbox_for_unseen(self, sender_email):
+        if not self.imap_server:
+            self.initialize_imap()
+
+        self.imap_server.select('INBOX')
+        _, message_numbers = self.imap_server.search(None, f'UNSEEN FROM "{sender_email}"')
         return message_numbers[0].split()
 
     def get_email_content(self, email_id):

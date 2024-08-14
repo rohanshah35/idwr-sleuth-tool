@@ -9,6 +9,7 @@ from src.fileio.file_handler import ProjectHandler
 from src.structures.client import Client
 from src.structures.project import Project
 from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
+from src.utils.utils import DateEntry
 
 
 class ProjectController:
@@ -323,41 +324,44 @@ class ProjectController:
         self.app.show_frame('bulk')
 
     def open_export_popup(self):
-        project_name = self.app.selected_project.get_name()
-
         def content(frame):
-            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            ctk.CTkButton(
-                frame,
-                text="Export Project (XLS)",
-                command=export_xls,
-                width=140,
-                height=30,
-                corner_radius=20,
-                fg_color="#2C3E50",
-                hover_color="#1F2A38"
-            ).pack(pady=10)
-            ctk.CTkButton(
-                frame,
-                text="Export Project (CSV)",
-                command=export_csv,
-                width=140,
-                height=30,
-                corner_radius=20,
-                fg_color="#2C3E50",
-                hover_color="#1F2A38"
-            ).pack(pady=10)
+            # Start Date
+            ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
+            start_date = DateEntry(frame)
+            start_date.pack(pady=(0, 10))
 
-        def export_xls():
+            # End Date
+            ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
+            end_date = DateEntry(frame)
+            end_date.pack(pady=(0, 20))
+
+            ctk.CTkButton(frame, text="Export Selected Project (XLSX)",
+                          command=lambda: export_xls(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+            ctk.CTkButton(frame, text="Export Selected Project (CSV)",
+                          command=lambda: export_csv(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+        def export_xls(start_date, end_date):
             exporter = ExcelExporter()
-            exporter.export_specific_project(self.app.selected_project.get_name())
-            messagebox.showinfo("Export", f"Success, {project_name} exported successfully!")
+            output = exporter.export_specific_project(self.app.selected_project.get_name(), start_date, end_date)
+            if output is None:
+                messagebox.showinfo("Error", "No data found within selected timeframe!")
+            else:
+                messagebox.showinfo("Export", "Success, project exported successfully!")
 
-        def export_csv():
+        def export_csv(start_date, end_date):
             exporter = CSVExporter()
-            exporter.export_specific_project(self.app.selected_project.get_name())
-            messagebox.showinfo("Export", f"Success, {project_name} exported successfully!")
+            output = exporter.export_specific_project(self.app.selected_project.get_name(), start_date, end_date)
+            if output is None:
+                messagebox.showinfo("Error", "No data found within selected timeframe!")
+            else:
+                messagebox.showinfo("Export", "Success, project exported successfully!")
 
         self.open_popup("Export", content)
 

@@ -1,9 +1,11 @@
 # Handles client data
+from datetime import date
+
 from src.auth.linkedin_handler import LinkedInHandler
 
 
 class Client:
-    def __init__(self, name, description, company, linkedin, email, anonymous=None, linkedin_name=None):
+    def __init__(self, name, description, company, linkedin, email, anonymous=None, linkedin_name=None, date_created=None):
         self.name = name
         self.description = description
         self.company = company
@@ -13,6 +15,10 @@ class Client:
         self.last_sender = None
         self.anonymous = anonymous
         self.linkedin_name = linkedin_name
+        if not date_created:
+            self.date_created = date.today()
+        else:
+            self.date_created = date_created
 
     def get_name(self):
         return self.name
@@ -34,6 +40,12 @@ class Client:
 
     def get_linkedin_name(self):
         return self.linkedin_name
+
+    def get_date_created(self):
+        return self.date_created
+
+    def get_date_created_iso(self):
+        return self.date_created.isoformat()
 
     def set_name(self, name):
         self.name = name
@@ -85,7 +97,8 @@ class Client:
             "linkedin": self.linkedin,
             "message_thread": self.message_thread,
             "anonymous": self.anonymous,
-            "linkedin_name": self.linkedin_name
+            "linkedin_name": self.linkedin_name,
+            "date_created": self.date_created.isoformat()
         }
 
     def __str__(self):
@@ -93,7 +106,19 @@ class Client:
 
     @classmethod
     def from_dict(cls, data):
-        client = cls(data["name"], data["description"], data["company"], data["linkedin"], data["email"], data["anonymous"], data["linkedin_name"])
+        # split_date = data["date_created"].split("-")
+        # date_created = date(int(split_date[0]), int(split_date[1]), int(split_date[2]))
+        date_created = date.fromisoformat(data["date_created"])
+
+        client = cls(
+            data["name"],
+            data["description"],
+            data["company"], data["linkedin"],
+            data["email"],
+            data["anonymous"],
+            data["linkedin_name"],
+            date_created
+        )
         client.message_thread = data.get("message_thread", [])
         return client
 

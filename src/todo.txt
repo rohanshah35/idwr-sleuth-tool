@@ -7,7 +7,4 @@
 - GUI cleanup
     - Animations
     - Responsiveness
-- Exports in timeframes
-- Multiple anonymous clients
 - Edge cases for all menus
-- Discord webhook for bugs
