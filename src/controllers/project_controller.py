@@ -116,7 +116,7 @@ class ProjectController:
 
     def update_project(self):
         if self.app.selected_project:
-            self.project_label.config(text=self.app.selected_project.name)
+            self.project_label.config(text=self.app.selected_project.get_name())
 
     def update_project_label(self):
         if self.app.selected_project:
@@ -269,7 +269,7 @@ class ProjectController:
 
         def create_client(client_name, client_description, client_company, client_linkedin, client_email, anonymous):
             if client_linkedin:
-                client_linkedin_name = self.app.user_manager.linkedin_handler.get_linkedin_profile_name(client_linkedin)
+                client_linkedin_name = self.app.user_manager.get_linkedin_handler().get_linkedin_profile_name(client_linkedin)
                 client = Client(client_name, client_description, client_company, client_linkedin, client_email, anonymous, client_linkedin_name)
             else:
                 client = Client(client_name, client_description, client_company, client_linkedin, client_email, anonymous)

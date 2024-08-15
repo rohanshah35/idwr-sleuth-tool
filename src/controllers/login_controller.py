@@ -84,38 +84,45 @@ class LoginController:
 
     def login(self):
         self.error_label.config(text="")
-        self.app.email = self.email_entry.get()
-        self.app.email_password = self.email_pass_entry.get()
-        self.app.linkedin_email = self.linkedin_email_entry.get()
-        self.app.linkedin_password = self.linkedin_pass_entry.get()
+        email = self.email_entry.get()
+        email_password = self.email_pass_entry.get()
+        linkedin_email = self.linkedin_email_entry.get()
+        linkedin_password = self.linkedin_pass_entry.get()
 
-        if email_validator(self.app.email) and email_validator(self.app.linkedin_email):
-            self.app.user_manager.linkedin_handler = LinkedInHandler(self.app.linkedin_email,
-                                                                     self.app.linkedin_password)
-            self.app.user_manager.email_handler = EmailHandler(self.app.email, self.app.email_password)
+        if email_validator(email) and email_validator(linkedin_email):
+            # Show loading screen immediately after login button is pressed
+            self.app.show_frame('loading')
 
-            try:
-                self.app.user_manager.linkedin_handler.login_to_linkedin_visible_then_headless()
-                linkedin_cookies = self.app.user_manager.linkedin_handler.get_cookies()
-                self.app.user_manager.email_handler.initialize_imap()
-                self.app.user_manager.email_handler.initialize_smtp()
-
-                self.app.user_manager.user_data = {
-                    'linkedin_email': self.app.linkedin_email,
-                    'linkedin_password': self.app.linkedin_password,
-                    'email': self.app.email,
-                    'email_password': self.app.email_password,
-                    'linkedin_cookies': linkedin_cookies
-                }
-
-                self.app.user_manager.save_user_data()
-                self.app.show_frame('home')
-            except Exception as e:
-                self.clear_entries()
-                self.error_label.config(text="Login unsuccessful. Please try again.")
+            # Use after method to allow the loading screen to render
+            self.app.root.after(100, lambda: self.perform_login(email, email_password, linkedin_email, linkedin_password))
         else:
             self.clear_entries()
             self.error_label.config(text="Invalid email format. Please try again.")
+
+    def perform_login(self, email, email_password, linkedin_email, linkedin_password):
+        try:
+            self.app.user_manager.set_linkedin_handler(LinkedInHandler(linkedin_email, linkedin_password))
+            self.app.user_manager.set_email_handler(EmailHandler(email, email_password))
+
+            self.app.user_manager.get_linkedin_handler().login_to_linkedin_visible_then_headless()
+            linkedin_cookies = self.app.user_manager.get_linkedin_handler().get_cookies()
+            self.app.user_manager.get_email_handler().initialize_imap()
+            self.app.user_manager.get_email_handler().initialize_smtp()
+
+            self.app.user_manager.set_user_data({
+                'linkedin_email': linkedin_email,
+                'linkedin_password': linkedin_password,
+                'email': email,
+                'email_password': email_password,
+                'linkedin_cookies': linkedin_cookies
+            })
+
+            self.app.user_manager.save_user_data()
+            self.app.show_frame('home')
+        except Exception as e:
+            self.app.show_frame('login')  # Show login frame again if there's an error
+            self.clear_entries()
+            self.error_label.config(text="Login unsuccessful. Please try again.")
 
     def show(self):
         self.frame.pack(fill=tk.BOTH, expand=True)

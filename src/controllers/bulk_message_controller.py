@@ -138,7 +138,7 @@ class BulkMessageController:
                 for client in selected_clients:
                     customized_message = self.replace_string_with_keywords(message, client)
 
-                    self.app.user_manager.linkedin_handler.send_linkedin_message(client.linkedin, customized_message)
+                    self.app.user_manager.get_linkedin_handler().send_linkedin_message(client.linkedin, customized_message)
                 message_content.delete("1.0", tk.END)
 
             ctk.CTkButton(frame, text="Send message", command=send_message, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
@@ -168,7 +168,7 @@ class BulkMessageController:
                     customized_subject_message = self.replace_string_with_keywords(subject, client)
                     customized_body_message = self.replace_string_with_keywords(body, client)
 
-                    self.app.user_manager.email_handler.send_email(client.get_email(), customized_subject_message, customized_body_message)
+                    self.app.user_manager.get_email_handler().send_email(client.get_email(), customized_subject_message, customized_body_message)
                 subject_entry.delete(0, tk.END)
                 body_text.delete("1.0", tk.END)
             ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)

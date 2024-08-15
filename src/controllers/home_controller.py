@@ -78,7 +78,7 @@ class HomeController:
         self.frame.pack_forget()
 
     def update_email(self):
-        email = self.app.user_manager.user_data.get('linkedin_email', 'Not set')
+        email = self.app.user_manager.get_user_data().get('linkedin_email', 'Not set')
         self.email_label.config(text=email+'!')
 
     def open_mailbox_popup(self):
@@ -86,8 +86,8 @@ class HomeController:
             ttk.Label(frame, text="Notifications", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
             # Get new LinkedIn messages and emails
-            linkedin_messages = self.app.user_manager.linkedin_handler.check_for_new_messages(self.app.entire_client_list)
-            new_emails = self.app.user_manager.email_handler.search_mailbox_for_unseen_emails_from_clients(self.app.entire_client_list)
+            linkedin_messages = self.app.user_manager.get_linkedin_handler().check_for_new_messages(self.app.entire_client_list)
+            new_emails = self.app.user_manager.get_email_handler().search_mailbox_for_unseen_emails_from_clients(self.app.entire_client_list)
             for client in linkedin_messages:
                 client.set_has_responded(True)
             for client in new_emails:
@@ -129,7 +129,7 @@ class HomeController:
             else:
                 ttk.Label(email_frame, text="No new emails").pack(pady=20)
 
-        popup = self.open_popup("Mailbox", content, width=400, height=500)
+        popup = self.open_popup("Mailbox", content)
 
     def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
@@ -295,7 +295,7 @@ class HomeController:
 
         def delete_account():
             if messagebox.askokcancel("Delete Account", "Are you sure you want to delete your account? Everything will be lost forever."):
-                self.app.user_manager.file_handler.delete_credentials()
+                self.app.user_manager.get_file_handler().delete_credentials()
                 project_names = ProjectHandler.get_all_project_names()
                 for name in project_names:
                     filename = f'projects/{name}.json'
