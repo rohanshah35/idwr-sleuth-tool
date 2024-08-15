@@ -159,6 +159,7 @@ class LinkedInHandler:
                         if linkedin_name.lower() in name_element.text.lower():
                             clients_with_new_messages.append(client)
                             print(f"New message detected from {linkedin_name}")
+                            client.set_has_responded(True)
                             break
                     except NoSuchElementException:
                         continue

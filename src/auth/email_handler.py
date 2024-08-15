@@ -51,7 +51,6 @@ class EmailHandler:
             if not client_email:
                 print(f"Skipping client {client.get_name()} - No email provided.")
                 continue
-
             unseen_mail_from_client = self.search_mailbox_for_unseen(client_email)
             if unseen_mail_from_client:
                 clients_with_new_mail.append(client)

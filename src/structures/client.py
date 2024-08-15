@@ -5,7 +5,7 @@ from src.auth.linkedin_handler import LinkedInHandler
 
 
 class Client:
-    def __init__(self, name, description, company, linkedin, email, anonymous=None, linkedin_name=None, date_created=None):
+    def __init__(self, name, description, company, linkedin, email, anonymous=None, linkedin_name=None, date_created=None, has_responded=None):
         self.name = name
         self.description = description
         self.company = company
@@ -19,6 +19,7 @@ class Client:
             self.date_created = date.today()
         else:
             self.date_created = date_created
+        self.has_responded = has_responded
 
     def get_name(self):
         return self.name
@@ -47,6 +48,9 @@ class Client:
     def get_date_created_iso(self):
         return self.date_created.isoformat()
 
+    def get_has_responded(self):
+        return self.has_responded
+
     def set_name(self, name):
         self.name = name
 
@@ -67,6 +71,12 @@ class Client:
 
     def set_linkedin_name(self, linkedin_name):
         self.linkedin_name = linkedin_name
+
+    def set_date_created(self, date_created):
+        self.date_created = date_created
+
+    def set_has_responded(self, has_responded):
+        self.has_responded = has_responded
 
     def load_linkedin_conversation(self, linkedin_handler):
         uncleaned_message_thread = linkedin_handler.get_conversation_text(self.get_name())
@@ -98,7 +108,8 @@ class Client:
             "message_thread": self.message_thread,
             "anonymous": self.anonymous,
             "linkedin_name": self.linkedin_name,
-            "date_created": self.date_created.isoformat()
+            "date_created": self.date_created.isoformat(),
+            "has_responded": self.has_responded
         }
 
     def __str__(self):
@@ -117,7 +128,8 @@ class Client:
             data["email"],
             data["anonymous"],
             data["linkedin_name"],
-            date_created
+            date_created,
+            data["has_responded"]
         )
         client.message_thread = data.get("message_thread", [])
         return client

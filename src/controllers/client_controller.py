@@ -155,6 +155,7 @@ class ClientController:
             self.app.selected_client.set_email(client_email)
 
             self.app.selected_project.update_client(old_name, self.app.selected_client)
+            self.app.update_entire_client_list()
 
             project_manager = ProjectHandler(self.app.selected_project)
             project_manager.write_project()

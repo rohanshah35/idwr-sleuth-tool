@@ -88,6 +88,14 @@ class HomeController:
             # Get new LinkedIn messages and emails
             linkedin_messages = self.app.user_manager.linkedin_handler.check_for_new_messages(self.app.entire_client_list)
             new_emails = self.app.user_manager.email_handler.search_mailbox_for_unseen_emails_from_clients(self.app.entire_client_list)
+            for client in linkedin_messages:
+                client.set_has_responded(True)
+            for client in new_emails:
+                client.set_has_responded(True)
+
+            for project in self.app.project_list:
+                project_manager = ProjectHandler(project)
+                project_manager.write_project()
 
             # Create a notebook for tabs
             notebook = ttk.Notebook(frame)
@@ -225,6 +233,7 @@ class HomeController:
             if os.path.exists(filename):
                 try:
                     os.remove(filename)
+                    self.app.update_project_list()
                     popup.destroy()
                     messagebox.showinfo("Success", f"Project '{project_name}' deleted successfully!")
                 except OSError as e:

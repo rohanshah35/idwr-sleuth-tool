@@ -49,6 +49,12 @@ class App:
         else:
             self.show_frame('login')
 
+    def update_project_list(self):
+        self.project_list = ProjectHandler.load_projects_from_directory()
+
+    def update_entire_client_list(self):
+        self.entire_client_list = self.get_all_clients_from_projects()
+
     def get_all_clients_from_projects(self):
         all_clients = []
 

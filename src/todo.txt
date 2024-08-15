@@ -2,8 +2,6 @@
 - Code cleanup
     - Comments
     - Cleanup objects (make instance variable calls using getters and setters, make variables private)
-- Notifications
-    - Highlight clients that responded in exported file
 - GUI cleanup
     - Animations
     - Responsiveness
