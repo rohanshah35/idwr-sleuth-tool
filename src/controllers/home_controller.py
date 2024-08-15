@@ -129,7 +129,7 @@ class HomeController:
             else:
                 ttk.Label(email_frame, text="No new emails").pack(pady=20)
 
-        popup = self.open_popup("Mailbox", content, width=400, height=500)
+        popup = self.open_popup("Mailbox", content)
 
     def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
