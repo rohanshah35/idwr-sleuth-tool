@@ -100,37 +100,3 @@ class EmailHandler:
                 self.smtp_server.quit()
             except:
                 pass  # Ignore errors during SMTP quit
-
-
-
-if __name__ == "__main__":
-    email_address = '@gmail.com'
-    password = ''
-    sender_email = ""
-
-    try:
-        email_handler = EmailHandler(email_address, password)
-
-        print("Initializing email connections...")
-        email_handler.initialize_imap()
-        email_handler.initialize_smtp()
-        print("Email connections successful")
-
-        # Search for emails from the specified sender
-        message_ids = email_handler.search_mailbox(sender_email)
-
-        for email_id in message_ids:
-            email_content, email_body = email_handler.get_email_content(email_id)
-            print(f"Subject: {email_content['Subject']}")
-            print(f"From: {email_content['From']}")
-            print(f"Date: {email_content['Date']}")
-            print("Content:")
-            print(email_body)
-            print("--------------------")
-
-        # Example: Send an email
-        email_handler.send_email('recipient@example.com', 'Test Subject', 'This is a test email.')
-        print("Email sent successfully")
-
-    except Exception as e:
-        print(f"Error: {str(e)}")

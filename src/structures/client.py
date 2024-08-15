@@ -1,172 +1,142 @@
-# Handles client data
 from datetime import date
-
 from src.auth.linkedin_handler import LinkedInHandler
 
 
 class Client:
     def __init__(self, name, description, company, linkedin, email, anonymous=None, linkedin_name=None, date_created=None, has_responded=None):
-        self.name = name
-        self.description = description
-        self.company = company
-        self.linkedin = linkedin
-        self.email = email
-        self.message_thread = []
-        self.last_sender = None
-        self.anonymous = anonymous
-        self.linkedin_name = linkedin_name
-        if not date_created:
-            self.date_created = date.today()
-        else:
-            self.date_created = date_created
-        self.has_responded = has_responded
+        self.__name = name
+        self.__description = description
+        self.__company = company
+        self.__linkedin = linkedin
+        self.__email = email
+        self.__message_thread = []
+        self.__last_sender = None
+        self.__anonymous = anonymous
+        self.__linkedin_name = linkedin_name
+        self.__date_created = date.today() if not date_created else date_created
+        self.__has_responded = has_responded
 
+    # Getters
     def get_name(self):
-        return self.name
+        return self.__name
 
     def get_description(self):
-        return self.description
+        return self.__description
 
     def get_company(self):
-        return self.company
+        return self.__company
 
     def get_linkedin(self):
-        return self.linkedin
+        return self.__linkedin
 
     def get_email(self):
-        return self.email
+        return self.__email
+
+    def get_message_thread(self):
+        return self.__message_thread
+
+    def get_last_sender(self):
+        return self.__last_sender
 
     def get_anonymous(self):
-        return self.anonymous
+        return self.__anonymous
 
     def get_linkedin_name(self):
-        return self.linkedin_name
+        return self.__linkedin_name
 
     def get_date_created(self):
-        return self.date_created
+        return self.__date_created
 
     def get_date_created_iso(self):
-        return self.date_created.isoformat()
+        return self.__date_created.isoformat()
 
     def get_has_responded(self):
-        return self.has_responded
+        return self.__has_responded
 
+    # Setters
     def set_name(self, name):
-        self.name = name
+        self.__name = name
 
     def set_description(self, description):
-        self.description = description
+        self.__description = description
 
     def set_company(self, company):
-        self.company = company
+        self.__company = company
 
     def set_linkedin(self, linkedin):
-        self.linkedin = linkedin
+        self.__linkedin = linkedin
 
     def set_email(self, email):
-        self.email = email
+        self.__email = email
+
+    def set_message_thread(self, message_thread):
+        self.__message_thread = message_thread
+
+    def set_last_sender(self, last_sender):
+        self.__last_sender = last_sender
 
     def set_anonymous(self, anonymous):
-        self.anonymous = anonymous
+        self.__anonymous = anonymous
 
     def set_linkedin_name(self, linkedin_name):
-        self.linkedin_name = linkedin_name
+        self.__linkedin_name = linkedin_name
 
     def set_date_created(self, date_created):
-        self.date_created = date_created
+        self.__date_created = date_created
 
     def set_has_responded(self, has_responded):
-        self.has_responded = has_responded
+        self.__has_responded = has_responded
 
     def load_linkedin_conversation(self, linkedin_handler):
         uncleaned_message_thread = linkedin_handler.get_conversation_text(self.get_name())
         for i, message in enumerate(uncleaned_message_thread, 0):
-            self.message_thread.append(self.message_to_dict(i, message))
+            self.__message_thread.append(self.__message_to_dict(i, message))
 
-    def message_to_dict(self, index, message):
-        split_sender_and_message_body = message.split(':', 1) # splits by : 1 time
-        print(split_sender_and_message_body)
+    def __message_to_dict(self, index, message):
+        split_sender_and_message_body = message.split(':', 1)
         message = {}
         try:
             message_body = split_sender_and_message_body[1]
-            self.last_sender = split_sender_and_message_body[0]
+            self.__last_sender = split_sender_and_message_body[0]
         except IndexError:
             message_body = split_sender_and_message_body[0]
 
         message["id"] = index
-        message["sender"] = self.last_sender
+        message["sender"] = self.__last_sender
         message["body"] = message_body
         return message
 
     def to_dict(self):
         return {
-            "name": self.name,
-            "description": self.description,
-            "company": self.company,
-            "email": self.email,
-            "linkedin": self.linkedin,
-            "message_thread": self.message_thread,
-            "anonymous": self.anonymous,
-            "linkedin_name": self.linkedin_name,
-            "date_created": self.date_created.isoformat(),
-            "has_responded": self.has_responded
+            "name": self.__name,
+            "description": self.__description,
+            "company": self.__company,
+            "email": self.__email,
+            "linkedin": self.__linkedin,
+            "message_thread": self.__message_thread,
+            "anonymous": self.__anonymous,
+            "linkedin_name": self.__linkedin_name,
+            "date_created": self.__date_created.isoformat(),
+            "has_responded": self.__has_responded
         }
 
     def __str__(self):
-        return f"Client(name={self.name}, email={self.email})"
+        return f"Client(name={self.__name}, email={self.__email})"
 
     @classmethod
     def from_dict(cls, data):
-        # split_date = data["date_created"].split("-")
-        # date_created = date(int(split_date[0]), int(split_date[1]), int(split_date[2]))
         date_created = date.fromisoformat(data["date_created"])
 
         client = cls(
             data["name"],
             data["description"],
-            data["company"], data["linkedin"],
+            data["company"],
+            data["linkedin"],
             data["email"],
             data["anonymous"],
             data["linkedin_name"],
             date_created,
             data["has_responded"]
         )
-        client.message_thread = data.get("message_thread", [])
+        client.set_message_thread(data.get("message_thread", []))
         return client
-
-def main():
-    # LinkedIn credentials
-    linkedin_username = ""
-    linkedin_password = ""
-
-    # Recipient's full name as it appears on LinkedIn
-    recipient_name = "Luca Bianchini"
-    client = Client("Luca Bianchini", "Bob's name", "flsdjkflsdjf", "kldskfkldsklf")
-
-    try:
-        # Create LinkedInHandler instance
-        linkedin_handler = LinkedInHandler(linkedin_username, linkedin_password)
-
-        print("Logging in to LinkedIn...")
-        if linkedin_handler.login_to_linkedin_headless():
-            print("Login successful!")
-
-            print(f"Attempting to view conversation with {recipient_name}...")
-            client.load_linkedin_conversation(linkedin_handler)
-
-            #test encoding and decoding
-            data = client.to_dict()
-            print(data)
-            client_from_dict = Client.from_dict(data)
-            print(client_from_dict.to_dict())
-        else:
-            print("Failed to log in to LinkedIn.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        if linkedin_handler:
-            print("Closing browser...")
-            linkedin_handler.quit()
-
-if __name__ == "__main__":
-    main()

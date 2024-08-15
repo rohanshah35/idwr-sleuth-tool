@@ -61,7 +61,7 @@ class ClientController:
         self.frame.pack_forget()
 
     def update_client(self):
-        self.project_label.config(text=self.app.selected_client.name)
+        self.project_label.config(text=self.app.selected_client.get_name())
 
     def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
@@ -172,7 +172,7 @@ class ClientController:
             messagebox.showinfo("Error", "Selected client does not have a LinkedIn URL set!")
             return
 
-        self.app.user_manager.linkedin_handler.open_linkedin_conversation_visible(self.app.selected_client)
+        self.app.user_manager.get_linkedin_handler().open_linkedin_conversation_visible(self.app.selected_client)
 
     def open_email_conversation_popup(self):
         if not self.app.selected_client.get_email():
@@ -194,7 +194,7 @@ class ClientController:
                 subject = subject_entry.get()
                 body = body_text.get("1.0", tk.END).strip()
                 if subject and body:
-                    self.app.user_manager.email_handler.send_email(self.app.selected_client.email, subject, body)
+                    self.app.user_manager.get_email_handler().send_email(self.app.selected_client.get_email(), subject, body)
                     messagebox.showinfo("Success", "Email sent successfully!")
                     subject_entry.delete(0, tk.END)
                     body_text.delete("1.0", tk.END)

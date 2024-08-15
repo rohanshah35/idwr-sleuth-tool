@@ -43,7 +43,7 @@ class App:
             'loading': LoadingScreenController(self),
             'bulk': BulkMessageController(self),
         }
-        if self.user_manager.user_data:
+        if self.user_manager.get_user_data():
             self.show_frame('loading')
             self.root.after(100, self.validate_credentials)
         else:
@@ -114,27 +114,27 @@ class App:
     #         self.show_frame('login')
 
     def check_linkedin_cookies(self):
-        if not self.user_manager.linkedin_handler:
-            self.user_manager.linkedin_handler = LinkedInHandler(
-                self.user_manager.user_data['linkedin_email'],
-                self.user_manager.user_data['linkedin_password']
-            )
+        if not self.user_manager.get_linkedin_handler():
+            self.user_manager.set_linkedin_handler(LinkedInHandler(
+                self.user_manager.get_user_data()['linkedin_email'],
+                self.user_manager.get_user_data()['linkedin_password']
+            ))
 
-        cookies = self.user_manager.user_data.get('linkedin_cookies')
-        if cookies and self.user_manager.linkedin_handler.login_with_cookies(cookies):
+        cookies = self.user_manager.get_user_data().get('linkedin_cookies')
+        if cookies and self.user_manager.get_linkedin_handler().login_with_cookies(cookies):
             return True
         else:
-            return self.user_manager.linkedin_handler.login_to_linkedin()
+            return self.user_manager.get_linkedin_handler().login_to_linkedin()
 
     def validate_email(self):
-        if not self.user_manager.email_handler:
-            self.user_manager.email_handler = EmailHandler(
-                self.user_manager.user_data['email'],
-                self.user_manager.user_data['email_password']
-            )
+        if not self.user_manager.get_email_handler():
+            self.user_manager.set_email_handler(EmailHandler(
+                self.user_manager.get_user_data()['email'],
+                self.user_manager.get_user_data()['email_password']
+            ))
 
         try:
-            self.user_manager.email_handler.initialize_smtp()
+            self.user_manager.get_email_handler().initialize_smtp()
             return True
         except Exception as e:
             print(f"An error occurred while validating email: {str(e)}")

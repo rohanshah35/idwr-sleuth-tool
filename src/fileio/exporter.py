@@ -87,7 +87,7 @@ class ExcelExporter:
                         client.get_linkedin() if not client.get_anonymous() else "",
                         client.get_email() if not client.get_anonymous() else "",
                         client.get_date_created_iso(),
-                        "Yes" if client.has_responded else "No"
+                        "Yes" if client.get_has_responded() else "No"
                     ]
                     ws.append(row_data)
 
@@ -122,7 +122,7 @@ class ExcelExporter:
                 client.get_linkedin() if not client.get_anonymous() else "",
                 client.get_email() if not client.get_anonymous() else "",
                 client.get_date_created_iso(),
-                "Yes" if client.has_responded else "No"
+                "Yes" if client.get_has_responded() else "No"
             ]
             ws.append(row_data)
 
@@ -160,7 +160,7 @@ class ExcelExporter:
             client.get_linkedin() if not client.get_anonymous() else "",
             client.get_email() if not client.get_anonymous() else "",
             client.get_date_created_iso(),
-            "Yes" if client.has_responded else "No"
+            "Yes" if client.get_has_responded() else "No"
         ]
         ws.append(row_data)
 
@@ -212,7 +212,7 @@ class CSVExporter:
                             client.get_linkedin() if not client.get_anonymous() else "",
                             client.get_email() if not client.get_anonymous() else "",
                             client.get_date_created_iso(),
-                            "Yes" if client.has_responded else "No"
+                            "Yes" if client.get_has_responded() else "No"
                         ])
 
         return filepath
@@ -241,7 +241,7 @@ class CSVExporter:
                     client.get_linkedin() if not client.get_anonymous() else "",
                     client.get_email() if not client.get_anonymous() else "",
                     client.get_date_created_iso(),
-                    "Yes" if client.has_responded else "No"
+                    "Yes" if client.get_has_responded() else "No"
                 ])
 
         return filepath
@@ -273,7 +273,7 @@ class CSVExporter:
                 client.get_linkedin() if not client.get_anonymous() else "",
                 client.get_email() if not client.get_anonymous() else "",
                 client.get_date_created_iso(),
-                "Yes" if client.has_responded else "No"
+                "Yes" if client.get_has_responded() else "No"
             ])
 
         return filepath
