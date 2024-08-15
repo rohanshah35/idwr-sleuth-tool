@@ -43,7 +43,7 @@ class UserManager:
 
     def load_handlers(self):
         if self.user_data:
-            self.linkedin_handler = LinkedInHandler(self.user_data['linkedin_username'], self.user_data['linkedin_password'])
+            self.linkedin_handler = LinkedInHandler(self.user_data['linkedin_email'], self.user_data['linkedin_password'])
             self.email_handler = EmailHandler(self.user_data['email'], self.user_data['email_password'])
 
     # Loads user data from file and decrypts sensitive information

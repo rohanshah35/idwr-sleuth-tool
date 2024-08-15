@@ -1,21 +1,25 @@
+from datetime import datetime
 import os
 import tkinter as tk
+
+import requests
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
-from PIL import Image, ImageTk
+from PIL import Image
+import customtkinter as ctk
 
-from src.fileio.file_handler import JobHandler
-from src.structures.job import Job
+from src.fileio.file_handler import ProjectHandler
+from src.structures.project import Project
 from src.fileio.exporter import ExcelExporter, CSVExporter
+from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
+from src.utils.utils import DateEntry
 
 
 class HomeController:
     def __init__(self, app):
         self.app = app
         self.frame = ttk.Frame(app.frame)
-
-        self.app.user_manager.load_handlers()
 
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
@@ -30,35 +34,40 @@ class HomeController:
         self.email_label.pack(side=tk.LEFT)
 
         original_image = Image.open("resources/mailbox.png")
-        resized_image = original_image.resize((30, 30), Image.LANCZOS)
-        self.mailbox_image = ImageTk.PhotoImage(resized_image)
+        resized_image = original_image.resize((20, 20), Image.LANCZOS)
 
-        self.mailbox_btn = tk.Button(
+        self.mailbox_image = ctk.CTkImage(light_image=resized_image, dark_image=resized_image, size=(20, 20))
+
+        self.mailbox_btn = ctk.CTkButton(
             options_frame,
+            text="Notifications",
             image=self.mailbox_image,
-            compound=tk.LEFT,
+            compound="left",
             command=self.open_mailbox_popup,
-            padx=10, pady=5,
-            width=142
+            width=140,
+            height=32,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
         )
         self.mailbox_btn.pack(pady=(10, 30))
 
-        self.select_job_btn = ttk.Button(options_frame, text="Select Job", command=self.open_select_job_popup, width=20)
-        self.select_job_btn.pack(pady=10)
+        self.select_project_btn = ctk.CTkButton(options_frame, text="Select Project", command=self.open_select_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.select_project_btn.pack(pady=10)
 
-        self.create_job_btn = ttk.Button(options_frame, text="Create Job", command=self.open_create_job_popup, width=20)
-        self.create_job_btn.pack(pady=10)
+        self.create_project_btn = ctk.CTkButton(options_frame, text="Create Project", command=self.open_create_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.create_project_btn.pack(pady=10)
 
-        self.delete_job_btn = ttk.Button(options_frame, text="Delete Job", command=self.open_delete_job_popup, width=20)
-        self.delete_job_btn.pack(pady=10)
+        self.delete_project_btn = ctk.CTkButton(options_frame, text="Delete Project", command=self.open_delete_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.delete_project_btn.pack(pady=10)
 
-        self.export_btn = ttk.Button(options_frame, text="Export", command=self.open_export_popup, width=20)
+        self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.account_cred_btn = ttk.Button(options_frame, text="Settings", command=self.open_credentials_popup, width=20)
+        self.account_cred_btn = ctk.CTkButton(options_frame, text="Settings", command=self.open_settings_popup, width=140, height=30, corner_radius=20, fg_color="#606060", hover_color="#505050")
         self.account_cred_btn.pack(pady=(30, 10))
 
-        self.exit_btn = ttk.Button(options_frame, text="Exit", command=self.exit_app, width=20)
+        self.exit_btn = ctk.CTkButton(options_frame, text="Exit", command=self.exit_app, width=140, height=30, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=10)
 
     def show(self):
@@ -69,13 +78,60 @@ class HomeController:
         self.frame.pack_forget()
 
     def update_email(self):
-        email = self.app.user_manager.user_data.get('linkedin_username', 'Not set')
+        email = self.app.user_manager.user_data.get('linkedin_email', 'Not set')
         self.email_label.config(text=email+'!')
 
     def open_mailbox_popup(self):
-        messagebox.showinfo("Mailbox", "Mailbox clicked!")
+        def content(frame):
+            ttk.Label(frame, text="Notifications", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-    def open_popup(self, title, content_func, width=800, height=600):
+            # Get new LinkedIn messages and emails
+            linkedin_messages = self.app.user_manager.linkedin_handler.check_for_new_messages(self.app.entire_client_list)
+            new_emails = self.app.user_manager.email_handler.search_mailbox_for_unseen_emails_from_clients(self.app.entire_client_list)
+            for client in linkedin_messages:
+                client.set_has_responded(True)
+            for client in new_emails:
+                client.set_has_responded(True)
+
+            for project in self.app.project_list:
+                project_manager = ProjectHandler(project)
+                project_manager.write_project()
+
+            # Create a notebook for tabs
+            notebook = ttk.Notebook(frame)
+            notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+            # LinkedIn Messages Tab
+            linkedin_frame = ttk.Frame(notebook)
+            notebook.add(linkedin_frame, text="LinkedIn Messages")
+
+            if linkedin_messages:
+                for client in linkedin_messages:
+                    message_frame = ttk.Frame(linkedin_frame)
+                    message_frame.pack(fill=tk.X, padx=5, pady=5)
+                    ttk.Label(message_frame, text=f"New message from: {client.get_name()}", font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                    ttk.Label(message_frame, text=f"Company: {client.get_company()}").pack(anchor=tk.W)
+                    ttk.Separator(linkedin_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
+            else:
+                ttk.Label(linkedin_frame, text="No new LinkedIn messages").pack(pady=20)
+
+            # Emails Tab
+            email_frame = ttk.Frame(notebook)
+            notebook.add(email_frame, text="Emails")
+
+            if new_emails:
+                for client in new_emails:
+                    email_message_frame = ttk.Frame(email_frame)
+                    email_message_frame.pack(fill=tk.X, padx=5, pady=5)
+                    ttk.Label(email_message_frame, text=f"New email from: {client.get_name()}", font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                    ttk.Label(email_message_frame, text=f"Email: {client.get_email()}").pack(anchor=tk.W)
+                    ttk.Separator(email_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
+            else:
+                ttk.Label(email_frame, text="No new emails").pack(pady=20)
+
+        popup = self.open_popup("Mailbox", content, width=400, height=500)
+
+    def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")
@@ -93,7 +149,7 @@ class HomeController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=BOTTOM, fill=X, pady=10)
 
-        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=5)
 
         return popup
 
@@ -109,113 +165,128 @@ class HomeController:
 
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
 
-    def open_select_job_popup(self):
-        jobs = JobHandler.get_all_job_names()
-        selected_job = tk.StringVar()
-        selected_job.set(jobs[0] if jobs else "No jobs available")
+    def open_select_project_popup(self):
+        projects = ProjectHandler.get_all_project_names()
+        selected_project = tk.StringVar()
+        selected_project.set(projects[0] if projects else "No projects available")
 
         def content(frame):
-            ttk.Label(frame, text="Select Job", font=("Helvetica", 16, "bold")).pack(pady=10)
+            ttk.Label(frame, text="Select Project", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-            drop = ttk.OptionMenu(frame, selected_job, selected_job.get(), *jobs)
-            drop.pack(pady=10)
+            drop = ctk.CTkOptionMenu(frame, variable=selected_project, values=projects, width=140, fg_color="#2C3E50")
+            drop.pack(pady=(30, 10))
 
-            ttk.Button(frame, text="Select Job", command=select_job, width=20).pack(pady=10)
+            ctk.CTkButton(frame, text="Select Project", command=select_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
-        def select_job():
-            for job in self.app.job_list:
-                if selected_job.get() == job.get_name():
-                    self.app.selected_job = job
-                    self.app.client_list = job.get_clients()
-                    self.app.controllers['job'].update_job()
+        def select_project():
+            for project in self.app.project_list:
+                if selected_project.get() == project.get_name():
+                    self.app.selected_project = project
+                    self.app.client_list = project.get_clients()
+                    self.app.controllers['project'].update_project()
                     popup.destroy()
-                    self.app.show_frame('job')
+                    self.app.show_frame('project')
 
-        popup = self.open_popup("Select Job", content)
+        popup = self.open_popup("Select Project", content)
 
-    def open_create_job_popup(self):
+    def open_create_project_popup(self):
         def content(frame):
-            ttk.Label(frame, text="Create Job", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Create Project", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            ttk.Label(frame, text="Job Name:").pack(pady=10)
-            job_name_entry = ttk.Entry(frame, width=40)
-            job_name_entry.pack(pady=(0, 10), padx=20)
+            ttk.Label(frame, text="Project Name:").pack(pady=10)
+            project_name_entry = ttk.Entry(frame, width=40)
+            project_name_entry.pack(pady=(0, 10), padx=20)
 
-            ttk.Label(frame, text="Job Description:").pack(pady=10)
-            job_desc_entry = tk.Text(frame, width=40, height=5)
-            job_desc_entry.pack(pady=(0, 20), padx=20)
+            ttk.Label(frame, text="Project Description:").pack(pady=10)
+            project_desc_entry = tk.Text(frame, width=40, height=5)
+            project_desc_entry.pack(pady=(0, 20), padx=20)
 
-            create_button = ttk.Button(frame, text="Create Job", command=lambda: create_job(job_name_entry.get(), job_desc_entry.get("1.0", tk.END)))
+            create_button = ctk.CTkButton(frame, text="Create Project", command=lambda: create_project(project_name_entry.get(), project_desc_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
             create_button.pack(pady=(0, 30))
 
-        def create_job(job_name, job_description):
-            job = Job(job_name, job_description)
-            self.app.job_list.append(job)
-            job_handler = JobHandler(job)
-            job_handler.write_job()
+        def create_project(project_name, project_description):
+            project = Project(project_name, project_description)
+            self.app.project_list.append(project)
+            project_handler = ProjectHandler(project)
+            project_handler.write_project()
             popup.destroy()
-            messagebox.showinfo("Success", f"Job '{job_name}' created successfully!")
+            messagebox.showinfo("Success", f"Project '{project_name}' created successfully!")
 
-        popup = self.open_popup("Create Job", content)
+        popup = self.open_popup("Create Project", content)
 
-    def open_delete_job_popup(self):
-        jobs = JobHandler.get_all_job_names()
-        selected_job = tk.StringVar()
-        selected_job.set(jobs[0] if jobs else "No jobs available")
+    def open_delete_project_popup(self):
+        projects = ProjectHandler.get_all_project_names()
+        selected_project = tk.StringVar()
+        selected_project.set(projects[0] if projects else "No projects available")
 
         def content(frame):
-            ttk.Label(frame, text="Delete Job", font=("Helvetica", 16, "bold")).pack(pady=10)
+            ttk.Label(frame, text="Delete Project", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-            drop = ttk.OptionMenu(frame, selected_job, selected_job.get(), *jobs)
-            drop.pack(pady=10)
+            drop = ctk.CTkOptionMenu(frame, variable=selected_project, values=projects, width=140, fg_color="#2C3E50")
+            drop.pack(pady=(30, 10))
 
-            ttk.Button(frame, text="Delete Job", command=delete_job, width=20).pack(pady=10)
+            ctk.CTkButton(frame, text="Delete Project", command=delete_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
-        def delete_job():
-            job_name = selected_job.get()
-            filename = f'jobs/{job_name}.json'
+        def delete_project():
+            project_name = selected_project.get()
+            filename = f'projects/{project_name}.json'
             if os.path.exists(filename):
                 try:
                     os.remove(filename)
+                    self.app.update_project_list()
                     popup.destroy()
-                    messagebox.showinfo("Success", f"Job '{job_name}' deleted successfully!")
-                    jobs.remove(job_name)
-
-                    for job in self.app.job_list:
-                        if job.get_name() == job_name:
-                            self.app.job_list.remove(job)
+                    messagebox.showinfo("Success", f"Project '{project_name}' deleted successfully!")
                 except OSError as e:
-                    print(f"Error deleting job file: {e}")
+                    messagebox.showerror("Error", f"Error deleting project '{project_name}': {e}")
             else:
-                print(f"Job file '{filename}' does not exist.")
+                messagebox.showerror("Error", f"Project '{project_name}' not found.")
 
-        popup = self.open_popup("Delete Job", content)
+        popup = self.open_popup("Delete Project", content)
 
     def open_export_popup(self):
         def content(frame):
-            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            ttk.Button(frame, text="Export All Jobs (XLS)", command=export_xls, width=20).pack(pady=10)
-            ttk.Button(frame, text="Export All Jobs (CSV)", command=export_csv, width=20).pack(pady=10)
+            # Start Date
+            ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
+            start_date = DateEntry(frame)
+            start_date.pack(pady=(0, 10))
 
-        def export_xls():
+            # End Date
+            ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
+            end_date = DateEntry(frame)
+            end_date.pack(pady=(0, 20))
+
+            ctk.CTkButton(frame, text="Export All Projects (XLSX)",
+                          command=lambda: export_xls(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+            ctk.CTkButton(frame, text="Export All Projects (CSV)",
+                          command=lambda: export_csv(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+        def export_xls(start_date, end_date):
             exporter = ExcelExporter()
-            exporter.export_all_jobs()
-            messagebox.showinfo("Export", "Success, all jobs exported successfully!")
+            exporter.export_all_projects(start_date, end_date)
+            messagebox.showinfo("Export", "Success, all projects exported successfully!")
 
-        def export_csv():
+        def export_csv(start_date, end_date):
             exporter = CSVExporter()
-            exporter.export_all_jobs()
-            messagebox.showinfo("Export", "Success, all jobs exported successfully!")
+            exporter.export_all_projects(start_date, end_date)
+            messagebox.showinfo("Export", "Success, all projects exported successfully!")
 
         self.open_popup("Export", content)
 
-    def open_credentials_popup(self):
+    def open_settings_popup(self):
         def content(frame):
             ttk.Label(frame, text="Settings", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            ttk.Button(frame, text="Reset Credentials", command=reset_credentials, width=20).pack(pady=10)
-            ttk.Button(frame, text="Delete Account", command=delete_account, width=20).pack(pady=10)
+            ctk.CTkButton(frame, text="Reset Credentials", command=reset_credentials, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Delete Account", command=delete_account, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Instructions", command=show_instructions, width=140, height=30, corner_radius=20, fg_color="#805500", hover_color="#664400").pack(pady=(30, 10))
+            ctk.CTkButton(frame, text="Submit Bug Ticket", command=show_bug_ticket, width=140, height=30, corner_radius=20, fg_color="#446600", hover_color="#334d00").pack(pady=10)
 
         def reset_credentials():
             if messagebox.askokcancel("Reset Credentials", "Are you sure you want to reset your credentials?"):
@@ -225,15 +296,82 @@ class HomeController:
         def delete_account():
             if messagebox.askokcancel("Delete Account", "Are you sure you want to delete your account? Everything will be lost forever."):
                 self.app.user_manager.file_handler.delete_credentials()
-                job_names = JobHandler.get_all_job_names()
-                for name in job_names:
-                    filename = f'jobs/{name}.json'
+                project_names = ProjectHandler.get_all_project_names()
+                for name in project_names:
+                    filename = f'projects/{name}.json'
                     os.remove(filename)
                 self.app.show_frame('login')
                 popup.destroy()
 
-        popup = self.open_popup("Change Credentials", content)
+        def show_instructions():
+            def content(frame):
+                ttk.Label(frame, text="Instructions", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+
+                instructions = [
+                    "I. Home Menu",
+                    "   A. Select Project: Choose which project to work on",
+                    "   B. Create Project: Create a project, with a name and description",
+                    "   C. Delete Project: Delete a project (forever)",
+                    "   D. Export: Export a full report, includes all projects and clients",
+                    "",
+                    "II. Project Menu",
+                    "   A. Select Client: Choose which client to work on",
+                    "   B. Create Client: Create a client, with a name, description, company, LinkedIn URL, and email",
+                    "   C. Delete Client: Delete a client (forever)",
+                    "   D. Send bulk message: Send a bulk message (either LinkedIn or email) to clients of your choosing",
+                    "   E. Export: Export a project report, includes all clients",
+                    "",
+                    "III. Client Menu",
+                    "   A. LinkedIn Conversation: Send a LinkedIn message to client",
+                    "   B. Email Conversation: Send an email to client",
+                    "   C. Export: Export a client report, includes all client attributes",
+                    "",
+                    "IV. Settings",
+                    "   A. Reset Credentials: In the case your login changes to LinkedIn and/or email, you can reset your credentials without losing any data",
+                    "   B. Delete Account: Wipe all data, including credentials, forever",
+                    "",
+                ]
+
+                for instruction in instructions:
+                    ttk.Label(frame, text=instruction, font=("Arial", 10)).pack(anchor=tk.W, padx=20)
+
+                ttk.Label(frame, text="Any more questions? Contact email@gmail.com", font=("Helvetica", 10, "italic")).pack(pady=(90, 0))
+
+            self.open_popup("Instructions", content)
+
+        def show_bug_ticket():
+            def content(frame):
+                ttk.Label(frame, text="Bug Ticket Submission", font=("Helvetica", 16, "bold")).pack(pady=(0, 40))
+
+                ticket_entry = tk.Text(frame, width=80, height=20)
+                ticket_entry.pack(pady=(0, 20), padx=20)
+
+                send_button = ctk.CTkButton(frame, text="Submit Ticket", command=lambda: submit_ticket(ticket_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+                send_button.pack(pady=(0, 30))
+
+                def submit_ticket(ticket):
+                    webhook_url = "https://discord.com/api/webhooks/1272445421943390272/tLSoAlr0hI1zjJiDzsVFmsbC8R11rHtQalh7AzxrpxJ4gP_zcIjMyku3Ca-ZK5ktnK5l"
+
+                    data = {
+                        "content": "New Bug Ticket Submission",
+                        "embeds": [{
+                            "title": "IDWR Intern Bug Ticket",
+                            "description": ticket,
+                            "color": 15158332  # Red color
+                        }]
+                    }
+
+                    response = requests.post(webhook_url, json=data)
+
+                    if response.status_code == 204:
+                        popup.destroy()
+                        messagebox.showinfo("Success", "Ticket submitted successfully!")
+                    else:
+                        messagebox.showerror("Error", f"Failed to submit ticket. Status code: {response.status_code}")
+
+            self.open_popup("Bug Ticket Submission", content)
+
+        popup = self.open_popup("Settings", content)
 
     def exit_app(self):
-        if messagebox.askokcancel("Exit", "Are you sure you want to exit?"):
-            self.app.root.quit()
+        self.app.root.destroy()

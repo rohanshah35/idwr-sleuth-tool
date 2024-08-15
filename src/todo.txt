@@ -1,0 +1,8 @@
+- Backend optimizations
+- Code cleanup
+    - Comments
+    - Cleanup objects (make instance variable calls using getters and setters, make variables private)
+- GUI cleanup
+    - Animations
+    - Responsiveness
+- Edge cases for all menus

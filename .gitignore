@@ -1,4 +1,4 @@
-src/jobs/*
+src/projects/*
 src/auth/credentials.json
 
 __pycache__/

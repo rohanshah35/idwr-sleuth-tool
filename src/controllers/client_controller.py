@@ -2,9 +2,13 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
+import customtkinter as ctk
+
+from src.fileio.file_handler import ProjectHandler
+from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 
 from src.fileio.exporter import ExcelExporter, CSVExporter
+from src.utils.utils import DateEntry
 
 
 class ClientController:
@@ -15,19 +19,38 @@ class ClientController:
         options_frame = ttk.Frame(self.frame)
         options_frame.pack(expand=True)
 
-        self.job_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
-        self.job_label.pack(pady=(0, 30))
+        self.project_label = ttk.Label(options_frame, text="", font=("Helvetica", 18, "bold"))
+        self.project_label.pack(pady=(0, 30))
 
-        self.linkedin_conversation_btn = ttk.Button(options_frame, text="LinkedIn Conversation", command=self.open_linkedin_conversation_popup, width=20)
+        self.edit_client_btn = ctk.CTkButton(
+            options_frame,
+            text="Edit Client",
+            command=self.open_edit_client_popup,
+            width=200,
+            height=40,
+            corner_radius=20,
+            fg_color="#2C3E50",
+            hover_color="#1F2A38"
+        )
+        self.edit_client_btn.pack(pady=(10, 30))
+
+        self.linkedin_conversation_btn = ctk.CTkButton(options_frame, text="LinkedIn Conversation",
+                                                       command=self.open_linkedin_conversation_popup, width=200,
+                                                       height=40, corner_radius=20, fg_color="#2C3E50",
+                                                       hover_color="#1F2A38")
         self.linkedin_conversation_btn.pack(pady=10)
 
-        self.email_conversation_btn = ttk.Button(options_frame, text="Email Conversation", command=self.open_email_conversation_popup, width=20)
+        self.email_conversation_btn = ctk.CTkButton(options_frame, text="Email Conversation",
+                                                    command=self.open_email_conversation_popup, width=200, height=40,
+                                                    corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.email_conversation_btn.pack(pady=10)
 
-        self.export_btn = ttk.Button(options_frame, text="Export", command=self.open_export_popup, width=20)
+        self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=200,
+                                        height=40, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.exit_btn = ttk.Button(options_frame, text="Back to job menu", command=self.go_to_job, width=20)
+        self.exit_btn = ctk.CTkButton(options_frame, text="Back", command=self.go_to_project, width=200, height=40,
+                                      corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=(30, 10))
 
     def show(self):
@@ -38,9 +61,9 @@ class ClientController:
         self.frame.pack_forget()
 
     def update_client(self):
-        self.job_label.config(text=self.app.selected_client.name)
+        self.project_label.config(text=self.app.selected_client.name)
 
-    def open_popup(self, title, content_func, width=800, height=600):
+    def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)
         popup.title(title)
         popup.geometry(f"{width}x{height}")
@@ -56,9 +79,10 @@ class ClientController:
         content_func(content_frame)
 
         button_frame = ttk.Frame(content_frame)
-        button_frame.pack(side=BOTTOM, fill=X, pady=10)
+        button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10)
 
-        ttk.Button(button_frame, text="Back", command=popup.destroy).pack()
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, width=140, height=30, corner_radius=20,
+                      fg_color="#2C3E50", hover_color="#1F2A38").pack()
 
         return popup
 
@@ -74,86 +98,87 @@ class ClientController:
 
         popup.geometry(f"{width}x{height}+{position_right}+{position_down}")
 
-    def open_linkedin_conversation_popup(self):
+    def open_edit_client_popup(self):
         def content(frame):
-            ttk.Label(frame, text="LinkedIn Conversation", font=("Helvetica", 16, "bold")).pack(pady=10)
+            ttk.Label(frame, text="Edit Client", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            conversation_frame = ttk.Frame(frame, borderwidth=1, relief="solid")
-            conversation_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+            ttk.Label(frame, text="Client Name:").pack(pady=10)
+            client_name_entry = ttk.Entry(frame, width=40)
+            client_name_entry.insert(0, self.app.selected_client.get_name())
+            client_name_entry.pack(pady=(0, 10), padx=20)
 
-            canvas = tk.Canvas(conversation_frame)
-            scrollbar = ttk.Scrollbar(conversation_frame, orient="vertical", command=canvas.yview)
-            scrollable_frame = ttk.Frame(canvas)
+            ttk.Label(frame, text="Client Description:").pack(pady=10)
+            client_desc_entry = tk.Text(frame, width=40, height=5)
+            client_desc_entry.insert("1.0", self.app.selected_client.get_description())
+            client_desc_entry.pack(pady=(0, 10), padx=20)
 
-            scrollable_frame.bind(
-                "<Configure>",
-                lambda e: canvas.configure(
-                    scrollregion=canvas.bbox("all")
-                )
+            ttk.Label(frame, text="Client Company:").pack(pady=10)
+            client_company_entry = ttk.Entry(frame, width=40)
+            client_company_entry.insert(0, self.app.selected_client.get_company())
+            client_company_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client LinkedIn URL:").pack(pady=10)
+            client_linkedin_entry = ttk.Entry(frame, width=40)
+            client_linkedin_entry.insert(0, self.app.selected_client.get_linkedin())
+            client_linkedin_entry.pack(pady=(0, 10), padx=20)
+
+            ttk.Label(frame, text="Client Email:").pack(pady=10)
+            client_email_entry = ttk.Entry(frame, width=40)
+            client_email_entry.insert(0, self.app.selected_client.get_email())
+            client_email_entry.pack(pady=(0, 10), padx=20)
+
+            edit_button = ctk.CTkButton(
+                frame,
+                text="Save Client",
+                command=lambda: edit_client(
+                    client_name_entry.get(),
+                    client_desc_entry.get("1.0", tk.END).strip(),
+                    client_company_entry.get(),
+                    client_linkedin_entry.get(),
+                    client_email_entry.get()
+                ),
+                width=140,
+                height=30,
+                corner_radius=20,
+                fg_color="#2C3E50",
+                hover_color="#1F2A38"
             )
+            edit_button.pack(pady=(20, 0))
 
-            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-            canvas.configure(yscrollcommand=scrollbar.set)
+        def edit_client(client_name, client_description, client_company, client_linkedin, client_email):
+            old_name = self.app.selected_client.get_name()
 
-            canvas.pack(side="left", fill="both", expand=True)
-            scrollbar.pack(side="right", fill="y")
+            self.app.selected_client.set_name(client_name)
+            self.app.selected_client.set_description(client_description)
+            self.app.selected_client.set_company(client_company)
+            self.app.selected_client.set_linkedin(client_linkedin)
+            self.app.selected_client.set_email(client_email)
 
-            def update_conversation():
-                for widget in scrollable_frame.winfo_children():
-                    widget.destroy()
+            self.app.selected_project.update_client(old_name, self.app.selected_client)
+            self.app.update_entire_client_list()
 
-                conversation_text = self.app.user_manager.linkedin_handler.get_conversation_text(self.app.selected_client.linkedin)
-                client_name = self.app.selected_client.get_name()
+            project_manager = ProjectHandler(self.app.selected_project)
+            project_manager.write_project()
 
-                for message in conversation_text:
-                    parts = message.split(': ', 1)
-                    if len(parts) == 2:
-                        sender, content = parts
-                        if sender == client_name:
-                            prefix = f"{client_name}: "
-                            anchor = "w"
-                            side = "left"
-                        else:
-                            prefix = "You: "
-                            anchor = "e"
-                            side = "left"
+            self.update_client()
 
-                        message_frame = ttk.Frame(scrollable_frame)
-                        message_frame.pack(fill="x", pady=5, padx=10)
+            popup.destroy()
+            messagebox.showinfo("Success", f"Client '{client_name}' edited successfully!")
 
-                        ttk.Label(message_frame, text=prefix, anchor=anchor, foreground='#555555').pack(side=side)
-                        ttk.Label(message_frame, text=content, anchor=anchor).pack(side=side)
-                    else:
-                        ttk.Label(scrollable_frame, text=message, anchor="w").pack(pady=5, padx=10, fill="x")
+        popup = self.open_popup("Edit Client", content)
 
-                    separator_frame = ttk.Frame(scrollable_frame)
-                    separator_frame.pack(fill="x", pady=5, padx=10)
-                    ttk.Separator(separator_frame, orient='horizontal').pack(fill='x')
+    def open_linkedin_conversation_popup(self):
+        if not self.app.selected_client.get_linkedin():
+            messagebox.showinfo("Error", "Selected client does not have a LinkedIn URL set!")
+            return
 
-                scrollable_frame.update_idletasks()
-                canvas.yview_moveto(1.0)
-
-            update_conversation()
-
-            input_frame = ttk.Frame(frame)
-            input_frame.pack(fill=tk.X, padx=20, pady=10)
-
-            message_entry = ttk.Entry(input_frame, width=50)
-            message_entry.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 10))
-
-            def send_message():
-                message = message_entry.get()
-                if message:
-                    self.app.user_manager.linkedin_handler.send_linkedin_message(self.app.selected_client.linkedin, message)
-                    message_entry.delete(0, tk.END)
-                    update_conversation()
-
-            send_button = ttk.Button(input_frame, text="Send", command=send_message)
-            send_button.pack(side=tk.RIGHT)
-
-        popup = self.open_popup("LinkedIn Conversation", content)
+        self.app.user_manager.linkedin_handler.open_linkedin_conversation_visible(self.app.selected_client)
 
     def open_email_conversation_popup(self):
+        if not self.app.selected_client.get_email():
+            messagebox.showinfo("Error", "Selected client does not have an email set!")
+            return
+
         def content(frame):
             ttk.Label(frame, text="Email Conversation", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
@@ -176,31 +201,53 @@ class ClientController:
                 else:
                     messagebox.showerror("Error", "Please enter both subject and body.")
 
-            send_button = ttk.Button(frame, text="Send Email", command=send_email)
+            send_button = ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30,
+                                        corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
             send_button.pack(pady=20)
 
         popup = self.open_popup("Email Conversation", content)
 
     def open_export_popup(self):
-        client_name = self.app.selected_client.get_name()
-
         def content(frame):
-            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+            ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            ttk.Button(frame, text="Export Client (XLS)", command=export_xls, width=20).pack(pady=10)
-            ttk.Button(frame, text="Export Client (CSV)", command=export_csv, width=20).pack(pady=10)
+            # Start Date
+            ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
+            start_date = DateEntry(frame)
+            start_date.pack(pady=(0, 10))
 
-        def export_xls():
+            # End Date
+            ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
+            end_date = DateEntry(frame)
+            end_date.pack(pady=(0, 20))
+
+            ctk.CTkButton(frame, text="Export Selected Client (XLSX)",
+                          command=lambda: export_xls(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+            ctk.CTkButton(frame, text="Export Selected Client (CSV)",
+                          command=lambda: export_csv(start_date.get_date(), end_date.get_date()),
+                          width=200, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+
+        def export_xls(start_date, end_date):
             exporter = ExcelExporter()
-            exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
+            output = exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name(), start_date, end_date)
+            if output is None:
+                messagebox.showinfo("Error", "No data found within selected timeframe!")
+            else:
+                messagebox.showinfo("Export", "Success, client exported successfully!")
 
-        def export_csv():
+        def export_csv(start_date, end_date):
             exporter = CSVExporter()
-            exporter.export_specific_client(self.app.selected_job.get_name(), self.app.selected_client.get_name())
-            messagebox.showinfo("Export", f"Success, {client_name} exported successfully!")
+            output = exporter.export_specific_client(self.app.selected_project.get_name(), self.app.selected_client.get_name(), start_date, end_date)
+            if output is None:
+                messagebox.showinfo("Error", "No data found within selected timeframe!")
+            else:
+                messagebox.showinfo("Export", "Success, client exported successfully!")
 
         self.open_popup("Export", content)
 
-    def go_to_job(self):
-        self.app.show_frame('job')
+    def go_to_project(self):
+        self.app.show_frame('project')
