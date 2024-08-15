@@ -1,5 +1,4 @@
 - Code cleanup
     - Comments
-    - Cleanup objects (make instance variable calls using getters and setters, make variables private)
 - Edge cases for all menus
 - Fix "not responding"

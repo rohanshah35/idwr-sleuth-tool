@@ -7,15 +7,40 @@ from email.mime.multipart import MIMEMultipart
 
 class EmailHandler:
     def __init__(self, email_address, password):
-        self.email_address = email_address
-        self.password = password
-        self.imap_server = None
-        self.smtp_server = None
+        self._email_address = email_address
+        self._password = password
+        self._imap_server = None
+        self._smtp_server = None
+
+        def get_email_address(self):
+            return self._email_address
+
+    def set_email_address(self, email_address):
+        self._email_address = email_address
+
+    def get_password(self):
+        return self._password
+
+    def set_password(self, password):
+        self._password = password
+
+    def get_imap_server(self):
+        return self._imap_server
+
+    def set_imap_server(self, imap_server):
+        self._imap_server = imap_server
+
+    def get_smtp_server(self):
+        return self._smtp_server
+
+    def set_smtp_server(self, smtp_server):
+        self._smtp_server = smtp_server
+
 
     def initialize_imap(self):
         try:
-            self.imap_server = imaplib.IMAP4_SSL('imap.gmail.com')
-            self.imap_server.login(self.email_address, self.password)
+            self._imap_server = imaplib.IMAP4_SSL('imap.gmail.com')
+            self._imap_server.login(self._email_address, self._password)
         except imaplib.IMAP4.error:
             raise Exception("Invalid email credentials for IMAP, please try again.")
 
@@ -23,25 +48,25 @@ class EmailHandler:
         try:
             smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
             smtp_server.starttls()
-            smtp_server.login(self.email_address, self.password)
-            self.smtp_server = smtp_server  # Only store if login is successful
+            smtp_server.login(self._email_address, self._password)
+            self._smtp_server = smtp_server  # Only store if login is successful
         except smtplib.SMTPAuthenticationError:
             raise Exception("Invalid email credentials for SMTP, please try again.")
 
     def send_email(self, recipient_email, subject, body):
-        if not self.smtp_server:
+        if not self._smtp_server:
             self.initialize_smtp()
 
         message = MIMEMultipart()
-        message['From'] = self.email_address
+        message['From'] = self._email_address
         message['To'] = recipient_email
         message['Subject'] = subject
         message.attach(MIMEText(body, 'plain'))
         text = message.as_string()
-        self.smtp_server.sendmail(self.email_address, recipient_email, text)
+        self._smtp_server.sendmail(self._email_address, recipient_email, text)
 
     def search_mailbox_for_unseen_emails_from_clients(self, clients):
-        if not self.imap_server:
+        if not self._imap_server:
             self.initialize_imap()
 
         clients_with_new_mail = []
@@ -59,26 +84,26 @@ class EmailHandler:
         return clients_with_new_mail
 
     def search_mailbox(self, sender_email):
-        if not self.imap_server:
+        if not self._imap_server:
             self.initialize_imap()
 
-        self.imap_server.select('INBOX')
-        _, message_numbers = self.imap_server.search(None, f'FROM "{sender_email}"')
+        self._imap_server.select('INBOX')
+        _, message_numbers = self._imap_server.search(None, f'FROM "{sender_email}"')
         return message_numbers[0].split()
 
     def search_mailbox_for_unseen(self, sender_email):
-        if not self.imap_server:
+        if not self._imap_server:
             self.initialize_imap()
 
-        self.imap_server.select('INBOX')
-        _, message_numbers = self.imap_server.search(None, f'UNSEEN FROM "{sender_email}"')
+        self._imap_server.select('INBOX')
+        _, message_numbers = self._imap_server.search(None, f'UNSEEN FROM "{sender_email}"')
         return message_numbers[0].split()
 
     def get_email_content(self, email_id):
-        if not self.imap_server:
+        if not self._imap_server:
             self.initialize_imap()
 
-        _, msg_data = self.imap_server.fetch(email_id, '(RFC822)')
+        _, msg_data = self._imap_server.fetch(email_id, '(RFC822)')
         email_body = msg_data[0][1]
         email_message = email.message_from_bytes(email_body)
 
@@ -90,13 +115,13 @@ class EmailHandler:
             return email_message, email_message.get_payload(decode=True).decode()
 
     def close_connections(self):
-        if self.imap_server:
+        if self._imap_server:
             try:
-                self.imap_server.logout()
+                self._imap_server.logout()
             except:
                 pass  # Ignore errors during IMAP logout
-        if self.smtp_server:
+        if self._smtp_server:
             try:
-                self.smtp_server.quit()
+                self._smtp_server.quit()
             except:
                 pass  # Ignore errors during SMTP quit
