@@ -13,6 +13,7 @@ class CredentialHandler:
     # Initialize with a filename
     def __init__(self):
         self.filename = 'auth/credentials.json'
+        os.makedirs("auth", exist_ok=True)
 
     # Read credentials from the file
     def read_credentials(self):
@@ -40,6 +41,7 @@ class ProjectHandler:
     def __init__(self, project):
         self.project = project
         self.filename = f'projects/{project.get_name()}.json'
+        os.makedirs("projects", exist_ok=True)
 
     def read_project(self):
         try:
@@ -65,10 +67,14 @@ class ProjectHandler:
 
     @staticmethod
     def get_all_project_names():
+        os.makedirs("projects", exist_ok=True)
+
         return [f.replace('.json', '') for f in os.listdir('projects') if f.endswith('.json')]
 
     @staticmethod
     def load_project(project_name):
+        os.makedirs("projects", exist_ok=True)
+
         filename = f'projects/{project_name}.json'
         try:
             with open(filename, 'r') as f:
@@ -87,6 +93,8 @@ class ProjectHandler:
 
     @staticmethod
     def load_projects_from_directory(directory='projects'):
+        os.makedirs("projects", exist_ok=True)
+
         project_list = []
         project_files = [f for f in os.listdir(directory) if f.endswith('.json')]
 

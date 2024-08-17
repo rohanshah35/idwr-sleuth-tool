@@ -33,16 +33,9 @@ class HomeController:
         self.email_label = ttk.Label(self.welcome_frame, text="", font=("Helvetica", 18, "bold"))
         self.email_label.pack(side=tk.LEFT)
 
-        original_image = Image.open("resources/mailbox.png")
-        resized_image = original_image.resize((20, 20), Image.LANCZOS)
-
-        self.mailbox_image = ctk.CTkImage(light_image=resized_image, dark_image=resized_image, size=(20, 20))
-
         self.mailbox_btn = ctk.CTkButton(
             options_frame,
             text="Notifications",
-            image=self.mailbox_image,
-            compound="left",
             command=self.open_mailbox_popup,
             width=140,
             height=32,
@@ -52,22 +45,32 @@ class HomeController:
         )
         self.mailbox_btn.pack(pady=(10, 30))
 
-        self.select_project_btn = ctk.CTkButton(options_frame, text="Select Project", command=self.open_select_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.select_project_btn = ctk.CTkButton(options_frame, text="Select Project",
+                                                command=self.open_select_project_popup, width=140, height=30,
+                                                corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.select_project_btn.pack(pady=10)
 
-        self.create_project_btn = ctk.CTkButton(options_frame, text="Create Project", command=self.open_create_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.create_project_btn = ctk.CTkButton(options_frame, text="Create Project",
+                                                command=self.open_create_project_popup, width=140, height=30,
+                                                corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.create_project_btn.pack(pady=10)
 
-        self.delete_project_btn = ctk.CTkButton(options_frame, text="Delete Project", command=self.open_delete_project_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.delete_project_btn = ctk.CTkButton(options_frame, text="Delete Project",
+                                                command=self.open_delete_project_popup, width=140, height=30,
+                                                corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.delete_project_btn.pack(pady=10)
 
-        self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+        self.export_btn = ctk.CTkButton(options_frame, text="Export", command=self.open_export_popup, width=140,
+                                        height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
         self.export_btn.pack(pady=10)
 
-        self.account_cred_btn = ctk.CTkButton(options_frame, text="Settings", command=self.open_settings_popup, width=140, height=30, corner_radius=20, fg_color="#606060", hover_color="#505050")
+        self.account_cred_btn = ctk.CTkButton(options_frame, text="Settings", command=self.open_settings_popup,
+                                              width=140, height=30, corner_radius=20, fg_color="#606060",
+                                              hover_color="#505050")
         self.account_cred_btn.pack(pady=(30, 10))
 
-        self.exit_btn = ctk.CTkButton(options_frame, text="Exit", command=self.exit_app, width=140, height=30, corner_radius=20, fg_color="#CC0000", hover_color="#990000")
+        self.exit_btn = ctk.CTkButton(options_frame, text="Exit", command=self.exit_app, width=140, height=30,
+                                      corner_radius=20, fg_color="#CC0000", hover_color="#990000")
         self.exit_btn.pack(pady=10)
 
     def show(self):
@@ -79,15 +82,17 @@ class HomeController:
 
     def update_email(self):
         email = self.app.user_manager.get_user_data().get('linkedin_email', 'Not set')
-        self.email_label.config(text=email+'!')
+        self.email_label.config(text=email + '!')
 
     def open_mailbox_popup(self):
         def content(frame):
             ttk.Label(frame, text="Notifications", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
             # Get new LinkedIn messages and emails
-            linkedin_messages = self.app.user_manager.get_linkedin_handler().check_for_new_messages(self.app.entire_client_list)
-            new_emails = self.app.user_manager.get_email_handler().search_mailbox_for_unseen_emails_from_clients(self.app.entire_client_list)
+            linkedin_messages = self.app.user_manager.get_linkedin_handler().check_for_new_messages(
+                self.app.entire_client_list)
+            new_emails = self.app.user_manager.get_email_handler().search_mailbox_for_unseen_emails_from_clients(
+                self.app.entire_client_list)
             for client in linkedin_messages:
                 client.set_has_responded(True)
             for client in new_emails:
@@ -109,7 +114,8 @@ class HomeController:
                 for client in linkedin_messages:
                     message_frame = ttk.Frame(linkedin_frame)
                     message_frame.pack(fill=tk.X, padx=5, pady=5)
-                    ttk.Label(message_frame, text=f"New message from: {client.get_name()}", font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                    ttk.Label(message_frame, text=f"New message from: {client.get_name()}",
+                              font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
                     ttk.Label(message_frame, text=f"Company: {client.get_company()}").pack(anchor=tk.W)
                     ttk.Separator(linkedin_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
             else:
@@ -123,7 +129,8 @@ class HomeController:
                 for client in new_emails:
                     email_message_frame = ttk.Frame(email_frame)
                     email_message_frame.pack(fill=tk.X, padx=5, pady=5)
-                    ttk.Label(email_message_frame, text=f"New email from: {client.get_name()}", font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                    ttk.Label(email_message_frame, text=f"New email from: {client.get_name()}",
+                              font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
                     ttk.Label(email_message_frame, text=f"Email: {client.get_email()}").pack(anchor=tk.W)
                     ttk.Separator(email_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
             else:
@@ -149,7 +156,8 @@ class HomeController:
         button_frame = ttk.Frame(content_frame)
         button_frame.pack(side=BOTTOM, fill=X, pady=10)
 
-        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=5)
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, corner_radius=20, fg_color="#2C3E50",
+                      hover_color="#1F2A38").pack(pady=5)
 
         return popup
 
@@ -176,7 +184,8 @@ class HomeController:
             drop = ctk.CTkOptionMenu(frame, variable=selected_project, values=projects, width=140, fg_color="#2C3E50")
             drop.pack(pady=(30, 10))
 
-            ctk.CTkButton(frame, text="Select Project", command=select_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Select Project", command=select_project, width=140, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
         def select_project():
             for project in self.app.project_list:
@@ -201,7 +210,11 @@ class HomeController:
             project_desc_entry = tk.Text(frame, width=40, height=5)
             project_desc_entry.pack(pady=(0, 20), padx=20)
 
-            create_button = ctk.CTkButton(frame, text="Create Project", command=lambda: create_project(project_name_entry.get(), project_desc_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+            create_button = ctk.CTkButton(frame, text="Create Project",
+                                          command=lambda: create_project(project_name_entry.get(),
+                                                                         project_desc_entry.get("1.0", tk.END)),
+                                          width=140, height=30, corner_radius=20, fg_color="#2C3E50",
+                                          hover_color="#1F2A38")
             create_button.pack(pady=(0, 30))
 
         def create_project(project_name, project_description):
@@ -225,7 +238,8 @@ class HomeController:
             drop = ctk.CTkOptionMenu(frame, variable=selected_project, values=projects, width=140, fg_color="#2C3E50")
             drop.pack(pady=(30, 10))
 
-            ctk.CTkButton(frame, text="Delete Project", command=delete_project, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Delete Project", command=delete_project, width=140, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
 
         def delete_project():
             project_name = selected_project.get()
@@ -283,10 +297,14 @@ class HomeController:
         def content(frame):
             ttk.Label(frame, text="Settings", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
 
-            ctk.CTkButton(frame, text="Reset Credentials", command=reset_credentials, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
-            ctk.CTkButton(frame, text="Delete Account", command=delete_account, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
-            ctk.CTkButton(frame, text="Instructions", command=show_instructions, width=140, height=30, corner_radius=20, fg_color="#805500", hover_color="#664400").pack(pady=(30, 10))
-            ctk.CTkButton(frame, text="Submit Bug Ticket", command=show_bug_ticket, width=140, height=30, corner_radius=20, fg_color="#446600", hover_color="#334d00").pack(pady=10)
+            ctk.CTkButton(frame, text="Reset Credentials", command=reset_credentials, width=140, height=30,
+                          corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Delete Account", command=delete_account, width=140, height=30, corner_radius=20,
+                          fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            ctk.CTkButton(frame, text="Instructions", command=show_instructions, width=140, height=30, corner_radius=20,
+                          fg_color="#805500", hover_color="#664400").pack(pady=(30, 10))
+            ctk.CTkButton(frame, text="Submit Bug Ticket", command=show_bug_ticket, width=140, height=30,
+                          corner_radius=20, fg_color="#446600", hover_color="#334d00").pack(pady=10)
 
         def reset_credentials():
             if messagebox.askokcancel("Reset Credentials", "Are you sure you want to reset your credentials?"):
@@ -294,7 +312,8 @@ class HomeController:
                 popup.destroy()
 
         def delete_account():
-            if messagebox.askokcancel("Delete Account", "Are you sure you want to delete your account? Everything will be lost forever."):
+            if messagebox.askokcancel("Delete Account",
+                                      "Are you sure you want to delete your account? Everything will be lost forever."):
                 self.app.user_manager.get_file_handler().delete_credentials()
                 project_names = ProjectHandler.get_all_project_names()
                 for name in project_names:
@@ -335,7 +354,8 @@ class HomeController:
                 for instruction in instructions:
                     ttk.Label(frame, text=instruction, font=("Arial", 10)).pack(anchor=tk.W, padx=20)
 
-                ttk.Label(frame, text="Any more questions? Contact email@gmail.com", font=("Helvetica", 10, "italic")).pack(pady=(90, 0))
+                ttk.Label(frame, text="Any more questions? Contact email@gmail.com",
+                          font=("Helvetica", 10, "italic")).pack(pady=(90, 0))
 
             self.open_popup("Instructions", content)
 
@@ -346,7 +366,9 @@ class HomeController:
                 ticket_entry = tk.Text(frame, width=80, height=20)
                 ticket_entry.pack(pady=(0, 20), padx=20)
 
-                send_button = ctk.CTkButton(frame, text="Submit Ticket", command=lambda: submit_ticket(ticket_entry.get("1.0", tk.END)), width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
+                send_button = ctk.CTkButton(frame, text="Submit Ticket",
+                                            command=lambda: submit_ticket(ticket_entry.get("1.0", tk.END)), width=140,
+                                            height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38")
                 send_button.pack(pady=(0, 30))
 
                 def submit_ticket(ticket):

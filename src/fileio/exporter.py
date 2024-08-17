@@ -8,6 +8,7 @@ from datetime import datetime
 
 date = datetime.today().strftime('%Y-%m-%d')
 
+
 class ExcelExporter:
     def __init__(self):
         self.export_dir = 'exports'
@@ -17,7 +18,8 @@ class ExcelExporter:
         # Define styles
         header_font = Font(bold=True, color="FFFFFF")
         header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
-        border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+        border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'),
+                        bottom=Side(style='thin'))
 
         # Apply styles to header
         for cell in ws[1]:
@@ -94,7 +96,8 @@ class ExcelExporter:
         self.apply_styles(ws)
         self.apply_conditional_formatting(ws, 'I')  # 'I' is the column letter for "Has Responded"
 
-        filepath = os.path.join(self.export_dir, f"Full Report, ({start_date.isoformat()} - {end_date.isoformat()}).xlsx")
+        filepath = os.path.join(self.export_dir,
+                                f"Full Report, ({start_date.isoformat()} - {end_date.isoformat()}).xlsx")
         wb.save(filepath)
         return filepath
 
@@ -111,7 +114,8 @@ class ExcelExporter:
         ws = wb.active
         ws.title = f"Project {project.get_name()}"
 
-        headers = ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created", "Has Responded"]
+        headers = ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created",
+                   "Has Responded"]
         ws.append(headers)
 
         for client in project.get_clients():
@@ -129,7 +133,8 @@ class ExcelExporter:
         self.apply_styles(ws)
         self.apply_conditional_formatting(ws, 'G')  # 'G' is the column letter for "Has Responded"
 
-        filepath = os.path.join(self.export_dir, f"{project.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).xlsx")
+        filepath = os.path.join(self.export_dir,
+                                f"{project.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).xlsx")
         wb.save(filepath)
         return filepath
 
@@ -150,7 +155,8 @@ class ExcelExporter:
         ws = wb.active
         ws.title = f"Client {client.get_name()}"
 
-        headers = ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created", "Has Responded"]
+        headers = ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created",
+                   "Has Responded"]
         ws.append(headers)
 
         row_data = [
@@ -167,7 +173,8 @@ class ExcelExporter:
         self.apply_styles(ws)
         self.apply_conditional_formatting(ws, 'G')  # 'G' is the column letter for "Has Responded"
 
-        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).xlsx")
+        filepath = os.path.join(self.export_dir,
+                                f"{client.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).xlsx")
         wb.save(filepath)
         return filepath
 
@@ -178,7 +185,8 @@ class CSVExporter:
         os.makedirs(self.export_dir, exist_ok=True)
 
     def export_all_projects(self, start_date=None, end_date=None):
-        filepath = os.path.join(self.export_dir, f"Full Report, ({start_date.isoformat()} - {end_date.isoformat()}).csv")
+        filepath = os.path.join(self.export_dir,
+                                f"Full Report, ({start_date.isoformat()} - {end_date.isoformat()}).csv")
 
         projects = ProjectHandler.load_projects_from_directory()
 
@@ -226,12 +234,14 @@ class CSVExporter:
         if start_date and end_date and not (start_date <= project_date <= end_date):
             return None
 
-        filepath = os.path.join(self.export_dir, f"{project.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).csv")
+        filepath = os.path.join(self.export_dir,
+                                f"{project.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).csv")
 
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             writer.writerow(
-                ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created", "Has Responded"])
+                ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created",
+                 "Has Responded"])
 
             for client in project.get_clients():
                 writer.writerow([
@@ -259,12 +269,14 @@ class CSVExporter:
         if not client:
             return None
 
-        filepath = os.path.join(self.export_dir, f"{client.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).csv")
+        filepath = os.path.join(self.export_dir,
+                                f"{client.get_name()} Report, ({start_date.isoformat()} - {end_date.isoformat()}).csv")
 
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             writer.writerow(
-                ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created", "Has Responded"])
+                ["Client Name", "Client Description", "Client Company", "LinkedIn", "Email", "Date Created",
+                 "Has Responded"])
 
             writer.writerow([
                 client.get_name(),
