@@ -39,6 +39,7 @@ class EmailHandler:
     def set_smtp_server(self, smtp_server):
         self._smtp_server = smtp_server
 
+    # Initializes the IMAP server and logs in
     def initialize_imap(self):
         try:
             self._imap_server = imaplib.IMAP4_SSL('imap.gmail.com')
@@ -46,6 +47,7 @@ class EmailHandler:
         except imaplib.IMAP4.error:
             raise Exception("Invalid email credentials for IMAP, please try again.")
 
+    # Initializes the SMTP server and logs in
     def initialize_smtp(self):
         try:
             smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -55,6 +57,7 @@ class EmailHandler:
         except smtplib.SMTPAuthenticationError:
             raise Exception("Invalid email credentials for SMTP, please try again.")
 
+    # Sends an email to the specified recipient
     def send_email(self, recipient_email, subject, body):
         if not self._smtp_server:
             self.initialize_smtp()
@@ -67,6 +70,7 @@ class EmailHandler:
         text = message.as_string()
         self._smtp_server.sendmail(self._email_address, recipient_email, text)
 
+    # Searches for unseen emails from specified clients
     def search_mailbox_for_unseen_emails_from_clients(self, clients):
         if not self._imap_server:
             self.initialize_imap()
@@ -85,6 +89,7 @@ class EmailHandler:
 
         return clients_with_new_mail
 
+    # Searches for unseen emails from a specific sender
     def search_mailbox_for_unseen(self, sender_email):
         if not self._imap_server:
             self.initialize_imap()

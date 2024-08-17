@@ -84,11 +84,13 @@ class LinkedInHandler:
     def set_password(self, password):
         self.__password = password
 
+    # Creates a headless Chrome WebDriver
     def create_headless_driver(self):
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         self.__driver = webdriver.Chrome(options=chrome_options)
 
+    # Logs into LinkedIn using provided cookies
     def login_with_cookies(self, cookies):
         if not self.__driver:
             self.create_headless_driver()
@@ -106,6 +108,7 @@ class LinkedInHandler:
         except TimeoutException:
             return False
 
+    # Logs into LinkedIn with username and password
     def login_to_linkedin(self):
         if not self.__driver:
             self.create_headless_driver()
@@ -132,6 +135,7 @@ class LinkedInHandler:
             print("Login failed or took too long.")
             return False
 
+    # Logs into LinkedIn with a visible driver, then switches to headless
     def login_to_linkedin_visible_then_headless(self):
         visible_driver = create_visible_driver()
         if login_to_linkedin(self.__username, self.__password, visible_driver):
@@ -148,10 +152,12 @@ class LinkedInHandler:
             visible_driver.quit()
             return False
 
+    # Logs into LinkedIn with a headless driver
     def login_to_linkedin_headless(self):
         self.__driver = create_visible_driver()
         return login_to_linkedin(self.__username, self.__password, self.__driver)
 
+    # Checks for new messages from clients on LinkedIn
     def check_for_new_messages(self, clients):
         if not self.__driver:
             print("No active driver. Please log in first.")
@@ -196,6 +202,7 @@ class LinkedInHandler:
 
         return clients_with_new_messages
 
+    # Opens a LinkedIn conversation using a profile URL
     def open_linkedin_conversation(self, profile_url):
         full_name = self.get_linkedin_profile_name(profile_url)
         if not full_name:
@@ -248,6 +255,7 @@ class LinkedInHandler:
             print(f"Current URL: {self.__driver.current_url}")
             return False
 
+    # Opens a LinkedIn conversation with a visible chatbox driver
     def open_linkedin_conversation_visible(self, client):
         if not self.__cookies:
             print("No cookies available. Please log in first.")
@@ -255,7 +263,7 @@ class LinkedInHandler:
 
         full_name = client.get_linkedin_name()
         if not full_name:
-            print(f"Client does not have a linkedin profile attached.")
+            print(f"Client does not have a LinkedIn profile attached.")
             return False
 
         self.__visible_chatbox_driver = create_visible_driver()
@@ -306,6 +314,7 @@ class LinkedInHandler:
 
         return False
 
+    # Retrieves the text of a LinkedIn conversation
     def get_conversation_text(self, profile_url):
         print(self.__driver)
         if not self.open_linkedin_conversation(profile_url):
@@ -347,6 +356,7 @@ class LinkedInHandler:
             print("Failed to load conversation messages")
             return None
 
+    # Sends a message to a LinkedIn conversation
     def send_linkedin_message(self, profile_url, message):
         if not self.open_linkedin_conversation(profile_url):
             print(f"Failed to open conversation for profile: {profile_url}")
@@ -389,6 +399,7 @@ class LinkedInHandler:
             print(f"Current URL: {self.__driver.current_url}")
             return False
 
+    # Gets the LinkedIn profile name from a profile URL
     def get_linkedin_profile_name(self, profile_url):
         self.__driver.get(profile_url)
 
@@ -400,6 +411,7 @@ class LinkedInHandler:
         print(f"Profile name: {full_name}")
         return full_name
 
+    # Quits the WebDriver instance
     def quit(self):
         if self.__driver:
             self.__driver.quit()
