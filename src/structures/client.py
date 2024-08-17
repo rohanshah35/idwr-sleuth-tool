@@ -1,5 +1,6 @@
+# Client data structure
+
 from datetime import date
-from src.auth.linkedin_handler import LinkedInHandler
 
 
 class Client:
@@ -87,11 +88,13 @@ class Client:
     def set_has_responded(self, has_responded):
         self.__has_responded = has_responded
 
+    # Conversation loading
     def load_linkedin_conversation(self, linkedin_handler):
         uncleaned_message_thread = linkedin_handler.get_conversation_text(self.get_name())
         for i, message in enumerate(uncleaned_message_thread, 0):
             self.__message_thread.append(self.__message_to_dict(i, message))
 
+    # Serialization methods
     def __message_to_dict(self, index, message):
         split_sender_and_message_body = message.split(':', 1)
         message = {}

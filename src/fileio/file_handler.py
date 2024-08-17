@@ -1,4 +1,5 @@
 # Handles file I/O
+
 import json
 import os
 
@@ -13,6 +14,7 @@ class CredentialHandler:
     # Initialize with a filename
     def __init__(self):
         self.filename = 'auth/credentials.json'
+        os.makedirs("auth", exist_ok=True)
 
     # Read credentials from the file
     def read_credentials(self):
@@ -32,6 +34,7 @@ class CredentialHandler:
             json.dump(credentials, f)
             f.write('\n')
 
+    # Delete the credentials file
     def delete_credentials(self):
         os.remove(self.filename)
 
@@ -40,7 +43,9 @@ class ProjectHandler:
     def __init__(self, project):
         self.project = project
         self.filename = f'projects/{project.get_name()}.json'
+        os.makedirs("projects", exist_ok=True)
 
+    # Read project data from the file
     def read_project(self):
         try:
             with open(self.filename, 'r') as f:
@@ -49,11 +54,13 @@ class ProjectHandler:
             print(f"Project file {self.filename} not found.")
             return None
 
+    # Write project data to the file
     def write_project(self):
         os.makedirs('projects', exist_ok=True)
         with open(self.filename, 'w') as f:
             json.dump(self.project, f, cls=ProjectEncoder)
 
+    # Rename the project file
     def rename_project(self, new_name):
         old_filename = self.filename
         new_filename = f'projects/{new_name}.json'
@@ -63,12 +70,16 @@ class ProjectHandler:
             os.rename(old_filename, new_filename)
             self.filename = new_filename
 
+    # Get a list of all project names from the directory
     @staticmethod
     def get_all_project_names():
+        os.makedirs("projects", exist_ok=True)
         return [f.replace('.json', '') for f in os.listdir('projects') if f.endswith('.json')]
 
+    # Load a specific project by name
     @staticmethod
     def load_project(project_name):
+        os.makedirs("projects", exist_ok=True)
         filename = f'projects/{project_name}.json'
         try:
             with open(filename, 'r') as f:
@@ -85,8 +96,10 @@ class ProjectHandler:
             print(f"Unexpected error loading project from {filename}: {str(e)}")
             return None
 
+    # Load all projects from the directory
     @staticmethod
     def load_projects_from_directory(directory='projects'):
+        os.makedirs("projects", exist_ok=True)
         project_list = []
         project_files = [f for f in os.listdir(directory) if f.endswith('.json')]
 
@@ -95,11 +108,9 @@ class ProjectHandler:
                 project_data = json.load(file)
                 project = Project(project_data['name'], project_data['description'])
 
-                client_objects = []
                 for client_dict in project_data.get('clients', []):
-                    client_objects.append(Client.from_dict(client_dict))
+                    project.add_client(Client.from_dict(client_dict))
 
-                project.clients = client_objects
                 project_list.append(project)
 
         return project_list

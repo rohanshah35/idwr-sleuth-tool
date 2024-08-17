@@ -1,4 +1,9 @@
+# Handles bulk messaging within GUI
+
+import threading
 import tkinter as tk
+from queue import Queue, Empty
+
 import ttkbootstrap as ttk
 import customtkinter as ctk
 from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
@@ -132,16 +137,55 @@ class BulkMessageController:
             message_content = tk.Text(frame, width=40, height=5)
             message_content.pack(pady=10, padx=20)
 
+            progress_var = tk.DoubleVar()
+            progress_bar = ttk.Progressbar(frame, variable=progress_var, maximum=100)
+            progress_bar.pack(pady=5, padx=20, fill=tk.X)
+
+            status_var = tk.StringVar()
+            status_label = ttk.Label(frame, textvariable=status_var)
+            status_label.pack(pady=5)
+
             def send_message():
                 message = message_content.get("1.0", tk.END).strip()
 
-                for client in selected_clients:
+                send_button.configure(state="disabled")
+
+                queue = Queue()
+
+                thread = threading.Thread(target=send_messages_thread,
+                                          args=(message, selected_clients, queue))
+                thread.start()
+
+                update_progress(frame, queue, progress_var, status_var, len(selected_clients))
+
+            def send_messages_thread(message, clients, queue):
+                for i, client in enumerate(clients, 1):
                     customized_message = self.replace_string_with_keywords(message, client)
+                    self.app.user_manager.get_linkedin_handler().send_linkedin_message(
+                        client.get_linkedin(), customized_message)
+                    queue.put(i)
+                queue.put(None)
 
-                    self.app.user_manager.get_linkedin_handler().send_linkedin_message(client.linkedin, customized_message)
-                message_content.delete("1.0", tk.END)
+            def update_progress(frame, queue, progress_var, status_var, total):
+                try:
+                    count = queue.get_nowait()
+                    if count is None:
+                        progress_var.set(100)
+                        status_var.set("All messages sent!")
+                        message_content.delete("1.0", tk.END)
+                        send_button.configure(state="normal")
+                    else:
+                        progress = (count / total) * 100
+                        progress_var.set(progress)
+                        status_var.set(f"Sending message {count}/{total}")
+                        frame.after(100, update_progress, frame, queue, progress_var, status_var, total)
+                except Empty:
+                    frame.after(100, update_progress, frame, queue, progress_var, status_var, total)
 
-            ctk.CTkButton(frame, text="Send message", command=send_message, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+            send_button = ctk.CTkButton(frame, text="Send message", command=send_message,
+                                        width=140, height=30, corner_radius=20,
+                                        fg_color="#2C3E50", hover_color="#1F2A38")
+            send_button.pack(pady=10)
 
         self.save_selections()
         popup = self.open_popup("LinkedIn", content)
@@ -161,17 +205,58 @@ class BulkMessageController:
             body_text = tk.Text(frame, width=40, height=10)
             body_text.pack(pady=(0, 10))
 
+            progress_var = tk.DoubleVar()
+            progress_bar = ttk.Progressbar(frame, variable=progress_var, maximum=100)
+            progress_bar.pack(pady=5, padx=20, fill=tk.X)
+
+            status_var = tk.StringVar()
+            status_label = ttk.Label(frame, textvariable=status_var)
+            status_label.pack(pady=5)
+
             def send_email():
                 subject = subject_entry.get().strip()
                 body = body_text.get("1.0", tk.END).strip()
-                for client in selected_clients:
-                    customized_subject_message = self.replace_string_with_keywords(subject, client)
-                    customized_body_message = self.replace_string_with_keywords(body, client)
 
-                    self.app.user_manager.get_email_handler().send_email(client.get_email(), customized_subject_message, customized_body_message)
-                subject_entry.delete(0, tk.END)
-                body_text.delete("1.0", tk.END)
-            ctk.CTkButton(frame, text="Send Email", command=send_email, width=140, height=30, corner_radius=20, fg_color="#2C3E50", hover_color="#1F2A38").pack(pady=10)
+                send_button.configure(state="disabled")
+
+                queue = Queue()
+
+                thread = threading.Thread(target=send_emails_thread, args=(subject, body, selected_clients, queue))
+                thread.start()
+
+                update_progress(frame, queue, progress_var, status_var, len(selected_clients))
+
+            def send_emails_thread(subject, body, clients, queue):
+                for i, client in enumerate(clients, 1):
+                    customized_subject = self.replace_string_with_keywords(subject, client)
+                    customized_body = self.replace_string_with_keywords(body, client)
+
+                    self.app.user_manager.get_email_handler().send_email(
+                        client.get_email(), customized_subject, customized_body)
+                    queue.put(i)
+                queue.put(None)
+
+            def update_progress(frame, queue, progress_var, status_var, total):
+                try:
+                    count = queue.get_nowait()
+                    if count is None:
+                        progress_var.set(100)
+                        status_var.set("All emails sent!")
+                        subject_entry.delete(0, tk.END)
+                        body_text.delete("1.0", tk.END)
+                        send_button.configure(state="normal")
+                    else:
+                        progress = (count / total) * 100
+                        progress_var.set(progress)
+                        status_var.set(f"Sending email {count}/{total}")
+                        frame.after(100, update_progress, frame, queue, progress_var, status_var, total)
+                except Empty:
+                    frame.after(100, update_progress, frame, queue, progress_var, status_var, total)
+
+            send_button = ctk.CTkButton(frame, text="Send Email", command=send_email,
+                                        width=140, height=30, corner_radius=20,
+                                        fg_color="#2C3E50", hover_color="#1F2A38")
+            send_button.pack(pady=10)
 
         self.save_selections()
         popup = self.open_popup("Email", content)

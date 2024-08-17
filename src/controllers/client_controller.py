@@ -1,4 +1,6 @@
-import os
+# Handles client menu within GUI
+
+import threading
 import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
@@ -172,6 +174,10 @@ class ClientController:
             messagebox.showinfo("Error", "Selected client does not have a LinkedIn URL set!")
             return
 
+        thread = threading.Thread(target=self._open_linkedin_conversation_thread)
+        thread.start()
+
+    def _open_linkedin_conversation_thread(self):
         self.app.user_manager.get_linkedin_handler().open_linkedin_conversation_visible(self.app.selected_client)
 
     def open_email_conversation_popup(self):
@@ -211,12 +217,10 @@ class ClientController:
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            # Start Date
             ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
             start_date = DateEntry(frame)
             start_date.pack(pady=(0, 10))
 
-            # End Date
             ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
             end_date = DateEntry(frame)
             end_date.pack(pady=(0, 20))

@@ -1,4 +1,0 @@
-- Code cleanup
-    - Comments
-- Edge cases for all menus
-- Fix "not responding"

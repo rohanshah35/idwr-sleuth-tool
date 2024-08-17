@@ -1,3 +1,5 @@
+# User data structure
+
 from src.auth.email_handler import EmailHandler
 from src.auth.linkedin_handler import LinkedInHandler
 from src.fileio.encryption import Encryptor
@@ -63,11 +65,13 @@ class UserManager:
     def set_user_data(self, user_data):
         self.__user_data = user_data
 
+    # Load messaging handlers
     def load_handlers(self):
         if self.__user_data:
             self.__linkedin_handler = LinkedInHandler(self.__user_data['linkedin_email'], self.__user_data['linkedin_password'])
             self.__email_handler = EmailHandler(self.__user_data['email'], self.__user_data['email_password'])
 
+    # Handle user data
     def __load_user_data(self):
         data = self.__file_handler.read_credentials()
         if 'linkedin_password' in data:

@@ -1,3 +1,6 @@
+# Handles login menu within GUI
+
+import threading
 import tkinter as tk
 import ttkbootstrap as ttk
 from customtkinter import CTkButton
@@ -90,16 +93,16 @@ class LoginController:
         linkedin_password = self.linkedin_pass_entry.get()
 
         if email_validator(email) and email_validator(linkedin_email):
-            # Show loading screen immediately after login button is pressed
             self.app.show_frame('loading')
 
-            # Use after method to allow the loading screen to render
-            self.app.root.after(100, lambda: self.perform_login(email, email_password, linkedin_email, linkedin_password))
+            threading.Thread(target=self.perform_login_thread,
+                             args=(email, email_password, linkedin_email, linkedin_password),
+                             daemon=True).start()
         else:
             self.clear_entries()
             self.error_label.config(text="Invalid email format. Please try again.")
 
-    def perform_login(self, email, email_password, linkedin_email, linkedin_password):
+    def perform_login_thread(self, email, email_password, linkedin_email, linkedin_password):
         try:
             self.app.user_manager.set_linkedin_handler(LinkedInHandler(linkedin_email, linkedin_password))
             self.app.user_manager.set_email_handler(EmailHandler(email, email_password))
@@ -120,7 +123,7 @@ class LoginController:
             self.app.user_manager.save_user_data()
             self.app.show_frame('home')
         except Exception as e:
-            self.app.show_frame('login')  # Show login frame again if there's an error
+            self.app.show_frame('login')
             self.clear_entries()
             self.error_label.config(text="Login unsuccessful. Please try again.")
 

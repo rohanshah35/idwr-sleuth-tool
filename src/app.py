@@ -1,8 +1,10 @@
-# Main controller for application
+# Main application framework
+
 import concurrent.futures
 import time
 import tkinter as tk
 import ttkbootstrap as ttk
+import threading
 
 from src.auth.email_handler import EmailHandler
 from src.auth.linkedin_handler import LinkedInHandler
@@ -14,7 +16,6 @@ from src.controllers.client_controller import ClientController
 from src.controllers.bulk_message_controller import BulkMessageController
 from src.fileio.file_handler import ProjectHandler
 from src.utils.constants import FRAME_HEIGHT, FRAME_WIDTH
-
 from src.structures.user import UserManager
 
 
@@ -45,16 +46,19 @@ class App:
         }
         if self.user_manager.get_user_data():
             self.show_frame('loading')
-            self.root.after(100, self.validate_credentials)
+            self.root.after(100, self.start_validation_thread)
         else:
             self.show_frame('login')
 
+    # Update the list of projects
     def update_project_list(self):
         self.project_list = ProjectHandler.load_projects_from_directory()
 
+    # Update the entire list of clients from all projects
     def update_entire_client_list(self):
         self.entire_client_list = self.get_all_clients_from_projects()
 
+    # Retrieve all clients from the projects
     def get_all_clients_from_projects(self):
         all_clients = []
 
@@ -64,6 +68,11 @@ class App:
 
         return all_clients
 
+    # Start a separate thread to validate credentials
+    def start_validation_thread(self):
+        threading.Thread(target=self.validate_credentials, daemon=True).start()
+
+    # Validate credentials using multithreading
     def validate_credentials(self):
         start_total = time.time()
 
@@ -79,6 +88,10 @@ class App:
 
         print(f"Total time: {total_time:.4f} seconds")
 
+        self.root.after(0, self.finish_validation, cookies_valid, email_valid)
+
+    # Handle the result of the validation process
+    def finish_validation(self, cookies_valid, email_valid):
         self.controllers['loading'].hide()
 
         if cookies_valid and email_valid:
@@ -86,33 +99,7 @@ class App:
         else:
             self.show_frame('login')
 
-    # def validate_credentials(self):
-    #     start_total = time.time()
-    #
-    #     start_cookies = time.time()
-    #     cookies_valid = self.check_linkedin_cookies()
-    #     end_cookies = time.time()
-    #     cookies_time = end_cookies - start_cookies
-    #
-    #     start_email = time.time()
-    #     email_valid = self.validate_email()
-    #     end_email = time.time()
-    #     email_time = end_email - start_email
-    #
-    #     end_total = time.time()
-    #     total_time = end_total - start_total
-    #
-    #     print(f"Time to check LinkedIn cookies: {cookies_time:.4f} seconds")
-    #     print(f"Time to validate email: {email_time:.4f} seconds")
-    #     print(f"Total time: {total_time:.4f} seconds")
-    #
-    #     self.controllers['loading'].hide()
-    #
-    #     if cookies_valid and email_valid:
-    #         self.show_frame('home')
-    #     else:
-    #         self.show_frame('login')
-
+    # Check LinkedIn cookies and login if necessary
     def check_linkedin_cookies(self):
         if not self.user_manager.get_linkedin_handler():
             self.user_manager.set_linkedin_handler(LinkedInHandler(
@@ -126,6 +113,7 @@ class App:
         else:
             return self.user_manager.get_linkedin_handler().login_to_linkedin()
 
+    # Validate the email credentials
     def validate_email(self):
         if not self.user_manager.get_email_handler():
             self.user_manager.set_email_handler(EmailHandler(
@@ -140,6 +128,7 @@ class App:
             print(f"An error occurred while validating email: {str(e)}")
             return False
 
+    # Show the specified frame and hide others
     def show_frame(self, controller_name):
         for controller in self.controllers.values():
             if hasattr(controller, 'hide'):
@@ -151,10 +140,15 @@ class App:
         else:
             frame.frame.pack(fill=tk.BOTH, expand=True)
 
+    # Start the main event loop of the application
     def run(self):
         self.root.mainloop()
 
 
-if __name__ == "__main__":
+def main():
     app = App()
     app.run()
+
+
+if __name__ == "__main__":
+    main()
