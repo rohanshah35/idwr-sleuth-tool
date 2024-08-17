@@ -103,11 +103,9 @@ class ProjectHandler:
                 project_data = json.load(file)
                 project = Project(project_data['name'], project_data['description'])
 
-                client_objects = []
                 for client_dict in project_data.get('clients', []):
-                    client_objects.append(Client.from_dict(client_dict))
+                    project.add_client(Client.from_dict(client_dict))
 
-                project.clients = client_objects
                 project_list.append(project)
 
         return project_list
