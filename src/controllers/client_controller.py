@@ -174,7 +174,6 @@ class ClientController:
             messagebox.showinfo("Error", "Selected client does not have a LinkedIn URL set!")
             return
 
-        # Create a new thread for opening the LinkedIn conversation
         thread = threading.Thread(target=self._open_linkedin_conversation_thread)
         thread.start()
 
@@ -218,12 +217,10 @@ class ClientController:
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            # Start Date
             ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
             start_date = DateEntry(frame)
             start_date.pack(pady=(0, 10))
 
-            # End Date
             ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
             end_date = DateEntry(frame)
             end_date.pack(pady=(0, 20))

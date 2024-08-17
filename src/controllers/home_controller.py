@@ -134,7 +134,6 @@ class HomeController:
             except Empty:
                 popup.after(100, update_progress, popup, queue, progress_var, status_var)
 
-        # Start fetching data
         fetch_data()
 
     def loading_content(self, frame):
@@ -148,23 +147,19 @@ class HomeController:
         status_label = ttk.Label(frame, textvariable=status_var)
         status_label.pack(pady=5)
 
-        # Store the variables in the frame for later access
         frame.progress_var = progress_var
         frame.status_var = status_var
 
     def get_progress_vars(self, popup):
-        # Retrieve the progress variables from the popup
         for child in popup.winfo_children():
             if hasattr(child, 'progress_var') and hasattr(child, 'status_var'):
                 return child.progress_var, child.status_var
         return None, None
 
     def update_mailbox_ui(self, popup, linkedin_messages, new_emails):
-        # Clear the popup content
         for widget in popup.winfo_children():
             widget.destroy()
 
-        # Recreate the content with the fetched data
         self.create_mailbox_content(popup, linkedin_messages, new_emails)
 
     def create_mailbox_content(self, popup, linkedin_messages, new_emails):
@@ -173,11 +168,9 @@ class HomeController:
 
         ttk.Label(frame, text="Notifications", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-        # Create a notebook for tabs
         notebook = ttk.Notebook(frame)
         notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # LinkedIn Messages Tab
         linkedin_frame = ttk.Frame(notebook)
         notebook.add(linkedin_frame, text="LinkedIn Messages")
 
@@ -192,7 +185,6 @@ class HomeController:
         else:
             ttk.Label(linkedin_frame, text="No new LinkedIn messages").pack(pady=20)
 
-        # Emails Tab
         email_frame = ttk.Frame(notebook)
         notebook.add(email_frame, text="Emails")
 
@@ -336,12 +328,10 @@ class HomeController:
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            # Start Date
             ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
             start_date = DateEntry(frame)
             start_date.pack(pady=(0, 10))
 
-            # End Date
             ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
             end_date = DateEntry(frame)
             end_date.pack(pady=(0, 20))
@@ -454,7 +444,7 @@ class HomeController:
                         "embeds": [{
                             "title": "IDWR Intern Bug Ticket",
                             "description": ticket,
-                            "color": 15158332  # Red color
+                            "color": 15158332
                         }]
                     }
 

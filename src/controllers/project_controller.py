@@ -278,16 +278,13 @@ class ProjectController:
         self.popup = self.open_popup("Create Client", content)
 
     def create_client(self, client_name, client_description, client_company, client_linkedin, client_email, anonymous):
-        # Disable the create button to prevent multiple submissions
         for widget in self.popup.winfo_children():
             if isinstance(widget, ctk.CTkButton) and widget.cget("text") == "Create Client":
                 widget.configure(state="disabled")
 
-        # Show a loading message
         loading_label = ttk.Label(self.popup, text="Creating client...", font=("Helvetica", 12))
         loading_label.pack(pady=10)
 
-        # Start a new thread for client creation
         threading.Thread(target=self._create_client_thread,
                          args=(client_name, client_description, client_company, client_linkedin, client_email, anonymous),
                          daemon=True).start()
@@ -305,10 +302,8 @@ class ProjectController:
             project_manager = ProjectHandler(self.app.selected_project)
             project_manager.write_project()
 
-            # Schedule UI updates on the main thread
             self.app.root.after(0, self._finish_client_creation, client_name)
         except Exception as e:
-            # Schedule error handling on the main thread
             self.app.root.after(0, self._handle_client_creation_error, str(e))
 
     def _finish_client_creation(self, client_name):
@@ -316,18 +311,15 @@ class ProjectController:
         messagebox.showinfo("Success", f"Client '{client_name}' created successfully!")
 
     def _handle_client_creation_error(self, error_message):
-        # Remove the loading message
         for widget in self.popup.winfo_children():
             if isinstance(widget, ttk.Label) and widget.cget("text") == "Creating client...":
                 widget.destroy()
 
-        # Re-enable the create button
         for widget in self.popup.winfo_children():
             if isinstance(widget, ctk.CTkButton) and widget.cget("text") == "Create Client":
                 widget.configure(state="normal")
 
         messagebox.showinfo("Error", f"Failed to create client: {error_message}")
-
 
     def open_delete_client_popup(self):
         clients = self.app.selected_project.get_all_client_names()
@@ -375,12 +367,10 @@ class ProjectController:
         def content(frame):
             ttk.Label(frame, text="Export", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
 
-            # Start Date
             ttk.Label(frame, text="Start Date:").pack(pady=(10, 5))
             start_date = DateEntry(frame)
             start_date.pack(pady=(0, 10))
 
-            # End Date
             ttk.Label(frame, text="End Date:").pack(pady=(10, 5))
             end_date = DateEntry(frame)
             end_date.pack(pady=(0, 20))

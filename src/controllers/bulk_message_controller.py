@@ -148,18 +148,14 @@ class BulkMessageController:
             def send_message():
                 message = message_content.get("1.0", tk.END).strip()
 
-                # Disable the send button
                 send_button.configure(state="disabled")
 
-                # Create a queue for thread communication
                 queue = Queue()
 
-                # Start a new thread for sending messages
                 thread = threading.Thread(target=send_messages_thread,
                                           args=(message, selected_clients, queue))
                 thread.start()
 
-                # Start updating the progress
                 update_progress(frame, queue, progress_var, status_var, len(selected_clients))
 
             def send_messages_thread(message, clients, queue):
@@ -168,7 +164,7 @@ class BulkMessageController:
                     self.app.user_manager.get_linkedin_handler().send_linkedin_message(
                         client.get_linkedin(), customized_message)
                     queue.put(i)
-                queue.put(None)  # Signal that we're done
+                queue.put(None)
 
             def update_progress(frame, queue, progress_var, status_var, total):
                 try:
@@ -177,7 +173,7 @@ class BulkMessageController:
                         progress_var.set(100)
                         status_var.set("All messages sent!")
                         message_content.delete("1.0", tk.END)
-                        send_button.configure(state="normal")  # Re-enable the send button
+                        send_button.configure(state="normal")
                     else:
                         progress = (count / total) * 100
                         progress_var.set(progress)
@@ -221,18 +217,13 @@ class BulkMessageController:
                 subject = subject_entry.get().strip()
                 body = body_text.get("1.0", tk.END).strip()
 
-                # Disable the send button
                 send_button.configure(state="disabled")
 
-                # Create a queue for thread communication
                 queue = Queue()
 
-                # Start a new thread for sending emails
-                thread = threading.Thread(target=send_emails_thread,
-                                          args=(subject, body, selected_clients, queue))
+                thread = threading.Thread(target=send_emails_thread, args=(subject, body, selected_clients, queue))
                 thread.start()
 
-                # Start updating the progress
                 update_progress(frame, queue, progress_var, status_var, len(selected_clients))
 
             def send_emails_thread(subject, body, clients, queue):
@@ -243,7 +234,7 @@ class BulkMessageController:
                     self.app.user_manager.get_email_handler().send_email(
                         client.get_email(), customized_subject, customized_body)
                     queue.put(i)
-                queue.put(None)  # Signal that we're done
+                queue.put(None)
 
             def update_progress(frame, queue, progress_var, status_var, total):
                 try:
@@ -253,7 +244,7 @@ class BulkMessageController:
                         status_var.set("All emails sent!")
                         subject_entry.delete(0, tk.END)
                         body_text.delete("1.0", tk.END)
-                        send_button.configure(state="normal")  # Re-enable the send button
+                        send_button.configure(state="normal")
                     else:
                         progress = (count / total) * 100
                         progress_var.set(progress)

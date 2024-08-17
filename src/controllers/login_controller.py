@@ -93,10 +93,8 @@ class LoginController:
         linkedin_password = self.linkedin_pass_entry.get()
 
         if email_validator(email) and email_validator(linkedin_email):
-            # Show loading screen immediately after login button is pressed
             self.app.show_frame('loading')
 
-            # Use threading to perform login in background
             threading.Thread(target=self.perform_login_thread,
                              args=(email, email_password, linkedin_email, linkedin_password),
                              daemon=True).start()
@@ -125,7 +123,7 @@ class LoginController:
             self.app.user_manager.save_user_data()
             self.app.show_frame('home')
         except Exception as e:
-            self.app.show_frame('login')  # Show login frame again if there's an error
+            self.app.show_frame('login')
             self.clear_entries()
             self.error_label.config(text="Login unsuccessful. Please try again.")
 

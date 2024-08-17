@@ -52,35 +52,37 @@ class LinkedInHandler:
         self.__cookies = None
         self.__visible_chatbox_driver = None
 
+    # Getters
     def get_username(self):
         return self.__username
-
-    def set_username(self, username):
-        self.__username = username
 
     def get_password(self):
         return self.__password
 
-    def set_password(self, password):
-        self.__password = password
-
     def get_driver(self):
         return self.__driver
-
-    def set_driver(self, driver):
-        self.__driver = driver
 
     def get_cookies(self):
         return self.__cookies
 
-    def set_cookies(self, cookies):
-        self.__cookies = cookies
-
     def get_visible_chatbox_driver(self):
         return self.__visible_chatbox_driver
 
+    # Setters
     def set_visible_chatbox_driver(self, driver):
         self.__visible_chatbox_driver = driver
+
+    def set_username(self, username):
+        self.__username = username
+
+    def set_cookies(self, cookies):
+        self.__cookies = cookies
+
+    def set_driver(self, driver):
+        self.__driver = driver
+
+    def set_password(self, password):
+        self.__password = password
 
     def create_headless_driver(self):
         chrome_options = Options()
@@ -147,7 +149,7 @@ class LinkedInHandler:
             return False
 
     def login_to_linkedin_headless(self):
-        self.__driver = create_visible_driver()  #using visible rn for test, headless vers: self.__driver = create_headless_driver()
+        self.__driver = create_visible_driver()
         return login_to_linkedin(self.__username, self.__password, self.__driver)
 
     def check_for_new_messages(self, clients):

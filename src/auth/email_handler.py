@@ -13,26 +13,28 @@ class EmailHandler:
         self._imap_server = None
         self._smtp_server = None
 
+    # Getters
     def get_email_address(self):
         return self._email_address
-
-    def set_email_address(self, email_address):
-        self._email_address = email_address
 
     def get_password(self):
         return self._password
 
-    def set_password(self, password):
-        self._password = password
-
     def get_imap_server(self):
         return self._imap_server
 
-    def set_imap_server(self, imap_server):
-        self._imap_server = imap_server
-
     def get_smtp_server(self):
         return self._smtp_server
+
+    # Setters
+    def set_email_address(self, email_address):
+        self._email_address = email_address
+
+    def set_password(self, password):
+        self._password = password
+
+    def set_imap_server(self, imap_server):
+        self._imap_server = imap_server
 
     def set_smtp_server(self, smtp_server):
         self._smtp_server = smtp_server
@@ -49,7 +51,7 @@ class EmailHandler:
             smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
             smtp_server.starttls()
             smtp_server.login(self._email_address, self._password)
-            self._smtp_server = smtp_server  # Only store if login is successful
+            self._smtp_server = smtp_server
         except smtplib.SMTPAuthenticationError:
             raise Exception("Invalid email credentials for SMTP, please try again.")
 
