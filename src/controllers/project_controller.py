@@ -1,3 +1,4 @@
+import threading
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -227,7 +228,6 @@ class ProjectController:
                     client_name_entry.delete(0, tk.END)
                     client_name_entry.insert(0, "Anonymous")
                     client_name_entry.config(state="disabled")
-                    # self.app.selected_client.set_anonymous(True)
                 else:
                     client_name_entry.config(state="normal")
                     client_name_entry.delete(0, tk.END)
@@ -258,7 +258,14 @@ class ProjectController:
             create_button = ctk.CTkButton(
                 frame,
                 text="Create Client",
-                command=lambda: create_client(client_name_entry.get(), client_desc_entry.get("1.0", tk.END), client_company_entry.get(), client_linkedin_entry.get(), client_email_entry.get(), anonymous_var.get()),
+                command=lambda: self.create_client(
+                    client_name_entry.get(),
+                    client_desc_entry.get("1.0", tk.END),
+                    client_company_entry.get(),
+                    client_linkedin_entry.get(),
+                    client_email_entry.get(),
+                    anonymous_var.get()
+                ),
                 width=140,
                 height=30,
                 corner_radius=20,
@@ -267,7 +274,25 @@ class ProjectController:
             )
             create_button.pack(pady=(20, 0))
 
-        def create_client(client_name, client_description, client_company, client_linkedin, client_email, anonymous):
+        self.popup = self.open_popup("Create Client", content)
+
+    def create_client(self, client_name, client_description, client_company, client_linkedin, client_email, anonymous):
+        # Disable the create button to prevent multiple submissions
+        for widget in self.popup.winfo_children():
+            if isinstance(widget, ctk.CTkButton) and widget.cget("text") == "Create Client":
+                widget.configure(state="disabled")
+
+        # Show a loading message
+        loading_label = ttk.Label(self.popup, text="Creating client...", font=("Helvetica", 12))
+        loading_label.pack(pady=10)
+
+        # Start a new thread for client creation
+        threading.Thread(target=self._create_client_thread,
+                         args=(client_name, client_description, client_company, client_linkedin, client_email, anonymous),
+                         daemon=True).start()
+
+    def _create_client_thread(self, client_name, client_description, client_company, client_linkedin, client_email, anonymous):
+        try:
             if client_linkedin:
                 client_linkedin_name = self.app.user_manager.get_linkedin_handler().get_linkedin_profile_name(client_linkedin)
                 client = Client(client_name, client_description, client_company, client_linkedin, client_email, anonymous, client_linkedin_name)
@@ -278,10 +303,30 @@ class ProjectController:
             self.app.update_entire_client_list()
             project_manager = ProjectHandler(self.app.selected_project)
             project_manager.write_project()
-            popup.destroy()
-            messagebox.showinfo("Success", f"Client '{client_name}' created successfully!")
 
-        popup = self.open_popup("Create Client", content)
+            # Schedule UI updates on the main thread
+            self.app.root.after(0, self._finish_client_creation, client_name)
+        except Exception as e:
+            # Schedule error handling on the main thread
+            self.app.root.after(0, self._handle_client_creation_error, str(e))
+
+    def _finish_client_creation(self, client_name):
+        self.popup.destroy()
+        messagebox.showinfo("Success", f"Client '{client_name}' created successfully!")
+
+    def _handle_client_creation_error(self, error_message):
+        # Remove the loading message
+        for widget in self.popup.winfo_children():
+            if isinstance(widget, ttk.Label) and widget.cget("text") == "Creating client...":
+                widget.destroy()
+
+        # Re-enable the create button
+        for widget in self.popup.winfo_children():
+            if isinstance(widget, ctk.CTkButton) and widget.cget("text") == "Create Client":
+                widget.configure(state="normal")
+
+        messagebox.showinfo("Error", f"Failed to create client: {error_message}")
+
 
     def open_delete_client_popup(self):
         clients = self.app.selected_project.get_all_client_names()

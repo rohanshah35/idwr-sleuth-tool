@@ -1,3 +1,4 @@
+import threading
 from datetime import datetime
 import os
 import tkinter as tk
@@ -85,58 +86,88 @@ class HomeController:
         self.email_label.config(text=email + '!')
 
     def open_mailbox_popup(self):
-        def content(frame):
-            ttk.Label(frame, text="Notifications", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
+        popup = self.open_popup("Mailbox", self.loading_content)
 
-            # Get new LinkedIn messages and emails
-            linkedin_messages = self.app.user_manager.get_linkedin_handler().check_for_new_messages(
-                self.app.entire_client_list)
-            new_emails = self.app.user_manager.get_email_handler().search_mailbox_for_unseen_emails_from_clients(
-                self.app.entire_client_list)
-            for client in linkedin_messages:
-                client.set_has_responded(True)
-            for client in new_emails:
-                client.set_has_responded(True)
+        def fetch_data():
+            try:
+                linkedin_messages = self.app.user_manager.get_linkedin_handler().check_for_new_messages(
+                    self.app.entire_client_list)
+                new_emails = self.app.user_manager.get_email_handler().search_mailbox_for_unseen_emails_from_clients(
+                    self.app.entire_client_list)
 
-            for project in self.app.project_list:
-                project_manager = ProjectHandler(project)
-                project_manager.write_project()
-
-            # Create a notebook for tabs
-            notebook = ttk.Notebook(frame)
-            notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-            # LinkedIn Messages Tab
-            linkedin_frame = ttk.Frame(notebook)
-            notebook.add(linkedin_frame, text="LinkedIn Messages")
-
-            if linkedin_messages:
                 for client in linkedin_messages:
-                    message_frame = ttk.Frame(linkedin_frame)
-                    message_frame.pack(fill=tk.X, padx=5, pady=5)
-                    ttk.Label(message_frame, text=f"New message from: {client.get_name()}",
-                              font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
-                    ttk.Label(message_frame, text=f"Company: {client.get_company()}").pack(anchor=tk.W)
-                    ttk.Separator(linkedin_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
-            else:
-                ttk.Label(linkedin_frame, text="No new LinkedIn messages").pack(pady=20)
-
-            # Emails Tab
-            email_frame = ttk.Frame(notebook)
-            notebook.add(email_frame, text="Emails")
-
-            if new_emails:
+                    client.set_has_responded(True)
                 for client in new_emails:
-                    email_message_frame = ttk.Frame(email_frame)
-                    email_message_frame.pack(fill=tk.X, padx=5, pady=5)
-                    ttk.Label(email_message_frame, text=f"New email from: {client.get_name()}",
-                              font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
-                    ttk.Label(email_message_frame, text=f"Email: {client.get_email()}").pack(anchor=tk.W)
-                    ttk.Separator(email_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
-            else:
-                ttk.Label(email_frame, text="No new emails").pack(pady=20)
+                    client.set_has_responded(True)
 
-        popup = self.open_popup("Mailbox", content)
+                for project in self.app.project_list:
+                    project_manager = ProjectHandler(project)
+                    project_manager.write_project()
+
+                # Update UI in the main thread
+                self.app.root.after(0, lambda: self.update_mailbox_ui(popup, linkedin_messages, new_emails))
+            except Exception as e:
+                self.app.root.after(0, lambda: messagebox.showerror("Error", f"An error occurred: {str(e)}"))
+
+        # Start a new thread for fetching data
+        threading.Thread(target=fetch_data, daemon=True).start()
+
+    def loading_content(self, frame):
+        ttk.Label(frame, text="Loading notifications...", font=("Helvetica", 16, "bold")).pack(pady=20)
+
+    def update_mailbox_ui(self, popup, linkedin_messages, new_emails):
+        # Clear the popup content
+        for widget in popup.winfo_children():
+            widget.destroy()
+
+        # Recreate the content with the fetched data
+        self.create_mailbox_content(popup, linkedin_messages, new_emails)
+
+    def create_mailbox_content(self, popup, linkedin_messages, new_emails):
+        frame = ttk.Frame(popup)
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        ttk.Label(frame, text="Notifications", font=("Helvetica", 16, "bold")).pack(pady=(0, 20))
+
+        # Create a notebook for tabs
+        notebook = ttk.Notebook(frame)
+        notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        # LinkedIn Messages Tab
+        linkedin_frame = ttk.Frame(notebook)
+        notebook.add(linkedin_frame, text="LinkedIn Messages")
+
+        if linkedin_messages:
+            for client in linkedin_messages:
+                message_frame = ttk.Frame(linkedin_frame)
+                message_frame.pack(fill=tk.X, padx=5, pady=5)
+                ttk.Label(message_frame, text=f"New message from: {client.get_name()}",
+                          font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                ttk.Label(message_frame, text=f"Company: {client.get_company()}").pack(anchor=tk.W)
+                ttk.Separator(linkedin_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
+        else:
+            ttk.Label(linkedin_frame, text="No new LinkedIn messages").pack(pady=20)
+
+        # Emails Tab
+        email_frame = ttk.Frame(notebook)
+        notebook.add(email_frame, text="Emails")
+
+        if new_emails:
+            for client in new_emails:
+                email_message_frame = ttk.Frame(email_frame)
+                email_message_frame.pack(fill=tk.X, padx=5, pady=5)
+                ttk.Label(email_message_frame, text=f"New email from: {client.get_name()}",
+                          font=("Helvetica", 12, "bold")).pack(anchor=tk.W)
+                ttk.Label(email_message_frame, text=f"Email: {client.get_email()}").pack(anchor=tk.W)
+                ttk.Separator(email_frame, orient='horizontal').pack(fill=tk.X, padx=5, pady=5)
+        else:
+            ttk.Label(email_frame, text="No new emails").pack(pady=20)
+
+        button_frame = ttk.Frame(frame)
+        button_frame.pack(side=BOTTOM, fill=X, pady=10)
+
+        ctk.CTkButton(button_frame, text="Back", command=popup.destroy, corner_radius=20, fg_color="#2C3E50",
+                      hover_color="#1F2A38").pack(pady=5)
 
     def open_popup(self, title, content_func, width=SUB_FRAME_WIDTH, height=SUB_FRAME_HEIGHT):
         popup = tk.Toplevel(self.app.root)

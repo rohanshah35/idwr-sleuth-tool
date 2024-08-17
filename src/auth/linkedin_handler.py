@@ -176,7 +176,8 @@ class LinkedInHandler:
 
                 for item in conversation_items:
                     try:
-                        name_element = item.find_element(By.CSS_SELECTOR, ".msg-conversation-listitem__participant-names")
+                        name_element = item.find_element(By.CSS_SELECTOR,
+                                                         ".msg-conversation-listitem__participant-names")
 
                         if linkedin_name.lower() in name_element.text.lower():
                             clients_with_new_messages.append(client)
@@ -389,30 +390,15 @@ class LinkedInHandler:
             return False
 
     def get_linkedin_profile_name(self, profile_url):
-        linkedin_profile_pattern = r'^https?:\/\/(?:www\.)?linkedin\.com\/in\/[\w\-]+\/?$'
-        if not re.match(linkedin_profile_pattern, profile_url):
-            print("Invalid LinkedIn profile URL")
-            return None
+        self.__driver.get(profile_url)
 
-        try:
-            self.__driver.get(profile_url)
+        name_element = WebDriverWait(self.__driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "h1.text-heading-xlarge"))
+        )
 
-            name_element = WebDriverWait(self.__driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "h1.text-heading-xlarge"))
-            )
-
-            full_name = name_element.text.strip()
-            print(f"Profile name: {full_name}")
-            return full_name
-
-        except TimeoutException:
-            print("Timeout while loading profile page or finding name element")
-        except NoSuchElementException:
-            print("Could not find the name element on the profile page")
-        except Exception as e:
-            print(f"An error occurred while retrieving the profile name: {str(e)}")
-
-        return None
+        full_name = name_element.text.strip()
+        print(f"Profile name: {full_name}")
+        return full_name
 
     def quit(self):
         if self.__driver:
