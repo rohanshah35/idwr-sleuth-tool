@@ -1,4 +1,4 @@
 - Code cleanup
     - Comments
 - Edge cases for all menus
-- Fix "not responding"
+    - Empty/no-name clients and projects

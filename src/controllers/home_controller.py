@@ -2,6 +2,7 @@ import threading
 from datetime import datetime
 import os
 import tkinter as tk
+from queue import Queue, Empty
 
 import requests
 import ttkbootstrap as ttk
@@ -87,33 +88,77 @@ class HomeController:
 
     def open_mailbox_popup(self):
         popup = self.open_popup("Mailbox", self.loading_content)
+        progress_var, status_var = self.get_progress_vars(popup)
 
         def fetch_data():
             try:
-                linkedin_messages = self.app.user_manager.get_linkedin_handler().check_for_new_messages(
-                    self.app.entire_client_list)
-                new_emails = self.app.user_manager.get_email_handler().search_mailbox_for_unseen_emails_from_clients(
-                    self.app.entire_client_list)
-
-                for client in linkedin_messages:
-                    client.set_has_responded(True)
-                for client in new_emails:
-                    client.set_has_responded(True)
-
-                for project in self.app.project_list:
-                    project_manager = ProjectHandler(project)
-                    project_manager.write_project()
-
-                # Update UI in the main thread
-                self.app.root.after(0, lambda: self.update_mailbox_ui(popup, linkedin_messages, new_emails))
+                queue = Queue()
+                threading.Thread(target=fetch_data_thread, args=(queue,), daemon=True).start()
+                update_progress(popup, queue, progress_var, status_var)
             except Exception as e:
                 self.app.root.after(0, lambda: messagebox.showerror("Error", f"An error occurred: {str(e)}"))
 
-        # Start a new thread for fetching data
-        threading.Thread(target=fetch_data, daemon=True).start()
+        def fetch_data_thread(queue):
+            queue.put(("status", "Checking LinkedIn messages..."))
+            linkedin_messages = self.app.user_manager.get_linkedin_handler().check_for_new_messages(
+                self.app.entire_client_list)
+            queue.put(("progress", 50))
+
+            queue.put(("status", "Checking emails..."))
+            new_emails = self.app.user_manager.get_email_handler().search_mailbox_for_unseen_emails_from_clients(
+                self.app.entire_client_list)
+            queue.put(("progress", 100))
+
+            for client in linkedin_messages:
+                client.set_has_responded(True)
+            for client in new_emails:
+                client.set_has_responded(True)
+
+            for project in self.app.project_list:
+                project_manager = ProjectHandler(project)
+                project_manager.write_project()
+
+            queue.put(("done", (linkedin_messages, new_emails)))
+
+        def update_progress(popup, queue, progress_var, status_var):
+            try:
+                message = queue.get_nowait()
+                if message[0] == "progress":
+                    progress_var.set(message[1])
+                elif message[0] == "status":
+                    status_var.set(message[1])
+                elif message[0] == "done":
+                    linkedin_messages, new_emails = message[1]
+                    self.app.root.after(0, lambda: self.update_mailbox_ui(popup, linkedin_messages, new_emails))
+                    return
+                popup.after(100, update_progress, popup, queue, progress_var, status_var)
+            except Empty:
+                popup.after(100, update_progress, popup, queue, progress_var, status_var)
+
+        # Start fetching data
+        fetch_data()
 
     def loading_content(self, frame):
         ttk.Label(frame, text="Loading notifications...", font=("Helvetica", 16, "bold")).pack(pady=20)
+
+        progress_var = tk.DoubleVar()
+        progress_bar = ttk.Progressbar(frame, variable=progress_var, maximum=100)
+        progress_bar.pack(pady=10, padx=20, fill=tk.X)
+
+        status_var = tk.StringVar()
+        status_label = ttk.Label(frame, textvariable=status_var)
+        status_label.pack(pady=5)
+
+        # Store the variables in the frame for later access
+        frame.progress_var = progress_var
+        frame.status_var = status_var
+
+    def get_progress_vars(self, popup):
+        # Retrieve the progress variables from the popup
+        for child in popup.winfo_children():
+            if hasattr(child, 'progress_var') and hasattr(child, 'status_var'):
+                return child.progress_var, child.status_var
+        return None, None
 
     def update_mailbox_ui(self, popup, linkedin_messages, new_emails):
         # Clear the popup content

@@ -1,4 +1,5 @@
 import os
+import threading
 import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
@@ -172,6 +173,11 @@ class ClientController:
             messagebox.showinfo("Error", "Selected client does not have a LinkedIn URL set!")
             return
 
+        # Create a new thread for opening the LinkedIn conversation
+        thread = threading.Thread(target=self._open_linkedin_conversation_thread)
+        thread.start()
+
+    def _open_linkedin_conversation_thread(self):
         self.app.user_manager.get_linkedin_handler().open_linkedin_conversation_visible(self.app.selected_client)
 
     def open_email_conversation_popup(self):
