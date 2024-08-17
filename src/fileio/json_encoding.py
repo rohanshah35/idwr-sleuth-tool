@@ -1,3 +1,5 @@
+# Handles JSON encoding/decoding
+
 import json
 
 from src.structures.client import Client

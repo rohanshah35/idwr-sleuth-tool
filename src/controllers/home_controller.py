@@ -1,14 +1,13 @@
+# Handles home menu within GUI
+
 import threading
-from datetime import datetime
 import os
 import tkinter as tk
 from queue import Queue, Empty
-
 import requests
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import messagebox
-from PIL import Image
 import customtkinter as ctk
 
 from src.fileio.file_handler import ProjectHandler

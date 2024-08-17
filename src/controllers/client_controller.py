@@ -1,4 +1,5 @@
-import os
+# Handles client menu within GUI
+
 import threading
 import tkinter as tk
 from tkinter import messagebox

@@ -1,4 +1,5 @@
 # General utility
+
 import re
 import tkinter as tk
 from datetime import date
@@ -12,12 +13,6 @@ def email_validator(input_string):
     if match is None:
         return False
     return True
-
-
-# Clears console based on OS
-def clear_console():
-    print(
-        "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 
 class DateEntry(ttk.Frame):

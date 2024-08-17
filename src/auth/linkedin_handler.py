@@ -1,4 +1,5 @@
-import re
+# Supports LinkedIn integration
+
 import time
 
 from selenium import webdriver
@@ -10,19 +11,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-# Creates and returns a visible Chrome WebDriver instance
 def create_visible_driver():
     return webdriver.Chrome()
 
 
-# Creates and returns a headless Chrome WebDriver instance
 def create_headless_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     return webdriver.Chrome(options=chrome_options)
 
 
-# Logs into LinkedIn using the provided credentials and WebDriver
 def login_to_linkedin(username, password, driver):
     driver.get("https://www.linkedin.com/login")
     try:

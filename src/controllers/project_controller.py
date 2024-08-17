@@ -1,3 +1,5 @@
+# Handles project menu within GUI
+
 import threading
 import tkinter as tk
 import ttkbootstrap as ttk
@@ -8,7 +10,6 @@ import customtkinter as ctk
 from src.fileio.exporter import ExcelExporter, CSVExporter
 from src.fileio.file_handler import ProjectHandler
 from src.structures.client import Client
-from src.structures.project import Project
 from src.utils.constants import SUB_FRAME_WIDTH, SUB_FRAME_HEIGHT
 from src.utils.utils import DateEntry
 

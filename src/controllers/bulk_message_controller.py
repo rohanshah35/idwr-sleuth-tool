@@ -1,3 +1,5 @@
+# Handles bulk messaging within GUI
+
 import threading
 import tkinter as tk
 from queue import Queue, Empty

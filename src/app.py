@@ -1,3 +1,5 @@
+# Main application framework
+
 import concurrent.futures
 import time
 import tkinter as tk
@@ -14,8 +16,8 @@ from src.controllers.client_controller import ClientController
 from src.controllers.bulk_message_controller import BulkMessageController
 from src.fileio.file_handler import ProjectHandler
 from src.utils.constants import FRAME_HEIGHT, FRAME_WIDTH
-
 from src.structures.user import UserManager
+
 
 class App:
     def __init__(self):
@@ -132,9 +134,11 @@ class App:
     def run(self):
         self.root.mainloop()
 
+
 def main():
     app = App()
     app.run()
+
 
 if __name__ == "__main__":
     main()

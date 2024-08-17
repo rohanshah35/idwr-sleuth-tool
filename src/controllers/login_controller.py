@@ -1,3 +1,5 @@
+# Handles login menu within GUI
+
 import threading
 import tkinter as tk
 import ttkbootstrap as ttk

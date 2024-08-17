@@ -1,6 +1,7 @@
+# Supports email integration
+
 import smtplib
 import imaplib
-import email
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -12,8 +13,8 @@ class EmailHandler:
         self._imap_server = None
         self._smtp_server = None
 
-        def get_email_address(self):
-            return self._email_address
+    def get_email_address(self):
+        return self._email_address
 
     def set_email_address(self, email_address):
         self._email_address = email_address
@@ -35,7 +36,6 @@ class EmailHandler:
 
     def set_smtp_server(self, smtp_server):
         self._smtp_server = smtp_server
-
 
     def initialize_imap(self):
         try:
@@ -83,14 +83,6 @@ class EmailHandler:
 
         return clients_with_new_mail
 
-    def search_mailbox(self, sender_email):
-        if not self._imap_server:
-            self.initialize_imap()
-
-        self._imap_server.select('INBOX')
-        _, message_numbers = self._imap_server.search(None, f'FROM "{sender_email}"')
-        return message_numbers[0].split()
-
     def search_mailbox_for_unseen(self, sender_email):
         if not self._imap_server:
             self.initialize_imap()
@@ -98,30 +90,3 @@ class EmailHandler:
         self._imap_server.select('INBOX')
         _, message_numbers = self._imap_server.search(None, f'UNSEEN FROM "{sender_email}"')
         return message_numbers[0].split()
-
-    def get_email_content(self, email_id):
-        if not self._imap_server:
-            self.initialize_imap()
-
-        _, msg_data = self._imap_server.fetch(email_id, '(RFC822)')
-        email_body = msg_data[0][1]
-        email_message = email.message_from_bytes(email_body)
-
-        if email_message.is_multipart():
-            for part in email_message.walk():
-                if part.get_content_type() == "text/plain":
-                    return email_message, part.get_payload(decode=True).decode()
-        else:
-            return email_message, email_message.get_payload(decode=True).decode()
-
-    def close_connections(self):
-        if self._imap_server:
-            try:
-                self._imap_server.logout()
-            except:
-                pass  # Ignore errors during IMAP logout
-        if self._smtp_server:
-            try:
-                self._smtp_server.quit()
-            except:
-                pass  # Ignore errors during SMTP quit

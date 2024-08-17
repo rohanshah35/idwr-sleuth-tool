@@ -1,4 +1,5 @@
-import json
+# Project data structure
+
 from datetime import date
 from src.structures.client import Client
 
