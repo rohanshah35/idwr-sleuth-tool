@@ -188,14 +188,17 @@ class BulkMessageController:
             send_button.pack(pady=10)
 
         self.save_selections()
-        popup = self.open_popup("LinkedIn", content)
+        if not selected_clients:
+            self.show_error_popup("LinkedIn Messaging", "You must select at least one client.")
+        elif all(client.get_linkedin() != "" for client in selected_clients):
+            popup = self.open_popup("LinkedIn", content)
+        else:
+            self.show_error_popup("LinkedIn Messaging", "Some selected clients don't have a LinkedIn profile.")
 
     def open_select_email_popup(self):
         def content(frame):
             ttk.Label(frame, text="Email", font=("Helvetica", 16, "bold")).pack(pady=10)
             ttk.Label(frame, text="Selected clients:", font=("Helvetica", 12)).pack(pady=5)
-            for client in selected_clients:
-                ttk.Label(frame, text=client.get_name(), foreground="white").pack()
 
             ttk.Label(frame, text="Subject:").pack(pady=(60, 0))
             subject_entry = ttk.Entry(frame, width=40)
@@ -259,7 +262,19 @@ class BulkMessageController:
             send_button.pack(pady=10)
 
         self.save_selections()
-        popup = self.open_popup("Email", content)
+        if not selected_clients:
+            self.show_error_popup("LinkedIn Messaging", "You must select at least one client.")
+        elif all(client.get_email() != "" for client in selected_clients):
+            popup = self.open_popup("Email", content)
+        else:
+            self.show_error_popup("Email Messaging", "Some selected clients don't have an email address.")
+
+    def show_error_popup(self, title, message):
+        def content(frame):
+            label = ttk.Label(frame, text=message, font=("Arial", 12), wraplength=400, justify=tk.CENTER)
+            label.pack(pady=20)
+
+        self.open_popup(title, content, width=450, height=300)
 
     def go_to_project(self):
         self.app.show_frame('project')
